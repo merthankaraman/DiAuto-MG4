@@ -35,4 +35,6 @@
     <string name="da_settings_subtitle">Ekran, ses ve bağlantıyı ayarla.</string>
     <string name="da_bluetooth_music">Müzik araç Bluetooth’undan</string>
     <string name="da_bluetooth_music_hint">Müziği aracın Bluetooth oynatıcısında tut. DiAuto ses odağına dokunmaz; navigasyon ve asistan sesi kullanılabilir kalır. Değişiklikten sonra Android Auto’yu yeniden bağla.</string>
+    <string name="da_force_bt_music_on_connect">Bağlanınca araçta BT Müzik’e geç</string>
+    <string name="da_force_bt_music_on_connect_hint">Android Auto bağlanınca aracın medya servisine Bluetooth Müzik kaynağını seçtirir (ana ekrandaki müzik kartı gibi). SAIC / MG üniteler. Varsayılan kapalı.</string>
 </resources>

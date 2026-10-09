@@ -41,4 +41,6 @@
     <string name="da_settings_subtitle">Tune your display, sound and connection.</string>
     <string name="da_bluetooth_music">Music through car Bluetooth</string>
     <string name="da_bluetooth_music_hint">Keep music with the car’s Bluetooth player. DiAuto leaves its audio focus alone; navigation and assistant audio remain available. Reconnect Android Auto after changing this.</string>
+    <string name="da_force_bt_music_on_connect">Switch car to BT Music on connect</string>
+    <string name="da_force_bt_music_on_connect_hint">When Android Auto connects, ask the car’s media service to select Bluetooth Music (same as the home-screen music card). SAIC / MG head units. Off by default.</string>
 </resources>

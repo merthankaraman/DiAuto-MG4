@@ -90,6 +90,8 @@ object SaicMediaPlayer {
     private const val TX_BT_PLAY = 2
     private const val TX_BT_PREVIOUS = 4
     private const val TX_BT_NEXT = 5
+    /** `IBtMusicBinderInterface.requestBtAudioFocus` — the launcher's source switch. */
+    private const val TX_BT_REQUEST_AUDIO_FOCUS = 0xf
 
     private const val TX_USB_PLAY_STATE = 0x1e
     private const val TX_USB_PLAY_PAUSE = 0xc
@@ -160,7 +162,41 @@ object SaicMediaPlayer {
             .forEach { it.connect(context) }
     }
 
+    /**
+     * Binds only the Bluetooth music interface — enough for [switchToBluetooth] without
+     * pulling every other player up on an AA connect path that does not need them.
+     */
+    fun connectBluetooth(context: Context) {
+        appContext = context.applicationContext
+        bluetooth.connect(context)
+    }
+
     val isAvailable: Boolean get() = status.isReady
+
+    val isBluetoothReady: Boolean get() = bluetooth.isReady
+
+    /**
+     * Makes the car's media source Bluetooth Music, the same way the SAIC launcher does when
+     * the home-screen music card picks BT (resource id 4).
+     *
+     * Order matters: [TX_BT_REQUEST_AUDIO_FOCUS] is the source handoff inside `MediaService`;
+     * [TX_BT_PLAY] only resumes the A2DP/AVRCP transport. Calling play alone is not a
+     * reliable switch.
+     *
+     * @return true when the focus call reached the service (play may still return false if
+     * nothing is queued on the phone).
+     */
+    fun switchToBluetooth(): Boolean {
+        val binder = bluetooth.binder()
+        if (binder == null) {
+            AppLogger.i(TAG, "switchToBluetooth: BT music service not bound")
+            return false
+        }
+        val focusOk = SaicAidl.callVoid(binder, DESC_BT, TX_BT_REQUEST_AUDIO_FOCUS)
+        val playOk = SaicAidl.callBoolean(binder, DESC_BT, TX_BT_PLAY) ?: false
+        AppLogger.i(TAG, "switchToBluetooth: requestBtAudioFocus=$focusOk play=$playOk")
+        return focusOk
+    }
 
     fun next(): Boolean = command(Command.NEXT)
 

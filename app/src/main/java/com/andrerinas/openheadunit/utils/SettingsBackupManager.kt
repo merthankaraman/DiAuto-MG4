@@ -102,6 +102,7 @@ object SettingsBackupManager {
         "auto-connect-single-usb" to ValueType.BOOLEAN,
         "enable-audio-sink" to ValueType.BOOLEAN,
         "music-via-bluetooth" to ValueType.BOOLEAN,
+        "force-bt-music-on-connect" to ValueType.BOOLEAN,
         "static-audio-focus" to ValueType.BOOLEAN,
         // Enum-backed, but INT is safe: Settings.playbackFocusMode reads it through
         // PlaybackFocusPolicy.Mode.fromInt, which falls back to AUTO for anything out of range.

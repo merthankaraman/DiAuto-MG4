@@ -688,6 +688,15 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("music-via-bluetooth", Build.MODEL == "DiLink5.1")
         set(value) { prefs.edit().putBoolean("music-via-bluetooth", value).apply() }
 
+    /**
+     * On AA connect, ask the car's SAIC media service to switch the active source to
+     * Bluetooth Music (`requestBtAudioFocus` then `play`) — what the factory launcher does
+     * when the music card picks BT. Default off; MG4 / SAIC head units only.
+     */
+    var forceBtMusicOnConnect: Boolean
+        get() = prefs.getBoolean("force-bt-music-on-connect", false)
+        set(value) { prefs.edit().putBoolean("force-bt-music-on-connect", value).apply() }
+
     val effectivePlaybackFocusMode: PlaybackFocusPolicy.Mode
         get() = if (musicViaBluetooth) PlaybackFocusPolicy.Mode.NEVER else playbackFocusMode
 
