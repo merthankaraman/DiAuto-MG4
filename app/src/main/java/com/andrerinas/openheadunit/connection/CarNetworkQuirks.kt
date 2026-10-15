@@ -49,27 +49,49 @@ object CarNetworkQuirks {
     fun pickPort(firewall: Firewall?, isSaic: Boolean, isFree: (Int) -> Boolean): Pair<Int, String> {
         if (firewall != null && firewall.rejectsByDefault && firewall.allowedTcp.isNotEmpty()) {
             val candidates = PREFERRED.filter { it in firewall.allowedTcp } +
-                firewall.allowedTcp.filter { it !in PREFERRED }
-            val chosen = candidates.firstOrNull { isFree(it) } ?: candidates.first()
-            return chosen to "restrictive firewall read from ${firewall.source} (allowed TCP: ${firewall.allowedTcp.joinToString(",")})"
+                    firewall.allowedTcp.filter { it !in PREFERRED }
+            val chosen = candidates.firstOrNull { isFree(it) }
+                ?: return 0 to "no free TCP port allowed by ${firewall.source}"
+            return chosen to "restrictive firewall read from ${firewall.source} (allowed TCP: ${
+                firewall.allowedTcp.joinToString(
+                    ","
+                )
+            })"
         }
         if (firewall != null) {
-            return STANDARD_PORT to "firewall read from ${firewall.source} without a default reject"
+            return if (isFree(STANDARD_PORT)) {
+                STANDARD_PORT to "firewall read from ${firewall.source} without a default reject"
+            } else {
+                0 to "standard TCP port $STANDARD_PORT is already in use"
+            }
         }
         if (isSaic) {
-            return SAIC_FALLBACK_PORT to "SAIC device, firewall script unreadable: falling back to a port allowed on every known firmware"
+            return if (isFree(SAIC_FALLBACK_PORT)) {
+                SAIC_FALLBACK_PORT to "SAIC device, firewall script unreadable: falling back to a port allowed on every known firmware"
+            } else {
+                0 to "SAIC fallback TCP port $SAIC_FALLBACK_PORT is already in use"
+            }
         }
-        return STANDARD_PORT to "no SAIC firewall detected: standard port"
+        return if (isFree(STANDARD_PORT)) {
+            STANDARD_PORT to "no SAIC firewall detected: standard port"
+        } else {
+            0 to "standard TCP port $STANDARD_PORT is already in use"
+        }
     }
 
-    @Volatile private var cachedPort: Int? = null
-    @Volatile private var cachedWhy: String = ""
-    @Volatile private var cachedArpNudge: Boolean? = null
+    @Volatile
+    private var cachedPort: Int? = null
+
+    @Volatile
+    private var cachedWhy: String = ""
+
+    @Volatile
+    private var cachedArpNudge: Boolean? = null
 
     private fun isSaicDevice(): Boolean =
         Build.MODEL.equals("SAIC", ignoreCase = true) ||
-            Build.DEVICE.contains("saic", ignoreCase = true) ||
-            Build.MANUFACTURER.equals("AUTUS", ignoreCase = true)
+                Build.DEVICE.contains("saic", ignoreCase = true) ||
+                Build.MANUFACTURER.equals("AUTUS", ignoreCase = true)
 
     private fun readFirewall(): Firewall? {
         for (path in SCRIPT_PATHS) {
@@ -87,7 +109,6 @@ object CarNetworkQuirks {
 
     private fun canBind(port: Int): Boolean = try {
         ServerSocket().use { s ->
-            s.reuseAddress = true
             s.bind(java.net.InetSocketAddress(port))
         }
         true
@@ -102,10 +123,16 @@ object CarNetworkQuirks {
             cachedPort?.let { return it }
             val (port, why) = pickPort(readFirewall(), isSaicDevice(), ::canBind)
             cachedWhy = why
-            cachedPort = port
+            if (port != 0) cachedPort = port
             AppLog.i("$TAG: automatic wireless port = $port ($why).")
             return port
         }
+    }
+
+    @Synchronized
+    fun invalidateCachedPort() {
+        cachedPort = null
+        cachedWhy = ""
     }
 
     /** Why the automatic choice was made (for diagnostics). */

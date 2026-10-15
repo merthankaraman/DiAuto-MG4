@@ -85,7 +85,12 @@ class SUExecutor {
             return false
         }
 
-        val exitCode = active?.runShell("setprop $key $value") ?: -1
+        if (!key.matches(Regex("^[a-zA-Z0-9._-]+$")) || value.contains(Regex("""[;&|`$\n\r]"""))) {
+            Log.e("SUExecutor", "#setProp rejected: Invalid characters in property key or value")
+            return false
+        }
+
+        val exitCode = active?.runShell("setprop $key '$value'") ?: -1
         return exitCode == 0
     }
 

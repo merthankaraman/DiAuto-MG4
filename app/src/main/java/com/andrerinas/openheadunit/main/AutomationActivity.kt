@@ -44,16 +44,18 @@ class AutomationActivity : AppCompatActivity() {
         when (data.host) {
             "connect" -> {
                 val ip = data.getQueryParameter("ip")
-                if (!ip.isNullOrEmpty()) {
+                if (!ip.isNullOrEmpty() && android.util.Patterns.IP_ADDRESS.matcher(ip).matches()) {
                     ContextCompat.startForegroundService(this, Intent(this, AapService::class.java).apply {
                         action = AapService.ACTION_CONNECT_SOCKET
                     })
                     lifecycleScope.launch(Dispatchers.IO) { App.provide(this@AutomationActivity).commManager.connect(ip, 5277) }
-                } else {
+                } else if (ip.isNullOrEmpty()) {
                     val autoIntent = Intent(this, AapService::class.java).apply {
                         this.action = AapService.ACTION_CHECK_USB
                     }
                     ContextCompat.startForegroundService(this, autoIntent)
+                } else {
+                    AppLog.w("AutomationActivity: Invalid IP format received: $ip")
                 }
             }
             "disconnect" -> {
@@ -68,7 +70,9 @@ class AutomationActivity : AppCompatActivity() {
                 }
                 ContextCompat.startForegroundService(this, exitIntent)
                 // Broadcast a finish request to close MainActivity if it's open
-                sendBroadcast(Intent("com.andrerinas.openheadunit.ACTION_FINISH_ACTIVITIES"))
+                sendBroadcast(Intent("com.andrerinas.openheadunit.ACTION_FINISH_ACTIVITIES").apply {
+                    setPackage(packageName)
+                })
             }
             "nightmode" -> {
                 val state = data.getQueryParameter("state")

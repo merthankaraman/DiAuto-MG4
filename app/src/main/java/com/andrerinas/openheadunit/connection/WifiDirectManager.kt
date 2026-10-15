@@ -1624,7 +1624,7 @@ class WifiDirectManager(private val context: Context) : WifiP2pManager.Connectio
         // Fallback: If iface is null, try to find a p2p interface name
         val targetIface = iface ?: getInterfaceByIp("192.168.49.1") ?: discoveredInterface
 
-        if (targetIface != null) {
+        if (targetIface != null && targetIface.matches(Regex("^[A-Za-z0-9._+-]+$"))) {
             // Try reading directly from sysfs
             try {
                 val file = java.io.File("/sys/class/net/$targetIface/address")
@@ -1639,7 +1639,7 @@ class WifiDirectManager(private val context: Context) : WifiP2pManager.Connectio
 
             // Try ip link
             try {
-                val process = Runtime.getRuntime().exec("ip link show $targetIface")
+                val process = Runtime.getRuntime().exec(arrayOf("ip", "link", "show", targetIface))
                 val reader = process.inputStream.bufferedReader()
                 var line: String?
                 while (reader.readLine().also { line = it } != null) {
