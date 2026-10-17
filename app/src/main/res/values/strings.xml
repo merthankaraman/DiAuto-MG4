@@ -1087,7 +1087,7 @@
     <string name="diagnostic_file_picker_unavailable">No file picker is available. Use Save diagnostic report on Android 10 or newer.</string>
     <string name="diagnostic_saving_report">Saving report…</string>
     <string name="diagnostic_report_saved">Diagnostic report saved</string>
-    <string name="diagnostic_saved_to_your_selected_location">Saved to your selected location.</string>
+    <string name="diagnostic_saved_to_your_selected_location">Saved to your selected location. It\'s safe to remove the USB stick now.</string>
     <string name="diagnostic_share_diagnostic_report">Share diagnostic report</string>
     <string name="diagnostic_share_manually">Report saved. Open it from your file manager to share it.</string>
     <string name="diagnostic_done">Done</string>
