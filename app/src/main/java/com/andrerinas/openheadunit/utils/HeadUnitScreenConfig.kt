@@ -326,7 +326,10 @@ object HeadUnitScreenConfig {
         isSmallScreen = longUsable <= 1920 && shortUsable <= 1200
 
         scaleFactor = 1.0f
-        if (!isSmallScreen) {
+        // A stream narrower than the panel (720p on the MG4's 1920x640) is upscaled by the view, so
+        // the margins must assume the same uniform scale or the phone lays out a taller picture.
+        val upscaledStream = getNegotiatedWidth() in 1 until screenWidthPx
+        if (!isSmallScreen || upscaledStream) {
             val sWidth = screenWidthPx.toFloat()
             val sHeight = screenHeightPx.toFloat()
             if (getNegotiatedWidth() > 0 && getNegotiatedHeight() > 0) {
