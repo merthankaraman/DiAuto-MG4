@@ -178,8 +178,8 @@ class Settings(private val context: Context) {
         // Default Silent. Key renamed so existing installs drop the old Info default
         // and pick up Silent without a prefs migration.
         get() = LogExporter.LogLevel.entries.getOrElse(
-            prefs.getInt(KEY_LOG_LEVEL, LogExporter.LogLevel.SILENT.ordinal)
-        ) { LogExporter.LogLevel.SILENT }
+            prefs.getInt(KEY_LOG_LEVEL, LogExporter.LogLevel.INFO.ordinal)
+        ) { LogExporter.LogLevel.INFO }
         set(value) { prefs.edit().putInt(KEY_LOG_LEVEL, value.ordinal).apply() }
 
     enum class LogSource {
@@ -586,7 +586,7 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putString("video-codec", value).apply() }
 
     var fpsLimit: Int
-        get() = prefs.getInt(KEY_FPS_LIMIT, 30)
+        get() = prefs.getInt(KEY_FPS_LIMIT, 60)
         set(value) { prefs.edit().putInt(KEY_FPS_LIMIT, value).apply() }
 
     var hasAcceptedDisclaimer: Boolean
@@ -1177,7 +1177,9 @@ class Settings(private val context: Context) {
         // (SurfaceView, Auto DPI→227@1080p, 30 fps) instead of keeping TextureView/60 fps.
         const val KEY_VIEW_MODE = "view-mode-allgo"
         const val KEY_DPI_PIXEL_DENSITY = "dpi-pixel-density-allgo"
-        const val KEY_FPS_LIMIT = "fps-limit-allgo"
+        // Renamed again so upgrades move to 60 fps: 1080p60 is within the MT2712 decoder's reported
+        // range, and 30 stays one setting away (Video → FPS Limit).
+        const val KEY_FPS_LIMIT = "fps-limit-60"
         /** Persist whether log capture should be active across restarts. */
         const val KEY_LOG_CAPTURE_ENABLED = "log-capture-enabled"
 
