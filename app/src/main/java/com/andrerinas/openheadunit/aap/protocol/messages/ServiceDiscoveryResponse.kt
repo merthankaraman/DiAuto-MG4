@@ -298,11 +298,17 @@ class ServiceDiscoveryResponse(private val context: Context)
 
             // Bluetooth Service — always advertise A2DP+HFP (phone pairing UI). Wi‑Fi media
             // path drops the live A2DP link after handoff via BluetoothHelper, not here.
-            if (settings.bluetoothAddress.isNotEmpty()) {
+            // Wireless Android Auto keys its record on this address, so read it from the adapter
+            // when nobody has typed one in (system uid sees the real MAC, not 02:00:00:00:00:00).
+            val carBtAddress = settings.bluetoothAddress.ifEmpty {
+                BluetoothHelper.getBluetoothMacAddress(context).orEmpty()
+            }
+            if (carBtAddress.isNotEmpty()) {
+                AppLog.i("Bluetooth service announced (address from ${if (settings.bluetoothAddress.isEmpty()) "adapter" else "settings"})")
                 val bluetooth = Control.Service.newBuilder().also { service ->
                     service.id = Channel.ID_BTH
                     service.bluetoothService = Control.Service.BluetoothService.newBuilder().also {
-                        it.carAddress = settings.bluetoothAddress
+                        it.carAddress = carBtAddress
                         it.addAllSupportedPairingMethods(
                             listOf(
                                 Control.BluetoothPairingMethod.A2DP,

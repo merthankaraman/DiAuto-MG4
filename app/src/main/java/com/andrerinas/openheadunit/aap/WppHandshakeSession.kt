@@ -35,6 +35,8 @@ enum class WppStage {
     AWAIT_INFO_REQUEST,
     /** Credentials delivered; the phone is associating, doing WPS and getting a DHCP lease. */
     SETTLING,
+    /** The session is up; the RFCOMM channel stays open for pings, as a real head unit keeps it. */
+    HOLDING,
     /** The phone's projection session landed. */
     DONE,
     /** The exchange ended without a session. */
@@ -59,6 +61,10 @@ sealed class WppEvent {
     object StageTimeout : WppEvent()
     /** The phone's projection session reached us over WiFi. */
     object TcpSessionUp : WppEvent()
+    /** The phone closed the held channel. Only acted on in [WppStage.HOLDING]. */
+    object PeerClosed : WppEvent()
+    /** The projection session ended. Only acted on in [WppStage.HOLDING]. */
+    object SessionEnded : WppEvent()
     /** The settling window elapsed with no session. */
     object SettleTimeout : WppEvent()
 }
@@ -80,6 +86,7 @@ sealed class WppAction {
     /** The phone is still working on it — push the settling deadline out. */
     object ExtendSettle : WppAction()
     object CompleteSuccess : WppAction()
+    data class Release(val peerClosed: Boolean) : WppAction()
     /**
      * [phoneWasSilent] is true when the phone never sent a single message — the signature of a
      * head unit whose Bluetooth stack drops our writes, not of a phone-side problem. It is what
@@ -120,7 +127,12 @@ sealed class WppAction {
  * @param versionExchangeEnabled whether to open with [WppMessageType.VERSION_REQUEST]. False sends
  *   exactly what shipped before it existed.
  */
-class WppHandshakeSession(private val versionExchangeEnabled: Boolean) {
+class WppHandshakeSession(
+    private val versionExchangeEnabled: Boolean,
+    // Closing the channel after handoff makes the phone reconnect and redo the exchange, which
+    // tears down the projection it just started ("Teardown existing session due to new connection").
+    private val holdsChannel: Boolean = true
+) {
 
     companion object {
         /** How long to wait for the phone's version response before carrying on without it.
@@ -180,6 +192,7 @@ class WppHandshakeSession(private val versionExchangeEnabled: Boolean) {
      */
     fun on(event: WppEvent): List<WppAction> {
         if (isTerminal()) return emptyList()
+        if (stage == WppStage.HOLDING) return onHolding(event)
 
         if (event is WppEvent.MessageReceived) {
             messagesReceived++
@@ -195,7 +208,7 @@ class WppHandshakeSession(private val versionExchangeEnabled: Boolean) {
             WppStage.AWAIT_CREDENTIALS -> onAwaitCredentials(event)
             WppStage.AWAIT_INFO_REQUEST -> onAwaitInfoRequest(event)
             WppStage.SETTLING -> onSettling(event)
-            WppStage.DONE, WppStage.FAILED -> emptyList()
+            WppStage.HOLDING, WppStage.DONE, WppStage.FAILED -> emptyList()
         }
     }
 
@@ -258,9 +271,19 @@ class WppHandshakeSession(private val versionExchangeEnabled: Boolean) {
         else -> emptyList()
     }
 
+    private fun onHolding(event: WppEvent): List<WppAction> = when {
+        event is WppEvent.MessageReceived -> {
+            messagesReceived++
+            if (event.type == WppMessageType.PING_REQUEST) listOf(WppAction.SendPingResponse) else emptyList()
+        }
+        event is WppEvent.PeerClosed -> { stage = WppStage.DONE; listOf(WppAction.Release(peerClosed = true)) }
+        event is WppEvent.SessionEnded -> { stage = WppStage.DONE; listOf(WppAction.Release(peerClosed = false)) }
+        else -> emptyList()
+    }
+
     private fun onSettling(event: WppEvent): List<WppAction> = when {
         event is WppEvent.TcpSessionUp -> {
-            stage = WppStage.DONE
+            stage = if (holdsChannel) WppStage.HOLDING else WppStage.DONE
             listOf(WppAction.CompleteSuccess)
         }
         event is WppEvent.MessageReceived &&
