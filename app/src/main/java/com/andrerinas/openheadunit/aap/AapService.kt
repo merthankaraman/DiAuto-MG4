@@ -1969,6 +1969,8 @@ class AapService : Service(), UsbReceiver.Listener {
                         // Read this device's own access point instead of hosting a P2P group. The AP
                         // itself is the user's to switch on; the provider only resolves and watches it.
                         AppLog.i("AapService: Native AA on the head unit hotspot — resolving access point credentials.")
+                        // The MG4 Radio app on the phone reaches the car radio through this.
+                        com.andrerinas.openheadunit.radio.RadioBridgeServer.start(this@AapService)
                         softApCredentialsProvider?.start()
                     } else {
                         // Start WiFi Direct as a "quiet host" (P2P Group for phone to join)
@@ -2049,6 +2051,7 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     override fun onDestroy() {
+        com.andrerinas.openheadunit.radio.RadioBridgeServer.stop(this)
         com.andrerinas.openheadunit.hud.BydNavigationOutputs.stop()
         AppLog.i("AapService destroying... (wakeLock held=${bootWakeLock?.isHeld == true})")
         isDestroying = true
