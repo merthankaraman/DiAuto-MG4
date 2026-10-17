@@ -1382,6 +1382,7 @@ class AapService : Service(), UsbReceiver.Listener {
      */
     private fun onDisconnected(state: CommManager.ConnectionState.Disconnected) {
         com.andrerinas.openheadunit.hud.BydNavigationOutputs.stop()
+        com.andrerinas.openheadunit.hud.SaicClusterNavigation.stop()
         isSwitchingToAccessory.set(false)
         releaseWifiLock()
 
@@ -2038,6 +2039,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         com.andrerinas.openheadunit.hud.BydNavigationOutputs.stop()
+        com.andrerinas.openheadunit.hud.SaicClusterNavigation.stop()
         AppLog.i("AapService: onTaskRemoved — attempting restart")
         try {
             val restartIntent = Intent(this, AapService::class.java)
@@ -2050,6 +2052,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     override fun onDestroy() {
         com.andrerinas.openheadunit.hud.BydNavigationOutputs.stop()
+        com.andrerinas.openheadunit.hud.SaicClusterNavigation.stop()
         AppLog.i("AapService destroying... (wakeLock held=${bootWakeLock?.isHeld == true})")
         isDestroying = true
         mediaMetadataDecodeJob?.cancel()
