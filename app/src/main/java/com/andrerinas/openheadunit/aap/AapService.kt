@@ -102,6 +102,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     // SupervisorJob prevents a child coroutine failure from cancelling the whole scope
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var stationRestoreJob: Job? = null
 
     private lateinit var uiModeManager: UiModeManager
     private lateinit var usbReceiver: UsbReceiver
@@ -1382,6 +1383,12 @@ class AapService : Service(), UsbReceiver.Listener {
      */
     private fun onDisconnected(state: CommManager.ConnectionState.Disconnected) {
         com.andrerinas.openheadunit.hud.BydNavigationOutputs.stop()
+        // Give the car Wi-Fi back once wireless Android Auto has stayed down for a while.
+        stationRestoreJob?.cancel()
+        stationRestoreJob = serviceScope.launch(Dispatchers.IO) {
+            delay(HotspotManager.STATION_RESTORE_DELAY_MS)
+            if (!commManager.isBusy) HotspotManager.restorePausedStation(this@AapService)
+        }
         isSwitchingToAccessory.set(false)
         releaseWifiLock()
 
@@ -1969,6 +1976,9 @@ class AapService : Service(), UsbReceiver.Listener {
                         // Read this device's own access point instead of hosting a P2P group. The AP
                         // itself is the user's to switch on; the provider only resolves and watches it.
                         AppLog.i("AapService: Native AA on the head unit hotspot — resolving access point credentials.")
+                        serviceScope.launch(Dispatchers.IO) {
+                            HotspotManager.ensure5GhzBeforeSession(this@AapService)
+                        }
                         softApCredentialsProvider?.start()
                     } else {
                         // Start WiFi Direct as a "quiet host" (P2P Group for phone to join)

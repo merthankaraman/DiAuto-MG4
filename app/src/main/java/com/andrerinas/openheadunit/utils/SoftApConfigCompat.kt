@@ -132,6 +132,16 @@ object SoftApConfigCompat {
      * SSID and passphrase the user (or the vendor) set stay as they are — this path never owned
      * them, and inventing values here would rename someone's hotspot behind their back.
      */
+    /** The stored Android 9 AP config as (apBand, apChannel), or null where it is unreadable. */
+    fun legacyBandAndChannel(context: Context): Pair<Int, Int>? = try {
+        val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val config = wifiManager.javaClass.getMethod("getWifiApConfiguration").invoke(wifiManager)
+        config?.let { it.javaClass.getField("apBand").getInt(it) to it.javaClass.getField("apChannel").getInt(it) }
+    } catch (e: Exception) {
+        AppLog.w("SoftApConfigCompat: could not read the stored AP band/channel: ${e.message}")
+        null
+    }
+
     private fun configureLegacyBand(context: Context, band: ApBand): Boolean = try {
         val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val config = wifiManager.javaClass.getMethod("getWifiApConfiguration").invoke(wifiManager)
@@ -140,7 +150,12 @@ object SoftApConfigCompat {
             false
         } else {
             val field = config.javaClass.getField("apBand")
+            val channelField = config.javaClass.getField("apChannel")
+            AppLog.i("SoftApConfigCompat: stored AP config before: apBand=${field.getInt(config)} apChannel=${channelField.getInt(config)}")
             field.setInt(config, SoftApBandPolicy.legacyApBand(band))
+            // Android 9 only picks a channel when apChannel is 0; a stored 2.4 GHz channel (7 on
+            // the MG4) otherwise keeps the AP on 2.4 GHz whatever apBand says.
+            channelField.setInt(config, 0)
             val applied = wifiManager.javaClass.getMethod(
                 "setWifiApConfiguration", android.net.wifi.WifiConfiguration::class.java
             ).invoke(wifiManager, config) as? Boolean ?: false

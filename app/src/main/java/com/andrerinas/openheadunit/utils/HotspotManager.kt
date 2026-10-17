@@ -95,6 +95,76 @@ object HotspotManager {
         return false
     }
 
+    /**
+     * Moves an access point the car already started on 2.4 GHz onto 5 GHz, once, before any phone
+     * connects (restarting a live MG4 AP mid-handshake bounces the session). Android Auto refuses
+     * 1080p over 2.4 GHz. setHotspotEnabled() falls back to 2.4 GHz if 5 GHz will not come up.
+     */
+    fun ensure5GhzBeforeSession(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return
+        val pausedStation = pauseStationIfOn2Ghz(context)
+        val stored = SoftApConfigCompat.legacyBandAndChannel(context)
+        AppLog.i("HotspotManager: stored AP config apBand=${stored?.first} apChannel=${stored?.second}")
+        val configIs5Ghz = stored != null &&
+            stored.first == SoftApBandPolicy.legacyApBand(ApBand.BAND_5GHZ) && stored.second == 0
+        if (configIs5Ghz && !pausedStation) return
+        if (!isApUp(context)) return // the next start requests 5 GHz with the channel cleared
+        AppLog.i(
+            if (pausedStation) "HotspotManager: restarting the AP so it leaves the car Wi-Fi's 2.4 GHz channel for 5 GHz"
+            else "HotspotManager: AP is up on a 2.4 GHz/pinned config - restarting it once on 5 GHz before any phone connects"
+        )
+        setHotspotEnabled(context, false)
+        val deadline = System.currentTimeMillis() + AP_STATE_TIMEOUT_MS
+        while (isApUp(context) && System.currentTimeMillis() < deadline) {
+            try { Thread.sleep(300) } catch (e: InterruptedException) { return }
+        }
+        val up = setHotspotEnabled(context, true)
+        AppLog.i("HotspotManager: 5 GHz restart finished up=$up, stored config now ${SoftApConfigCompat.legacyBandAndChannel(context)}")
+    }
+
+    /**
+     * The MG4's MT6630 has one radio: while the car's own Wi-Fi is connected, the access point is
+     * forced onto that network's channel, so a 2.4 GHz network caps Android Auto at 720p. Switch the
+     * station off (remembering that we did) so the AP can come up on 5 GHz.
+     */
+    private fun pauseStationIfOn2Ghz(context: Context): Boolean {
+        val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        if (!wifi.isWifiEnabled) return false
+        val freq = try { wifi.connectionInfo?.frequency ?: -1 } catch (e: Exception) { -1 }
+        if (freq !in 2400..2500) {
+            AppLog.i("HotspotManager: car Wi-Fi station frequency=$freq MHz - leaving it on")
+            return false
+        }
+        AppLog.i("HotspotManager: car Wi-Fi is connected on $freq MHz, which pins the single-radio AP to 2.4 GHz - switching it off while wireless Android Auto is in use")
+        stationPrefs(context).edit().putBoolean(KEY_STATION_PAUSED, true).apply()
+        @Suppress("DEPRECATION")
+        val ok = try { wifi.setWifiEnabled(false) } catch (e: Exception) {
+            AppLog.w("HotspotManager: could not switch the car Wi-Fi off: ${e.message}"); false
+        }
+        val deadline = System.currentTimeMillis() + AP_STATE_TIMEOUT_MS
+        while (ok && wifi.isWifiEnabled && System.currentTimeMillis() < deadline) {
+            try { Thread.sleep(200) } catch (e: InterruptedException) { break }
+        }
+        return ok
+    }
+
+    /** Switches the car's Wi-Fi back on, but only if [pauseStationIfOn2Ghz] switched it off. */
+    fun restorePausedStation(context: Context) {
+        val prefs = stationPrefs(context)
+        if (!prefs.getBoolean(KEY_STATION_PAUSED, false)) return
+        prefs.edit().putBoolean(KEY_STATION_PAUSED, false).apply()
+        val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        @Suppress("DEPRECATION")
+        val ok = try { wifi.setWifiEnabled(true) } catch (e: Exception) { false }
+        AppLog.i("HotspotManager: wireless Android Auto has been idle - switching the car Wi-Fi back on (ok=$ok)")
+    }
+
+    private fun stationPrefs(context: Context) =
+        context.applicationContext.getSharedPreferences("hotspot_band", Context.MODE_PRIVATE)
+
+    private const val KEY_STATION_PAUSED = "station-paused-for-5ghz"
+    const val STATION_RESTORE_DELAY_MS = 120_000L
+
     fun setHotspotEnabled(context: Context, enabled: Boolean): Boolean {
         AppLog.i("HotspotManager: Setting hotspot enabled=$enabled (API ${Build.VERSION.SDK_INT}, canWriteSettings=${AppPermissions.isWriteSettingsGranted(context)})")
 
