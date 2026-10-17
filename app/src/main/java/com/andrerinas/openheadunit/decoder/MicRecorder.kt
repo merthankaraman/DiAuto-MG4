@@ -72,6 +72,7 @@ class MicRecorder(private val micSampleRate: Int, private val context: Context) 
 
     fun stop() {
         AppLog.i("MicRecorder: Stopping. Active: $threadMicAudioActive")
+        CarVoicePath.disable(context)
         
         threadMicAudioActive = false
         threadMicAudio?.interrupt()
@@ -181,6 +182,7 @@ class MicRecorder(private val micSampleRate: Int, private val context: Context) 
             return 0
         }
 
+        CarVoicePath.enable(context, com.andrerinas.openheadunit.App.provide(context).commManager.isWirelessSession)
         val configuredSource = getAudioSource(settings.micInputSource)
         val ok = if (configuredSource == SOURCE_BLUETOOTH_SCO) {
             startScoAndRecord()
@@ -193,6 +195,7 @@ class MicRecorder(private val micSampleRate: Int, private val context: Context) 
             0
         } else {
             AppLog.e("MicRecorder: start failed — AudioRecord not initialized")
+            CarVoicePath.disable(context)
             -7
         }
     }
