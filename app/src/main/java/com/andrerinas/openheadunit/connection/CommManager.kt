@@ -281,7 +281,7 @@ class CommManager(
             }
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -331,7 +331,7 @@ class CommManager(
             }
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -362,7 +362,7 @@ class CommManager(
             }
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -411,7 +411,8 @@ class CommManager(
                         _transport = null
 
                         if (oldTransport != null) {
-                            transportedQuited(isClean)
+                            // Read from the transport that quit: _transport is already null here.
+                            transportedQuited(isClean, oldTransport.wasUserExit)
                         }
                     }
                     _transport!!.onAudioFocusStateChanged = { isPlaying -> onAudioFocusStateChanged?.invoke(isPlaying) }
@@ -435,7 +436,7 @@ class CommManager(
                     _connectionState.emit(
                         ConnectionState.Error(if (silent) ERROR_HANDSHAKE_PEER_SILENT else "Handshake failed")
                     )
-                    disconnect()
+                    disconnect(sendByeBye = false, isUserExit = false)
                 }
             } else {
                 _connectionState.emit(ConnectionState.Error("Starting handshake without connection"))
@@ -445,7 +446,7 @@ class CommManager(
             // to age into a backoff that no longer describes what is happening.
             noteHandshakeOutcome(silent = false)
             _connectionState.emit(ConnectionState.Error("Handshake failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -531,7 +532,7 @@ class CommManager(
             _connectionState.emit(ConnectionState.TransportStarted)
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Start reading failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -543,8 +544,7 @@ class CommManager(
      * `false` immediately) then schedules cleanup. `sendByeBye` is `false` because the
      * connection is already dead — there is no point sending a `ByeByeRequest`.
      */
-    private fun transportedQuited(isClean: Boolean) {
-        val wasUserExit = _transport?.wasUserExit ?: false
+    private fun transportedQuited(isClean: Boolean, wasUserExit: Boolean) {
         _connectionState.value = ConnectionState.Disconnected(isClean, isUserExit = wasUserExit)
         // Transport already quit on its own — no ByeByeRequest needed (connection is dead).
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye = false) }
@@ -969,7 +969,11 @@ class CommManager(
 
     fun destroy() {
         doDisconnect()
-        _scope.cancel()
+        // This instance is the app-wide one from AppComponent and outlives the service that calls
+        // destroy(): a later AapService in the same process uses it again. Cancelling the scope
+        // itself made every later launch a no-op, so disconnects never ran their cleanup. Cancel
+        // only the work in flight.
+        _scope.coroutineContext.cancelChildren()
     }
 
     companion object {
