@@ -35,6 +35,9 @@ class SoftApCaptivePortalSpoof {
     private var gatewayIpv4: String? = null
     private var httpPort: Int = 80
 
+    /** The unit refused the iptables redirect once; it will again until the app restarts. */
+    private var redirectRefused = false
+
     private var dnsSocket: DatagramSocket? = null
     private var httpServer: ServerSocket? = null
     private var dnsThread: Thread? = null
@@ -42,7 +45,7 @@ class SoftApCaptivePortalSpoof {
 
     @Synchronized
     fun start(apIface: String, gatewayIp: String) {
-        if (apIface.isBlank() || gatewayIp.isBlank()) return
+        if (apIface.isBlank() || gatewayIp.isBlank() || redirectRefused) return
         if (running.get() && ifaceName == apIface && gatewayIpv4 == gatewayIp) return
         stop()
 
@@ -61,7 +64,17 @@ class SoftApCaptivePortalSpoof {
             running.set(false)
             return
         }
-        installIptables(apIface)
+        if (!installIptables(apIface)) {
+            // Without the redirect no check ever reaches the listeners (the MG4 refuses it), so
+            // stop them and don't retry on every hotspot event until the app restarts.
+            AppLog.w("SoftApCaptive: this unit refuses the iptables redirect - captive-portal help off until restart")
+            redirectRefused = true
+            stopSockets()
+            ifaceName = null
+            gatewayIpv4 = null
+            running.set(false)
+            return
+        }
         AppLog.i(
             "SoftApCaptive: answering connectivity checks on $apIface ($gatewayIp) " +
                 "dns→:${SoftApCaptivePortalPolicy.DNS_REDIRECT_PORT} http=:$httpPort"
@@ -194,27 +207,29 @@ class SoftApCaptivePortalSpoof {
         }
     }
 
-    private fun installIptables(iface: String) {
+    private fun installIptables(iface: String): Boolean {
         val safe = sanitizeIface(iface) ?: run {
             AppLog.w("SoftApCaptive: refusing iptables for unsafe iface name '$iface'")
-            return
+            return false
         }
         val dnsPort = SoftApCaptivePortalPolicy.DNS_REDIRECT_PORT
         // DNS: every SoftAP client query hits us; we only answer captive hosts.
-        shell(
+        val dnsRedirected = shell(
             "iptables -t nat -C PREROUTING -i $safe -p udp --dport 53 " +
                 "-j REDIRECT --to-ports $dnsPort 2>/dev/null || " +
                 "iptables -t nat -I PREROUTING -i $safe -p udp --dport 53 " +
                 "-j REDIRECT --to-ports $dnsPort"
         )
+        if (!dnsRedirected) return false
         if (httpPort != 80) {
-            shell(
+            return shell(
                 "iptables -t nat -C PREROUTING -i $safe -p tcp --dport 80 " +
                     "-j REDIRECT --to-ports $httpPort 2>/dev/null || " +
                     "iptables -t nat -I PREROUTING -i $safe -p tcp --dport 80 " +
                     "-j REDIRECT --to-ports $httpPort"
             )
         }
+        return true
     }
 
     private fun removeIptables(iface: String?) {
