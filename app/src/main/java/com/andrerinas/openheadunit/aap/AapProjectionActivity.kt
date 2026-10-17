@@ -1816,6 +1816,11 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             return super.dispatchKeyEvent(event)
         }
 
+        if (!ProjectionKeyPolicy.shouldForwardCarKey(cachedKeyCodes, event.keyCode)) {
+            if (action == KeyEvent.ACTION_DOWN) AppLog.i("Projection: not forwarding car navigation key ${event.keyCode} to Android Auto")
+            return true
+        }
+
         // 2. Funnel all other keys to CommManager
         commManager.sendKey(event.keyCode, event.action == KeyEvent.ACTION_DOWN, event.downTime, "projection")
         return true
