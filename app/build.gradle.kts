@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -49,6 +50,19 @@ android {
 
     println("Detected available locales: $availableLocales")
 
+    val localProps = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) load(FileInputStream(f))
+    }
+    fun propOrEnv(key: String): String =
+        localProps.getProperty(key)
+            ?: (project.findProperty(key) as? String)
+            ?: System.getenv(key)
+            ?: ""
+    fun escapeBuildConfig(value: String): String =
+        value.replace("\\", "\\\\").replace("\"", "\\\"")
+    fun buildConfigString(value: String): String = "\"${escapeBuildConfig(value)}\""
+
     sourceSets {
         getByName("main") {
             assets.srcDirs("${project.layout.buildDirectory.get().asFile}/generated/assets/root")
@@ -70,8 +84,8 @@ android {
         applicationId = "com.drivehub.diauto.mg4"
         minSdk = 28
         targetSdk = 36
-        versionCode = 25
-        versionName = "1.9.6"
+        versionCode = 28
+        versionName = "1.9.9"
         setProperty("archivesBaseName", "${applicationId}_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -81,29 +95,8 @@ android {
         // This is scanned at build time from values-XX directories
         buildConfigField("String", "AVAILABLE_LOCALES", "\"${availableLocales.joinToString(",")}\"")
 
-        // Crash "Send" → Telegram (baked in at build; head-unit user never sees this).
-        // local.properties (gitignored): TELEGRAM_BOT_TOKEN=...  TELEGRAM_CHAT_ID=...
-        val localProps = Properties().apply {
-            val f = rootProject.file("local.properties")
-            if (f.exists()) load(FileInputStream(f))
-        }
-        fun propOrEnv(key: String, default: String = ""): String =
-            localProps.getProperty(key)
-                ?: (project.findProperty(key) as? String)
-                ?: System.getenv(key)
-                ?: default
-        fun escapeBuildConfig(value: String): String =
-            value.replace("\\", "\\\\").replace("\"", "\\\"")
-        buildConfigField(
-            "String",
-            "TELEGRAM_BOT_TOKEN",
-            "\"${escapeBuildConfig(propOrEnv("TELEGRAM_BOT_TOKEN"))}\""
-        )
-        buildConfigField(
-            "String",
-            "TELEGRAM_CHAT_ID",
-            "\"${escapeBuildConfig(propOrEnv("TELEGRAM_CHAT_ID"))}\""
-        )
+        buildConfigField("String", "TELEGRAM_BOT_TOKEN", "\"\"")
+        buildConfigField("String", "TELEGRAM_CHAT_ID", "\"\"")
 
         // MG4 HU uses 64-bit userspace on this unit; ship arm64 only.
         ndk {
@@ -114,6 +107,27 @@ android {
             cmake {
                 cppFlags("")
             }
+        }
+    }
+
+    buildTypes {
+        getByName("debug") {
+            // Standard credentials are available to local debug builds only.
+            buildConfigField("String", "TELEGRAM_BOT_TOKEN", buildConfigString(propOrEnv("TELEGRAM_BOT_TOKEN")))
+            buildConfigField("String", "TELEGRAM_CHAT_ID", buildConfigString(propOrEnv("TELEGRAM_CHAT_ID")))
+        }
+        getByName("release") {
+            // Release upload is opt-in and uses separate, explicitly named credentials.
+            buildConfigField(
+                "String",
+                "TELEGRAM_BOT_TOKEN",
+                buildConfigString(propOrEnv("TELEGRAM_BOT_TOKEN_RELEASE"))
+            )
+            buildConfigField(
+                "String",
+                "TELEGRAM_CHAT_ID",
+                buildConfigString(propOrEnv("TELEGRAM_CHAT_ID_RELEASE"))
+            )
         }
     }
 
@@ -134,9 +148,10 @@ android {
 
     androidComponents {
         beforeVariants { variantBuilder ->
-            val keep = variantBuilder.name == "carDebug" ||
-                variantBuilder.name == "phoneDebug"
-            variantBuilder.enable = keep
+            // phoneRelease is the public MVP (no system UID); carRelease is platform-signed locally.
+            variantBuilder.enable = variantBuilder.name in setOf(
+                "carDebug", "phoneDebug", "carRelease", "phoneRelease"
+            )
         }
     }
 
@@ -252,7 +267,7 @@ android {
 dependencies {
     implementation("org.conscrypt:conscrypt-android:2.5.3")
 
-    implementation("com.google.protobuf:protobuf-java:3.25.1")
+    implementation("com.google.protobuf:protobuf-java:3.25.9")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.media:media:1.6.0")
@@ -262,7 +277,6 @@ dependencies {
     implementation("androidx.startup:startup-runtime:1.1.1")
     implementation("com.google.android.gms:play-services-nearby:19.3.0")
     // ViewModel and LiveData
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     kapt("androidx.lifecycle:lifecycle-compiler:2.6.2")
 
     // KTX
@@ -272,8 +286,9 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")
+    testImplementation("org.json:json:20240303")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KotlinCompilerVersion.VERSION}")
     implementation(project(":contract"))
     implementation(project(":evhardware"))
 

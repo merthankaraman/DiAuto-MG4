@@ -98,20 +98,32 @@ object SaicCarAudioSource {
      * Requests focus under AllGo's package name so SystemUI switches the media
      * card off radio (`mMediaType=6`); safe to call repeatedly.
      */
+    @Synchronized
     fun claimAndroidAuto(context: Context): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
         val focusCtx = attributionContext(context)
         val am = focusCtx.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
             ?: return false
         return try {
-            val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            val request = if (aaFocusAudioManager === am) {
+                aaFocusRequest
+            } else {
+                aaFocusAudioManager?.let { previousManager ->
+                    aaFocusRequest?.let { previousRequest ->
+                        runCatching { previousManager.abandonAudioFocusRequest(previousRequest) }
+                    }
+                }
+                null
+            } ?: AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(mediaAttributes(SRC_ANDROID_AUTO))
                 .setWillPauseWhenDucked(false)
                 .setAcceptsDelayedFocusGain(true)
                 .setOnAudioFocusChangeListener(quietListener)
                 .build()
-            aaFocusRequest = request
-            aaFocusAudioManager = am
+                .also {
+                    aaFocusRequest = it
+                    aaFocusAudioManager = am
+                }
             val result = am.requestAudioFocus(request)
             aaFocusGranted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
             val lastOk = setLastSource(am, SRC_ANDROID_AUTO)
@@ -144,6 +156,7 @@ object SaicCarAudioSource {
         }
     }
 
+    @Synchronized
     fun releaseAndroidAuto(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val request = aaFocusRequest ?: return

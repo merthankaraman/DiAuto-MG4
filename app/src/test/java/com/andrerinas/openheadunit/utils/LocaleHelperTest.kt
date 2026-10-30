@@ -59,6 +59,16 @@ class LocaleHelperTest {
         assertEquals("es", SettingsBackupManager.parseImportJson(exported).values["app-language"])
     }
 
+    @Test fun connectionModeMigrationPreservesExplicitSingleModeChoices() {
+        prefs.edit().putInt("primary-connection", Settings.ConnectionKind.USB_CABLE.value).commit()
+        assertEquals(setOf(Settings.ConnectionMode.USB), Settings(context).connectionModes)
+
+        prefs.edit().clear()
+            .putStringSet("connection-modes", setOf(Settings.ConnectionMode.WIFI.key))
+            .commit()
+        assertEquals(setOf(Settings.ConnectionMode.WIFI), Settings(context).connectionModes)
+    }
+
     @Test
     @Config(sdk = [29], qualifiers = "en")
     fun olderAndroidSwitchesResourcesAndRtlWithoutChangingTheProcessDefault() {

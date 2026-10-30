@@ -97,10 +97,12 @@ class RemoteControlReceiver : BroadcastReceiver() {
                     val extraKeyCode = intent.getIntExtra("keycode", -1)
                         .takeIf { it > 0 }
                         ?: intent.getIntExtra("key_code", -1).takeIf { it > 0 }
-                    if (extraKeyCode != null) {
+                    if (extraKeyCode != null && extraKeyCode in 1..KeyEvent.getMaxKeyCode()) {
                         AppLog.i("RemoteControlReceiver: raw keycode=$extraKeyCode from command=$command")
                         commManager.sendKey(extraKeyCode, true, null, "remote-command")
                         commManager.sendKey(extraKeyCode, false, null, "remote-command")
+                    } else if (extraKeyCode != null) {
+                        AppLog.w("RemoteControlReceiver: Invalid raw keycode=$extraKeyCode rejected")
                     } else {
                         AppLog.i("RemoteControlReceiver: Unknown command='$command' from action='$action'")
                     }

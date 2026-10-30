@@ -179,6 +179,11 @@ class AapService : Service(), UsbReceiver.Listener {
     private var settingsPrefs: SharedPreferences? = null
     private val settings: Settings by lazy { App.provide(this).settings }
 
+    private fun setUserExitedAA(exited: Boolean) {
+        userExitedAA = exited
+        userExitPreferences(this).edit().putBoolean(KEY_USER_EXITED_AA, exited).apply()
+    }
+
     /**
      * TCP port of the wireless server and of the address the phone is told to dial. Chosen automatically on the
      * car from its real firewall rules -- see CarNetworkQuirks.
@@ -305,16 +310,14 @@ class AapService : Service(), UsbReceiver.Listener {
      * Set when the phone sends VIDEO_FOCUS_NATIVE (user tapped "Exit" in AA).
      * Suppresses [scheduleReconnectIfNeeded] so we don't try to reconnect to a
      * stale dongle that hasn't re-enumerated yet.
-     * Cleared on USB detach (dongle reset complete) or on fresh USB attach.
+     * Persisted until the user starts a new connection or a physical USB event resets the session.
      */
-    @Volatile
-    private var userExitedAA = false
     @Volatile private var userExitCooldownUntil = 0L
 
-    /** In-flight poke that may be waiting out [USER_EXIT_COOLDOWN_MS]. */
+    /** Scheduled Native AA poke/arm job. */
     private var nativeAaPokeJob: Job? = null
 
-    /** Sticky SAIC SRC_AA claim while Wi‑Fi AA music is the active session. */
+    /** SAIC SRC_AA claim job while Wi‑Fi AA media is playing. */
     private var saicAaMediaClaimJob: Job? = null
 
     /**
@@ -403,9 +406,17 @@ class AapService : Service(), UsbReceiver.Listener {
         if (status.hasPlaybackSeconds()) {
             lastAaPlaybackPositionMs = status.playbackSeconds.protoUint32ToLong() * 1000L
         }
+        val wasPlaying = lastAaPlaybackIsPlaying
         val isPlayingFromStatus = resolveIsPlayingFromStatus(status)
         lastAaPlaybackIsPlaying = isPlayingFromStatus
         mediaSessionIsPlaying = isPlayingFromStatus
+
+        if (status.hasState() &&
+            status.state == MediaPlayback.MediaPlaybackStatus.State.PLAYING &&
+            wasPlaying != true
+        ) {
+            startSaicAndroidAutoMediaPublication()
+        }
 
         if (!App.provide(this).settings.syncMediaSessionWithAaMetadata) return
         updateMediaSessionState(isPlayingFromStatus)
@@ -1049,6 +1060,7 @@ class AapService : Service(), UsbReceiver.Listener {
         isSwitchingToAccessory.set(false)
         updateNotification()
         acquireWifiLock()
+        lastAaPlaybackIsPlaying = null
 
         // Silent audio hack removed to prevent mixing/resampling stuttering issues
 
@@ -1071,9 +1083,7 @@ class AapService : Service(), UsbReceiver.Listener {
         requestPermanentAudioFocus()
 
         maybeSwitchCarToBtMusic()
-        // Wi‑Fi music: claim SAIC Android Auto source early (Allgo-style medya yayını) and
-        // keep it sticky; A2DP release below re-claims after the BT handoff settles.
-        startSaicAndroidAutoMediaPublication()
+        // Claim the SAIC media source only after the phone reports active AA playback.
         maybeReleaseCarBtMediaForWifiAudio()
 
         // Start GpsLocationService and NightModeManager sensor tracking
@@ -1149,12 +1159,10 @@ class AapService : Service(), UsbReceiver.Listener {
                 )
                 delay(3_000L)
             }
-            // Radio keeps SAIC amp priority even while DiAuto decodes Wi‑Fi PCM. Pause the
-            // tuner, claim the Allgo-style AA media source (SRC_AA), then re-take Android
-            // focus now that A2DP is gone (AUTO skipped it earlier).
-            silenceSaicRadioForWifiAudio()
-            claimSaicAndroidAutoMediaSource()
-            commManager.reclaimPlaybackFocusIfNeeded()
+            // Re-take playback focus after the BT handoff only if AA media is still playing.
+            if (lastAaPlaybackIsPlaying == true) {
+                commManager.reclaimPlaybackFocusIfNeeded()
+            }
         }
     }
 
@@ -1186,26 +1194,15 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     /**
-     * Allgo-style AA medya yayını for Wi‑Fi music: pause radio, claim SRC_AA immediately,
-     * then re-claim while the session stays up if the car drifts back to radio/BT.
+     * Allgo-style AA media publication for Wi‑Fi music, started only after playback begins.
      */
     private fun startSaicAndroidAutoMediaPublication() {
         saicAaMediaClaimJob?.cancel()
-        if (settings.musicViaBluetooth) return
+        if (settings.musicViaBluetooth || lastAaPlaybackIsPlaying != true) return
         saicAaMediaClaimJob = serviceScope.launch(Dispatchers.IO) {
+            if (lastAaPlaybackIsPlaying != true) return@launch
             silenceSaicRadioForWifiAudio()
-            claimSaicAndroidAutoMediaSource()
-            while (isActive) {
-                delay(8_000L)
-                if (settings.musicViaBluetooth) return@launch
-                when (commManager.connectionState.value) {
-                    is CommManager.ConnectionState.Disconnected,
-                    is CommManager.ConnectionState.Error -> return@launch
-                    else -> Unit
-                }
-                if (SaicMediaPlayer.isAndroidAutoSource()) continue
-                AppLog.i("AapService: SAIC source left Android Auto — re-claiming (Allgo-style publish)")
-                silenceSaicRadioForWifiAudio()
+            if (lastAaPlaybackIsPlaying == true) {
                 claimSaicAndroidAutoMediaSource()
             }
         }
@@ -1392,6 +1389,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
         // Release any permanent audio focus we may have requested when connected
         releasePermanentAudioFocus()
+        com.evsuite.hardware.saic.SaicCarAudioSource.releaseAndroidAuto(this)
         App.provide(this).carKeysManager.unregisterReceivers()
         saicAaMediaClaimJob?.cancel()
         saicAaMediaClaimJob = null
@@ -1517,7 +1515,7 @@ class AapService : Service(), UsbReceiver.Listener {
         // [FIX] Set cooldown flag for ALL user exits (not just USB).
         // The WirelessServer checks this flag to reject instant reconnections.
         if (state.isUserExit) {
-            userExitedAA = true
+            setUserExitedAA(true)
             userExitCooldownUntil = android.os.SystemClock.elapsedRealtime() + USER_EXIT_COOLDOWN_MS
             AppLog.i("AapService: User exit cooldown active for ${USER_EXIT_COOLDOWN_MS}ms")
         }
@@ -1588,7 +1586,7 @@ class AapService : Service(), UsbReceiver.Listener {
             (settings.autoConnectLastSession || settings.autoConnectSingleUsbDevice)) {
             if (state.isUserExit && !(settings.autoStartOnUsb && settings.reopenOnReconnection)) {
                 AppLog.i("AapService: USB disconnect after user Exit. Skipping auto-reconnect (waiting for dongle re-enumeration).")
-                userExitedAA = true
+                setUserExitedAA(true)
                 return
             }
             if (state.isUserExit && settings.autoStartOnUsb && settings.reopenOnReconnection) {
@@ -2195,7 +2193,7 @@ class AapService : Service(), UsbReceiver.Listener {
                 val strategy = settings.helperConnectionStrategy
 
                 // [FIX] Reset exit flags on manual scan start
-                userExitedAA = false
+                setUserExitedAA(false)
                 userExitCooldownUntil = 0L
                 Settings.clearBootLoopState(this)
                 initWifiMode(force = true)
@@ -2219,6 +2217,8 @@ class AapService : Service(), UsbReceiver.Listener {
             ACTION_NATIVE_AA_POKE        -> {
                 val mac = intent?.getStringExtra(EXTRA_MAC)
                 if (mac != null) {
+                    setUserExitedAA(false)
+                    userExitCooldownUntil = 0L
                     AppLog.i("AapService: Received manual Native-AA poke request for $mac")
                     scheduleNativeAaPoke(mac, reason = "manual poke")
                 }
@@ -2243,6 +2243,8 @@ class AapService : Service(), UsbReceiver.Listener {
                     commManager.connectionState.value is CommManager.ConnectionState.Connecting
                 if (sessionUp) {
                     AppLog.d("AapService: Bluetooth auto-start ignored — session already up.")
+                } else if (isUserExitActive(this)) {
+                    AppLog.i("AapService: Bluetooth auto-start ignored — user previously exited Android Auto.")
                 } else {
                     // Trusted Bluetooth phone just linked — go straight to Native AA; do not wait
                     // for the user to pick the phone on the home screen.
@@ -2285,7 +2287,7 @@ class AapService : Service(), UsbReceiver.Listener {
                 // Manual USB reconnect (list tap / AOA switch follow-up). Clear the user-exit
                 // latch that otherwise waits for a physical unplug — soft reconnect never
                 // produces USB_ATTACH while the cable stays in.
-                userExitedAA = false
+                setUserExitedAA(false)
                 userExitCooldownUntil = 0L
                 checkAlreadyConnectedUsb(force = true)
             }
@@ -2308,7 +2310,7 @@ class AapService : Service(), UsbReceiver.Listener {
             return
         }
         com.andrerinas.openheadunit.utils.OemAndroidAutoBlocker.blockIfEnabled(this, "service-usb-attach")
-        userExitedAA = false
+        setUserExitedAA(false)
         if (UsbDeviceCompat.isInAccessoryMode(device)) {
             // Device already in AOA mode (re-enumerated after UsbAttachedActivity switched it).
             AppLog.i("USB accessory device attached, connecting.")
@@ -2336,7 +2338,7 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     override fun onUsbDetach(device: UsbDevice) {
-        userExitedAA = false
+        setUserExitedAA(false)
         if (commManager.isConnectedToUsbDevice(device)) {
             // Cable physically removed — the USB connection is already dead, so skip the
             // ByeByeRequest send (which would block ~1 s trying to write to a gone device).
@@ -2346,7 +2348,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     override fun onUsbAccessoryDetach() {
         AppLog.i("USB Accessory detached. This might be a transient state (e.g., 100% battery). Attempting to re-sync...")
-        userExitedAA = false
+        setUserExitedAA(false)
         if (commManager.isConnected) {
             commManager.disconnect(sendByeBye = false, isUserExit = false)
         }
@@ -2749,6 +2751,11 @@ class AapService : Service(), UsbReceiver.Listener {
      *   credentials publish a host IP, [onNativeCredentials] rebinds here before the BT poke.
      */
     private fun startWirelessServer(bindHost: String? = wirelessBindHost) {
+        val listenPort = wirelessPort
+        if (listenPort !in 1..65535) {
+            AppLog.e("AapService: Wireless server not started — ${com.andrerinas.openheadunit.connection.CarNetworkQuirks.autoPortReason()}.")
+            return
+        }
         val desiredHost = WirelessServerBindPolicy.bindHostForAdvertisedIp(bindHost)
         wirelessBindHost = desiredHost
         val existing = wirelessServer
@@ -2874,7 +2881,7 @@ class AapService : Service(), UsbReceiver.Listener {
         if (commManager.isConnected ||
             commManager.connectionState.value is CommManager.ConnectionState.Connecting) {
             AppLog.i("AapService: USB/other session already active. Skipping auto-poke to avoid pulling phone into wireless flow.")
-        } else if (!userExitedAA) {
+        } else if (!isUserExitActive(this)) {
             nativeAaHandshakeManager?.triggerPoke()
         } else {
             AppLog.i("AapService: userExitedAA is true. Skipping auto-poke.")
@@ -3788,7 +3795,7 @@ class AapService : Service(), UsbReceiver.Listener {
                                 }
                             } else {
                                 AppLog.i("WirelessServer: Accepted client connection from ${clientSocket.inetAddress}. Passing to CommManager...")
-                                userExitedAA = false // Clear flag on genuine new connection
+                                setUserExitedAA(false) // Clear flag on genuine new connection
                                 commManager.connect(clientSocket)
                             }
                         }
@@ -3796,7 +3803,12 @@ class AapService : Service(), UsbReceiver.Listener {
                 } catch (e: Exception) {
                     // The cancelled branch used to be silent, which made a server that was torn
                     // down indistinguishable from one that was never started.
-                    if (isActive) AppLog.e("Wireless server error", e)
+                    if (isActive) {
+                        if (e is java.net.BindException) {
+                            com.andrerinas.openheadunit.connection.CarNetworkQuirks.invalidateCachedPort()
+                        }
+                        AppLog.e("Wireless server error", e)
+                    }
                     else AppLog.i("WirelessServer: port ${wirelessPort} released (${e.javaClass.simpleName}).")
                 } finally {
                     isListening = false
@@ -3859,14 +3871,11 @@ class AapService : Service(), UsbReceiver.Listener {
     // Companion
     // -------------------------------------------------------------------------
 
-    /**
-     * Waits out a user-exit cooldown (if any), then arms Native AA and pokes [mac].
-     * The home-screen pill shows a countdown so the user does not need to know about the gap.
-     */
+    /** Schedules a Native AA poke unless a recent or latched user exit suppresses it. */
     private fun scheduleNativeAaPoke(mac: String, reason: String) {
         nativeAaPokeJob?.cancel()
         nativeAaPokeJob = serviceScope.launch {
-            awaitUserExitCooldown(reason)
+            if (!allowNativeAaReconnect(reason)) return@launch
             armNativeAaForPoke()
             AppLog.i("AapService: $reason — poking $mac")
             nativeAaHandshakeManager?.manualPoke(mac)
@@ -3876,23 +3885,22 @@ class AapService : Service(), UsbReceiver.Listener {
     private fun scheduleNativeAaArm(reason: String) {
         nativeAaPokeJob?.cancel()
         nativeAaPokeJob = serviceScope.launch {
-            awaitUserExitCooldown(reason)
+            if (!allowNativeAaReconnect(reason)) return@launch
             armNativeAaForPoke()
         }
     }
 
-    private suspend fun awaitUserExitCooldown(reason: String) {
-        while (true) {
-            val remaining = userExitCooldownUntil - android.os.SystemClock.elapsedRealtime()
-            if (remaining <= 0L) break
-            val secs = ((remaining + 999L) / 1000L).toInt().coerceAtLeast(1)
-            AppLog.i("AapService: $reason waiting ${remaining}ms after disconnect ($secs s left)")
-            publishAutoConnectStatus(getString(R.string.da_waiting_after_disconnect, secs))
-            delay(minOf(1_000L, remaining))
+    private fun allowNativeAaReconnect(reason: String): Boolean {
+        val remaining = userExitCooldownUntil - android.os.SystemClock.elapsedRealtime()
+        if (isUserExitActive(this) || remaining > 0L) {
+            AppLog.i(
+                "AapService: $reason cancelled after user exit " +
+                    "(cooldown ${remaining.coerceAtLeast(0L)}ms remaining)",
+            )
+            return false
         }
-        userExitedAA = false
-        userExitCooldownUntil = 0L
         publishAutoConnectStatus(getString(R.string.da_connecting))
+        return true
     }
 
     private fun armNativeAaForPoke() {
@@ -3926,6 +3934,24 @@ class AapService : Service(), UsbReceiver.Listener {
 
 
     companion object {
+        @Volatile
+        private var userExitedAA = false
+
+        private const val USER_EXIT_PREFERENCES = "user_exit_state"
+        private const val KEY_USER_EXITED_AA = "user_exited_aa"
+
+        private fun userExitPreferences(context: Context): SharedPreferences {
+            val storageContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.createDeviceProtectedStorageContext()
+            } else {
+                context
+            }
+            return storageContext.getSharedPreferences(USER_EXIT_PREFERENCES, Context.MODE_PRIVATE)
+        }
+
+        fun isUserExitActive(context: Context): Boolean =
+            userExitedAA || userExitPreferences(context).getBoolean(KEY_USER_EXITED_AA, false)
+
         /** Bind attempts before the wireless server gives up and reports the port unusable. */
         private const val BIND_ATTEMPTS = 3
 
@@ -4003,8 +4029,7 @@ class AapService : Service(), UsbReceiver.Listener {
          */
         private const val LINK_LOSS_TEARDOWN_BUDGET_MS = 1500L
 
-        /** Cooldown after user-initiated exit. SoftAP restart on MG4 often needs ~10–20s;
-         *  poking while :5288 / hotspot are still down fails with a short wait. */
+        /** Brief race window after user exit; reconnect events in it are cancelled, not delayed. */
         private const val USER_EXIT_COOLDOWN_MS = 15_000L
 
         /** Delay before AapService tries to handle a normal-mode USB attach as a fallback

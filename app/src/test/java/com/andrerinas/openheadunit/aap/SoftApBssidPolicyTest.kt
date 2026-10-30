@@ -9,22 +9,42 @@ class SoftApBssidPolicyTest {
     @Test fun `recovers hotspot address when Android masks every MAC API`() {
         assertEquals("4E:B1:C7:94:48:3F", SoftApBssidPolicy.choose(
             "0", null, "02:00:00:00:00:00", "4e:b1:c7:94:48:3f"))
-        assertEquals("AA:BB:CC:DD:EE:FF", SoftApBssidPolicy.choose(
+        assertEquals("4E:B1:C7:94:48:3F", SoftApBssidPolicy.choose(
             "AA:BB:CC:DD:EE:FF", null, null, "4e:b1:c7:94:48:3f"))
         assertEquals("", SoftApBssidPolicy.choose(null, null, null, "02:00:00:00:00:00"))
     }
 
 
     @Test
-    fun `the user's own setting wins, and is normalised to upper case`() {
+    fun `the live interface address wins over a stale static override`() {
         assertEquals(
-            "AA:BB:CC:DD:EE:FF",
+            "11:22:33:44:55:66",
             SoftApBssidPolicy.choose(
                 staticOverride = " aa:bb:cc:dd:ee:ff ",
                 shellMac = "11:22:33:44:55:66",
                 hardwareAddress = "77:88:99:aa:bb:cc"
             )
         )
+    }
+
+    @Test
+    fun `the static override is used when live addresses are unavailable`() {
+        assertEquals(
+            "AA:BB:CC:DD:EE:FF",
+            SoftApBssidPolicy.choose(
+                staticOverride = " aa:bb:cc:dd:ee:ff ",
+                shellMac = null,
+                hardwareAddress = "02:00:00:00:00:00",
+                ipv6DerivedMac = null
+            )
+        )
+    }
+
+    @Test
+    fun `address comparison normalizes case and separators`() {
+        assertTrue(SoftApBssidPolicy.sameAddress("aa-bb-cc-dd-ee-ff", "AA:BB:CC:DD:EE:FF"))
+        assertFalse(SoftApBssidPolicy.sameAddress("aa:bb:cc:dd:ee:ff", "11:22:33:44:55:66"))
+        assertFalse(SoftApBssidPolicy.sameAddress("0", "11:22:33:44:55:66"))
     }
 
     @Test

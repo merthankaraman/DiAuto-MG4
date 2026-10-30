@@ -142,6 +142,8 @@ object BluetoothHelper {
 
     /** Hidden `BluetoothProfile.AVRCP_CONTROLLER` — factory media keys / pause over classic BT. */
     private const val PROFILE_AVRCP_CONTROLLER = 12
+    private const val PROFILE_DISCONNECT_TIMEOUT_MS = 3_000L
+    private const val PROFILE_DISCONNECT_POLL_MS = 100L
 
     /**
      * Paired devices the adapter currently reports as connected (via hidden
@@ -377,23 +379,47 @@ object BluetoothHelper {
         return try {
             val listener = object : BluetoothProfile.ServiceListener {
                 override fun onServiceConnected(profileId: Int, proxy: BluetoothProfile) {
-                    try {
-                        val disconnect = proxy.javaClass.methods.firstOrNull { method ->
-                            method.name == "disconnect" &&
-                                method.parameterTypes.size == 1 &&
-                                method.parameterTypes[0].isAssignableFrom(android.bluetooth.BluetoothDevice::class.java)
+                    val disconnectThread = Thread({
+                        try {
+                            val disconnect = proxy.javaClass.methods.firstOrNull { method ->
+                                method.name == "disconnect" &&
+                                    method.parameterTypes.size == 1 &&
+                                    method.parameterTypes[0].isAssignableFrom(android.bluetooth.BluetoothDevice::class.java)
+                            }
+                            val ok = disconnect?.invoke(proxy, device) as? Boolean
+                            AppLog.i(
+                                "BluetoothHelper: releaseBtMedia profile=$profileId " +
+                                    "disconnect(${device.address}) → $ok",
+                            )
+                            if (ok == true) {
+                                awaitProfileDisconnect(proxy, device, profileId)
+                            }
+                        } catch (e: Exception) {
+                            AppLog.w("BluetoothHelper: releaseBtMedia profile=$profileId disconnect failed: ${e.message}")
+                        } finally {
+                            try {
+                                adapter.closeProfileProxy(profileId, proxy)
+                            } catch (e: Exception) {
+                                AppLog.w(
+                                    "BluetoothHelper: releaseBtMedia profile=$profileId " +
+                                        "could not close proxy: ${e.message}",
+                                )
+                            }
                         }
-                        val ok = disconnect?.invoke(proxy, device) as? Boolean
-                        AppLog.i(
-                            "BluetoothHelper: releaseBtMedia profile=$profileId " +
-                                "disconnect(${device.address}) → $ok",
-                        )
+                    }, "BluetoothProfileDisconnect-$profileId").apply {
+                        isDaemon = true
+                    }
+                    try {
+                        disconnectThread.start()
                     } catch (e: Exception) {
-                        AppLog.w("BluetoothHelper: releaseBtMedia profile=$profileId disconnect failed: ${e.message}")
-                    } finally {
+                        AppLog.w("BluetoothHelper: releaseBtMedia profile=$profileId worker failed: ${e.message}")
                         try {
                             adapter.closeProfileProxy(profileId, proxy)
-                        } catch (_: Exception) {
+                        } catch (closeError: Exception) {
+                            AppLog.w(
+                                "BluetoothHelper: releaseBtMedia profile=$profileId " +
+                                    "could not close proxy: ${closeError.message}",
+                            )
                         }
                     }
                 }
@@ -405,6 +431,31 @@ object BluetoothHelper {
             AppLog.w("BluetoothHelper: releaseBtMedia getProfileProxy($profile) failed: ${e.message}")
             false
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun awaitProfileDisconnect(
+        proxy: BluetoothProfile,
+        device: android.bluetooth.BluetoothDevice,
+        profileId: Int,
+    ) {
+        val deadline = System.nanoTime() + PROFILE_DISCONNECT_TIMEOUT_MS * 1_000_000L
+        while (System.nanoTime() < deadline) {
+            val state = try {
+                proxy.getConnectionState(device)
+            } catch (e: Exception) {
+                AppLog.w("BluetoothHelper: releaseBtMedia profile=$profileId state check failed: ${e.message}")
+                return
+            }
+            if (state == BluetoothProfile.STATE_DISCONNECTED) return
+            try {
+                Thread.sleep(PROFILE_DISCONNECT_POLL_MS)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                return
+            }
+        }
+        AppLog.w("BluetoothHelper: releaseBtMedia profile=$profileId disconnect timed out")
     }
 
     /**

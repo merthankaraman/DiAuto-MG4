@@ -464,17 +464,34 @@ class SoftApCredentialsProvider(
         }
 
         // Android Auto requires a BSSID in Type 3 (Paul / Pixel 8 Pro: empty BSSID → status=-3).
-        // DiPlay can omit it on CarPlay; AA cannot. Prefer real ap0 MAC from sysfs / hardware /
-        // IPv6 EUI-64; static override first. SoftAP IPv4 bind stays DiPlay-style separately.
+        // DiPlay can omit it on CarPlay; AA cannot. Prefer the current AP interface address over a
+        // saved override: the latter may belong to a previous P2P group or hotspot after a restart.
+        // Use the manual value only when all live interface readers are unavailable.
         val shellMac = InterfaceMacReader.read(iface.name)
         val hardwareAddress = hardwareAddressOf(iface.name)
         val ipv6DerivedMac = P2pInterfaceBssid.read(iface.name)
         val bssidSource = when {
-            SoftApBssidPolicy.isUsable(settings.staticBSSID) -> "static"
             SoftApBssidPolicy.isUsable(shellMac) -> "sysfs"
             SoftApBssidPolicy.isUsable(hardwareAddress) -> "hardware"
             SoftApBssidPolicy.isUsable(ipv6DerivedMac) -> "ipv6-eui64"
+            SoftApBssidPolicy.isUsable(settings.staticBSSID) -> "static-fallback"
             else -> "none"
+        }
+        val detectedBssid = SoftApBssidPolicy.choose(
+            staticOverride = null,
+            shellMac = shellMac,
+            hardwareAddress = hardwareAddress,
+            ipv6DerivedMac = ipv6DerivedMac,
+        )
+        if (SoftApBssidPolicy.isUsable(settings.staticBSSID) &&
+            SoftApBssidPolicy.isUsable(detectedBssid) &&
+            !SoftApBssidPolicy.sameAddress(settings.staticBSSID, detectedBssid)
+        ) {
+            AppLog.w(
+                "SoftApCredentials: Saved Static BSSID does not match the live hotspot interface; " +
+                    "using the current interface address. The saved value may belong to another " +
+                    "wireless transport or an earlier hotspot."
+            )
         }
         val bssid = SoftApBssidPolicy.choose(
             staticOverride = settings.staticBSSID,

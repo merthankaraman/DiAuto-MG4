@@ -1,7 +1,7 @@
 package com.andrerinas.openheadunit.aap
 
 /**
- * Picks the BSSID to advertise for our own access point, best source first.
+ * Picks the BSSID to advertise for our own access point, preferring its live interface address.
  *
  * A chain rather than one source because `NetworkInterface.getHardwareAddress()` returns null or a
  * placeholder on plenty of devices since Android 6.0, while `/sys/class/net/<iface>/address` still
@@ -21,12 +21,12 @@ object SoftApBssidPolicy {
     private val MAC_SHAPE = Regex("^[0-9a-fA-F]{2}([:-][0-9a-fA-F]{2}){5}$")
 
     /**
-     * The first usable address of [staticOverride], [shellMac] and [hardwareAddress], normalised to
-     * colon-separated upper case, or "" if none yields one. What to do about "" differs by
-     * transport — see [NativeCredentialsPolicy].
+     * The first usable live interface address, falling back to [staticOverride] only when the
+     * current AP address cannot be read. What to do about "" differs by transport — see
+     * [NativeCredentialsPolicy].
      */
     fun choose(staticOverride: String?, shellMac: String?, hardwareAddress: String?, ipv6DerivedMac: String? = null): String =
-        listOf(staticOverride, shellMac, hardwareAddress, ipv6DerivedMac)
+        listOf(shellMac, hardwareAddress, ipv6DerivedMac, staticOverride)
             .firstOrNull { isUsable(it) }
             ?.let { normalise(it) }
             ?: ""
@@ -34,16 +34,19 @@ object SoftApBssidPolicy {
     /**
      * Whether [mac] is a real address.
      *
-     * [BUG_FIX] Checks the shape, not a list of known non-addresses. The setting this reads first
-     * stores the string "0" when it is unset, which is not MAC-shaped but passed the old
-     * placeholder check, won the chain over the real interface MAC, and was published verbatim —
-     * the phone then rejected the credentials on every retry. A free-text field can produce any
-     * number of such values, so validate what an address looks like instead.
+     * Checks the shape, not only a list of known non-addresses. The setting stores the string "0"
+     * when unset, and a free-text field can produce other non-addresses, so validate what an
+     * address looks like before using it as a fallback.
      */
     fun isUsable(mac: String?): Boolean {
         val trimmed = mac?.trim().orEmpty()
         if (!MAC_SHAPE.matches(trimmed)) return false
         return normalise(trimmed).lowercase() !in PLACEHOLDERS
+    }
+
+    fun sameAddress(first: String?, second: String?): Boolean {
+        if (!isUsable(first) || !isUsable(second)) return false
+        return normalise(first.orEmpty()) == normalise(second.orEmpty())
     }
 
     /** Dashes to colons, upper case. Accepts either separator so a hand-typed address still works. */

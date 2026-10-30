@@ -104,6 +104,21 @@ class DiagnosticsFragment : Fragment(R.layout.fragment_diagnostics) {
                                 if (sendResult.ok) {
                                     Toast.makeText(requireContext(), R.string.crash_report_sent, Toast.LENGTH_LONG).show()
                                     dialog.dismiss()
+                                } else if (sendResult.error == "unavailable") {
+                                    sendButton.isEnabled = true
+                                    if (CrashReportSender.shareReport(
+                                            requireContext(),
+                                            text,
+                                            fileName
+                                        )) {
+                                        dialog.dismiss()
+                                    } else {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            R.string.crash_report_send_failed,
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                 } else {
                                     sendButton.isEnabled = true
                                     Toast.makeText(

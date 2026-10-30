@@ -52,6 +52,8 @@ class ServiceDiscoveryResponse(private val context: Context)
                     val announceEv = settings.batteryForGoogleMaps &&
                         Mg4EnergyProvider.available(context)
                     if (announceEv) {
+                        // App.onCreate skips this when the process began before user unlock.
+                        Mg4EnergyProvider.start(context)
                         sources.addSensors(makeSensorType(Sensors.SensorType.VEHICLE_ENERGY_MODEL))
                         sources.addSensors(makeSensorType(Sensors.SensorType.RAW_VEHICLE_ENERGY_MODEL))
                         sources.addSensors(makeSensorType(Sensors.SensorType.RAW_EV_TRIP_SETTINGS))

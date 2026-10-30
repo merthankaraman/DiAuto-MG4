@@ -210,11 +210,13 @@ object LogExporter {
                 )
             }
             main.post {
-                Toast.makeText(
-                    appContext,
-                    if (result.ok) R.string.crash_report_sent else R.string.crash_report_send_failed,
-                    Toast.LENGTH_LONG
-                ).show()
+                val shared = result.error == "unavailable" && !report.isNullOrBlank() &&
+                    CrashReportSender.shareReport(appContext, report, file.name)
+                if (result.ok) {
+                    Toast.makeText(appContext, R.string.crash_report_sent, Toast.LENGTH_LONG).show()
+                } else if (!shared) {
+                    Toast.makeText(appContext, R.string.crash_report_send_failed, Toast.LENGTH_LONG).show()
+                }
             }
         }, "DiAuto-LogSend").start()
     }

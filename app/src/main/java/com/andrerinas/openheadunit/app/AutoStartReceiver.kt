@@ -26,6 +26,10 @@ class AutoStartReceiver : BroadcastReceiver() {
     @SuppressLint("MissingPermission")
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
+        if (action == BluetoothDevice.ACTION_ACL_CONNECTED && AapService.isUserExitActive(context)) {
+            AppLog.i("AutoStartReceiver: User exited Android Auto; ignoring Bluetooth auto-start.")
+            return
+        }
         // Use device-protected storage so the BT MACs are readable during locked boot
         val targetMacs = Settings.getAutoStartBtMacs(context)
 

@@ -89,6 +89,7 @@
 
     <application
         android:name=".App"
+        android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="DiAuto MG4"

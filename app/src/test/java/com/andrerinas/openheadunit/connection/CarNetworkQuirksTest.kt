@@ -65,10 +65,16 @@ class CarNetworkQuirksTest {
     }
 
     @Test
-    fun `all candidates busy still returns an allowed port`() {
+    fun `all allowed candidates busy returns no port`() {
         val fw = CarNetworkQuirks.parseFirewall(saicScript, "x")
         val (port, _) = CarNetworkQuirks.pickPort(fw, isSaic = true) { false }
-        assertEquals(30518, port)
+        assertEquals(0, port)
+    }
+
+    @Test
+    fun `unreadable SAIC firewall does not select an occupied fallback port`() {
+        val (port, _) = CarNetworkQuirks.pickPort(null, isSaic = true) { false }
+        assertEquals(0, port)
     }
 
     @Test

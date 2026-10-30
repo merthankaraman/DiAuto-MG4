@@ -1,52 +1,51 @@
-# Built-in car hotspot setup
+# MG4 built-in hotspot connection setup
 
-DiAuto & DiPlay — Built-in car hotspot test builds
-28 September 2026
+This guide covers wireless Android Auto between an MG4 head unit and an Android
+phone. It is written for the MG4 running Android 9 (operator-reported working on
+Luxury 64 kWh, SWI68-29958-1300R63; not verifiable from source). The test suite has
+firewall-script fixtures labeled SWI68 R71 and SWI69 R42, which do not establish
+behavior on other revisions. Wi-Fi Direct is
+unavailable on this unit; use the car's built-in Wi-Fi hotspot.
 
-DiAuto-connection-setup-test.apk: Android phone / Android Auto
-DiPlay-connection-setup-test.apk: iPhone / Apple CarPlay
-Install the APK on the car, not on your phone. Update the matching existing
-test app without uninstalling to preserve settings.
+## Set up the car hotspot
 
-These builds remove the Local hotspot option. Built-in car hotspot is the
-default; Wi-Fi Direct and USB remain available. Previous Local hotspot
-selections switch to built-in hotspot. Check and save the car's real hotspot
-details before connecting.
+1. In the MG4 settings, enable the built-in Wi-Fi hotspot. Select 5 GHz if available,
+   then note its network name and password.
+2. Open DiAuto-MG4 on the head unit and go to **Settings → Connection setup**.
+3. Select **Built-in car hotspot**, enter the car's hotspot name and password, and
+   save the settings. Keep the car hotspot enabled.
+   For this transport, DiAuto-MG4 prefers the BSSID read from the active hotspot
+   interface; an Advanced **Static BSSID** is only a fallback if the live address
+   cannot be read.
+4. Enable Bluetooth and Wi-Fi on the phone, then pair it with the MG4 using the car's
+   Bluetooth settings.
+5. In DiAuto-MG4, tap **Connect phone** and select the paired phone if prompted.
+   Accept Android Auto's first-connection prompts on the phone.
 
-BUILT-IN HOTSPOT SETUP — BOTH APPS
-1. In the car's settings, turn on its built-in Wi-Fi hotspot. Select 5 GHz
-   if available. Note the hotspot name and password exactly.
-2. Open DiAuto or DiPlay on the car. Go to Settings → Connection setup
-   (tap Open connection setup if shown).
-3. Select Built-in car hotspot. Tap Save hotspot details and use this mode
-   (or Edit saved hotspot), enter the car's hotspot name and password, and
-   save. Use Hide keyboard if needed. Leave the car hotspot on.
-4. Turn on Bluetooth and Wi-Fi on your phone. Pair it with the car's
-   Bluetooth. Allow the app permissions requested on the car.
-5. Return to the app and tap Connect phone. Select your phone when asked.
-   In DiPlay, use Choose iPhone if you need to select a different phone.
-6. Accept the Android Auto or CarPlay prompts on your phone.
+The phone does not need to join the hotspot manually first; DiAuto-MG4 provides the
+saved connection details during pairing. A car internet plan is not required for the
+local connection, though internet access depends on the phone and vehicle network
+configuration. If the hotspot name or password changes, update the saved details. Save the password:
+if no password is saved and the live hotspot configuration cannot be read, an empty
+passphrase may be advertised and the phone can refuse to join (observed
+`status=-3`). Uninstalling removes local app data, so re-enter them after a reinstall.
 
-You do not need to join the hotspot manually on your phone before tapping
-Connect phone. The app sends its details over Bluetooth so the phone can
-join automatically. Use the car's hotspot, not your phone's Personal Hotspot.
-ADB is not required for this connection setup. A car internet plan is not
-required; phone internet availability depends on its network settings.
-If you change the car hotspot name or password, update it in the app too.
-Test one projection app at a time.
+On a restrictive default-reject firewall the app picks a free allowed port other than
+8080/6010; if those are the only allowed ports, it declines to start the wireless
+listener (`CarNetworkQuirks`).
 
-OPTIONAL: DIPLAY AUTOMATIC INSTRUMENT MAP
-On the supported DiLink 5.1 firmware, open Settings → BYD navigation →
-Automatic map setup · ADB. Follow the displayed one-time computer setup,
-then tap Check and enable. Open the cluster's map card or select Map theme.
-This permission is for automatic cluster theme/card detection, not hotspot
-connection. The guide explains the exact command for the installed app.
+USB Android Auto is also available with a USB data cable and **Connect with USB**.
+Test one Android Auto host at a time.
 
-WHAT TO TEST / REPORT
-Check first connection, reconnect after restarting the app/car, maps,
-music/audio, and any instrument-map features supported by your car.
-If something fails, note the time and steps, car model, DiLink/Android
-version, phone model/OS, and which app you used. Export a diagnostic report
-from Settings → Diagnostics → Save diagnostic report. Reports are saved
-under Downloads/DiAuto or Downloads/DiPlay. Share the report with your test
-feedback; do not include your hotspot password.
+## What to test and report
+
+Check first connection, reconnect after restarting the app or car, maps, music/audio,
+and USB if applicable. If a feature fails, record the steps, MG4 model/firmware,
+phone model/OS, connection type, and app version. Export a report from **Settings →
+Diagnostics → Save diagnostic report** and review it before sharing; do not include
+the hotspot password.
+
+The `phone` flavor is a regular phone/tablet build without the system UID. Its
+CarProperty battery access and ability to force-stop OEM Android Auto apps on an MG4
+have not been verified on a vehicle. Use the platform-signed `car` flavor for MG4
+vehicle testing.

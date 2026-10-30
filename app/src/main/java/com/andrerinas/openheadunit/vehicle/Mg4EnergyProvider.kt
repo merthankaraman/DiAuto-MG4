@@ -25,6 +25,8 @@ object Mg4EnergyProvider {
     /** Cover SAIC CarService / CPM bind ladder (retries out to 60s). */
     private const val INITIAL_READ_TIMEOUT_MS = 60_000L
     private const val INITIAL_RETRY_MS = 500L
+    private const val INIT_RETRY_MS = 10_000L
+    private const val WARN_INTERVAL_MS = 60_000L
 
     data class EnergySnapshot(
         val capacityWh: Int,
@@ -40,6 +42,9 @@ object Mg4EnergyProvider {
     @Volatile private var latestMillis = 0L
     @Volatile private var started = false
     @Volatile private var initialized = false
+    @Volatile private var callbacksRegistered = false
+    @Volatile private var lastInitAttemptMs = 0L
+    private val lastWarnMs = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private var pollFuture: ScheduledFuture<*>? = null
     private val executor = Executors.newSingleThreadScheduledExecutor { r ->
         Thread(r, "diauto-mg4-energy").apply { isDaemon = true }
@@ -75,26 +80,7 @@ object Mg4EnergyProvider {
         }
         executor.execute {
             if (!settings.batteryDemoMode) {
-                try {
-                    EVHardware.init(context.applicationContext)
-                    initialized = true
-                    AppLog.i(
-                        "$TAG energy start firmware=${FirmwareInfo.getDetectedString()} " +
-                            "gen=${FirmwareInfo.getGeneration()} " +
-                            "cpm=${EVHardware.isCarPropertyManagerReady()}",
-                    )
-                    EVHardware.whenCarPropertyManagerReady {
-                        AppLog.i("$TAG CarPropertyManager ready — refreshing SoC/range")
-                        refresh()
-                    }
-                    EVHardware.whenSaicHubReady {
-                        AppLog.i("$TAG SaicHub ready — refreshing SoC/range")
-                        refresh()
-                    }
-                    primeFirstReading()
-                } catch (error: Throwable) {
-                    AppLog.e("$TAG EVHardware init failed; EV energy disabled: ${error.message}")
-                }
+                if (initHardware()) primeFirstReading()
             } else {
                 poll()
             }
@@ -104,6 +90,45 @@ object Mg4EnergyProvider {
                 )
             }
         }
+    }
+
+    /** Safe to call again after a failure: poll() retries it until the car services answer. */
+    private fun initHardware(): Boolean {
+        if (initialized) return true
+        val ctx = app ?: return false
+        lastInitAttemptMs = SystemClock.elapsedRealtime()
+        return try {
+            EVHardware.init(ctx)
+            initialized = true
+            AppLog.i(
+                "$TAG energy start firmware=${FirmwareInfo.getDetectedString()} " +
+                    "gen=${FirmwareInfo.getGeneration()} " +
+                    "cpm=${EVHardware.isCarPropertyManagerReady()}",
+            )
+            if (!callbacksRegistered) {
+                callbacksRegistered = true
+                EVHardware.whenCarPropertyManagerReady {
+                    AppLog.i("$TAG CarPropertyManager ready — refreshing SoC/range")
+                    refresh()
+                }
+                EVHardware.whenSaicHubReady {
+                    AppLog.i("$TAG SaicHub ready — refreshing SoC/range")
+                    refresh()
+                }
+            }
+            true
+        } catch (error: Throwable) {
+            warnThrottled("init", "EVHardware init failed, will retry: ${error.message}")
+            false
+        }
+    }
+
+    private fun warnThrottled(key: String, message: String) {
+        val now = SystemClock.elapsedRealtime()
+        val last = lastWarnMs[key] ?: 0L
+        if (last != 0L && now - last < WARN_INTERVAL_MS) return
+        lastWarnMs[key] = now
+        AppLog.w("$TAG $message")
     }
 
     fun refresh() {
@@ -117,8 +142,17 @@ object Mg4EnergyProvider {
         pollFuture = null
     }
 
-    fun snapshot(): EnergySnapshot? =
-        latest?.takeIf { SystemClock.elapsedRealtime() - latestMillis <= STALE_MS }
+    fun snapshot(): EnergySnapshot? {
+        val current = latest ?: return null
+        if (SystemClock.elapsedRealtime() - latestMillis > STALE_MS) {
+            warnThrottled("stale", "snapshot stale (${snapshotAgeSec()}s old); Maps gets no SoC until a new reading")
+            return null
+        }
+        return current
+    }
+
+    private fun snapshotAgeSec(): Long =
+        if (latestMillis == 0L) -1 else (SystemClock.elapsedRealtime() - latestMillis) / 1000
 
     /**
      * One-shot car SoC/range for the Charging info screen, ignoring demo mode.
@@ -193,13 +227,22 @@ object Mg4EnergyProvider {
             return
         }
 
-        if (!initialized) return
+        if (!initialized) {
+            if (SystemClock.elapsedRealtime() - lastInitAttemptMs < INIT_RETRY_MS) return
+            if (!initHardware()) return
+        }
 
-        val percent = EVHardware.getBatterySocPercent()?.toDouble() ?: return
+        val percent = EVHardware.getBatterySocPercent()?.toDouble() ?: run {
+            warnThrottled("soc-null", "car returned no SoC (latest snapshot ${snapshotAgeSec()}s old)")
+            return
+        }
         // Prefer live range; keep last good range so a late range does not block SoC.
         val rangeKm = EVHardware.getRemainingRangeKm()?.takeIf { it > 0 }
             ?: latest?.rangeKm?.takeIf { it > 0 }
-            ?: return
+            ?: run {
+                warnThrottled("range-null", "car returned SoC ${percent.roundToInt()}% but no range yet")
+                return
+            }
 
         publishFromPercent(settings, percent, rangeKm, demo = false)
     }

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 36
     namespace = "com.andrerinas.openheadunit.contract"
 
     defaultConfig {
@@ -40,5 +40,5 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KotlinCompilerVersion.VERSION}")
 }

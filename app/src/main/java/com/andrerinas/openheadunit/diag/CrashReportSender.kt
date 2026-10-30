@@ -1,5 +1,9 @@
 package com.andrerinas.openheadunit.diag
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -89,6 +93,24 @@ object CrashReportSender {
             }
         } catch (e: Exception) {
             Result(ok = false, error = e.javaClass.simpleName + ": " + (e.message ?: ""))
+        }
+    }
+
+    fun shareReport(context: Context, report: String, fileName: String): Boolean {
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, fileName)
+            putExtra(Intent.EXTRA_TEXT, report)
+        }
+        val chooser = Intent.createChooser(sendIntent, "Share $fileName")
+        if (context !is Activity) {
+            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        return try {
+            context.startActivity(chooser)
+            true
+        } catch (_: ActivityNotFoundException) {
+            false
         }
     }
 

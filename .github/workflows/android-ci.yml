@@ -21,16 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
         with:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
@@ -42,7 +42,7 @@ jobs:
       - name: Install pinned NDK and CMake
         run: |
           for attempt in 1 2 3; do
-            sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865" "cmake;3.22.1" && exit 0
+            sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1" && exit 0
             echo "sdkmanager attempt $attempt failed; retrying in 15s..." >&2
             sleep 15
           done
@@ -53,14 +53,14 @@ jobs:
         run: python3 scripts/check_localization.py
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
 
       - name: Assemble car + phone debug APKs
-        run: ./gradlew :app:testCarDebugUnitTest :app:assembleCarDebug :app:assemblePhoneDebug --stacktrace
+        run: ./gradlew :app:testCarDebugUnitTest :app:lintCarDebug :app:assembleCarDebug :app:assemblePhoneDebug --stacktrace
 
       - name: Upload debug APK
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: diauto-review-apk
           path: |
@@ -73,16 +73,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
         with:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
@@ -91,7 +91,7 @@ jobs:
       - name: Install pinned NDK and CMake
         run: |
           for attempt in 1 2 3; do
-            sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865" "cmake;3.22.1" && exit 0
+            sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1" && exit 0
             echo "sdkmanager attempt $attempt failed; retrying in 15s..." >&2
             sleep 15
           done
@@ -102,17 +102,149 @@ jobs:
         run: python3 scripts/check_localization.py
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
 
       - name: Run unit tests
         run: ./gradlew :app:testCarDebugUnitTest --stacktrace
 
       - name: Upload unit test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: unit-test-report
           path: |
             app/build/reports/tests/testCarDebugUnitTest
             app/build/test-results/testCarDebugUnitTest
           if-no-files-found: warn
+
+  secret-scan:
+    name: Secret scan (introduced commits)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Gitleaks 8.30.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$archive"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $archive" | sha256sum --check --status
+          tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
+          chmod +x "$RUNNER_TEMP/gitleaks"
+
+      - name: Scan introduced commits
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$BASE_SHA" =~ ^0+$ ]]; then
+            log_opts="--all"
+          else
+            if ! git cat-file -e "${BASE_SHA}^{commit}"; then
+              echo "::error::Secret scan base commit is unavailable; cannot safely scope the scan."
+              exit 2
+            fi
+            log_opts="${BASE_SHA}..HEAD"
+          fi
+
+          report="$RUNNER_TEMP/gitleaks-report.json"
+          log="$RUNNER_TEMP/gitleaks.log"
+          set +e
+          "$RUNNER_TEMP/gitleaks" git \
+            --redact=100 \
+            --report-format=json \
+            --report-path="$report" \
+            --log-level=error \
+            --log-opts="$log_opts" \
+            "$GITHUB_WORKSPACE" >"$log" 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            if [ -s "$report" ]; then
+              findings="$(jq 'length' "$report")"
+              echo "::error::Gitleaks failed with exit code $status ($findings redacted finding(s)); details withheld from logs."
+            else
+              echo "::error::Gitleaks failed with exit code $status before producing a report; scanner output withheld from logs."
+            fi
+            exit "$status"
+          fi
+          echo "Gitleaks found no secrets in the introduced commits."
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Review dependency and license changes
+        uses: actions/dependency-review-action@ce3cf9537a52e8119d91fd484ab5b8a807627bf8 # v4.6.0
+        with:
+          fail-on-severity: low
+          fail-on-scopes: runtime, development, unknown
+          license-check: true
+          vulnerability-check: true
+          comment-summary-in-pr: never
+
+  sast:
+    name: Semgrep SAST (new findings)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Semgrep
+        run: python3 -m pip install --disable-pip-version-check --no-input semgrep==1.182.0
+
+      - name: Scan for new findings
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/semgrep-report.json"
+          log="$RUNNER_TEMP/semgrep.log"
+          baseline_args=()
+          if [[ ! "$BASE_SHA" =~ ^0+$ ]]; then
+            if ! git cat-file -e "${BASE_SHA}^{commit}"; then
+              echo "::error::SAST baseline commit is unavailable; cannot safely compare results."
+              exit 2
+            fi
+            baseline_args+=(--baseline-commit "$BASE_SHA")
+          fi
+
+          set +e
+          semgrep scan \
+            --config p/default \
+            --metrics=off \
+            --disable-version-check \
+            --error \
+            --json \
+            --output "$report" \
+            "${baseline_args[@]}" \
+            . >"$log" 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            if [ -s "$report" ]; then
+              findings="$(jq '(.results // []) | length' "$report")"
+              echo "::error::Semgrep failed with exit code $status ($findings new finding(s) or scanner error); details withheld from logs."
+            else
+              echo "::error::Semgrep failed with exit code $status before producing a report; scanner output withheld from logs."
+            fi
+            exit "$status"
+          fi
+          echo "Semgrep found no new findings."

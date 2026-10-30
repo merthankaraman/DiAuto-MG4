@@ -2,8 +2,11 @@ package com.andrerinas.openheadunit.connection
 
 import com.andrerinas.openheadunit.utils.AppLog
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -11,6 +14,7 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.Inet4Address
 import java.net.InetAddress
+import java.net.NetworkInterface
 
 /**
  * MG4: the SAIC firmware sets `net.ipv4.conf.{all,default}.arp_ignore = 8` (script `arp_update.sh`,
@@ -31,6 +35,8 @@ import java.net.InetAddress
 object ArpNudger {
     private const val TAG = "ArpNudger"
     private const val INTERVAL_MS = 150L
+    private const val MAX_BACKOFF_MS = 1_000L
+    private const val MAX_DATAGRAMS = 50
 
     @Volatile
     private var job: Job? = null
@@ -57,37 +63,84 @@ object ArpNudger {
             return
         }
         val raw = host.address
+        val targets = targetAddresses(host, raw)
+        if (targets.isEmpty()) {
+            AppLog.w("$TAG: no usable addresses in the hotspot subnet; skipping ARP wake-up.")
+            return
+        }
         runningFor = hostIp
-        job = scope.launch(Dispatchers.IO) {
+        val nudgeJob = scope.launch(Dispatchers.IO, start = CoroutineStart.LAZY) {
+            val currentJob = currentCoroutineContext()[Job]
             AppLog.i("$TAG: ARP wake-up active for ${host.hostAddress} (${durationMs / 1000}s) -- the car's kernel has arp_ignore=8.")
             val deadline = System.currentTimeMillis() + durationMs
             var sent = 0
             var errors = 0
+            var backoffMs = INTERVAL_MS
             try {
                 // source = hotspot address, so the ARP sender IP is the one the phone is looking for
                 DatagramSocket(0, host).use { socket ->
-                    var i = 0
-                    while (isActive && System.currentTimeMillis() < deadline) {
-                        // addresses .200 to .249: never handed out by the DHCP (low range), never the car
-                        val lastOctet = 200 + (i % 50)
-                        i++
-                        val target = byteArrayOf(raw[0], raw[1], raw[2], lastOctet.toByte())
+                    for (target in targets) {
+                        if (!isActive || System.currentTimeMillis() >= deadline) break
                         try {
                             socket.send(
-                                DatagramPacket(byteArrayOf(0), 1, InetAddress.getByAddress(target), 9)
+                                DatagramPacket(byteArrayOf(0), 1, target, 9)
                             )
                             sent++
                         } catch (e: Exception) {
                             if (errors++ < 3) AppLog.w("$TAG: cannot send UDP: ${e.javaClass.simpleName}: ${e.message}")
                         }
-                        delay(INTERVAL_MS)
+                        delay(backoffMs)
+                        backoffMs = (backoffMs * 2).coerceAtMost(MAX_BACKOFF_MS)
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 AppLog.w("$TAG: stopped on error ${e.javaClass.simpleName}: ${e.message}")
+            } finally {
+                synchronized(this@ArpNudger) {
+                    if (job === currentJob) {
+                        job = null
+                        runningFor = null
+                    }
+                }
             }
             AppLog.i("$TAG: ARP wake-up finished ($sent datagrams, $errors errors).")
         }
+        job = nudgeJob
+        nudgeJob.start()
+    }
+
+    private fun targetAddresses(host: Inet4Address, raw: ByteArray): List<InetAddress> {
+        val prefixLength = try {
+            val interfaceAddress = NetworkInterface.getByInetAddress(host)?.interfaceAddresses
+                ?.firstOrNull { it.address == host }
+                ?: return emptyList()
+            interfaceAddress.networkPrefixLength.toInt()
+        } catch (_: Exception) {
+            return emptyList()
+        }
+        if (prefixLength !in 1..30) return emptyList()
+        val hostValue = ((raw[0].toInt() and 0xff) shl 24) or
+            ((raw[1].toInt() and 0xff) shl 16) or
+            ((raw[2].toInt() and 0xff) shl 8) or
+            (raw[3].toInt() and 0xff)
+        val mask = -1 shl (32 - prefixLength)
+        val network = hostValue and mask
+        val broadcast = network or mask.inv()
+        return (broadcast - MAX_DATAGRAMS..broadcast - 1)
+            .filter { it > network && it != hostValue }
+            .take(MAX_DATAGRAMS)
+            .map { address ->
+                InetAddress.getByAddress(
+                    byteArrayOf(
+                        (address ushr 24).toByte(),
+                        (address ushr 16).toByte(),
+                        (address ushr 8).toByte(),
+                        address.toByte(),
+                    ),
+                )
+            }
     }
 
     @Synchronized

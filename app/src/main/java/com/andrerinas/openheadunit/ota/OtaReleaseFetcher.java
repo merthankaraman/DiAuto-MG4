@@ -16,8 +16,11 @@ import java.nio.charset.StandardCharsets;
 
 final class OtaReleaseFetcher {
 
+    /*
+     * TODO: Rendere configurabile l'URL del repository GitHub (nelle impostazioni di OpenHeadUnit)
+     */
     private static final String GITHUB_RELEASES_URL =
-            "https://api.github.com/repos/merthankaraman/DiAuto-MG4/releases?per_page=20";
+            "https://api.github.com/repos/mastroiannim/DiAuto-MG4/releases?per_page=20";
 
     private OtaReleaseFetcher() {
     }
@@ -51,7 +54,7 @@ final class OtaReleaseFetcher {
         String releaseNotes = OtaReleaseAssets.firstNonEmpty(release.optString("body", null), "");
         boolean prerelease = release.optBoolean("prerelease", false);
 
-        OtaReleaseAssets.ApkAsset apkAsset = OtaReleaseAssets.selectGitHubApkAsset(release.optJSONArray("assets"));
+        OtaReleaseAssets.ApkAsset apkAsset = OtaReleaseAssets.selectGitHubApkAsset(release.optJSONArray("assets"), BuildConfig.FLAVOR);
         if (apkAsset == null) {
             return new OtaUpdateManager.UpdateInfo(
                     false, false, BuildConfig.VERSION_NAME, latestVersion, releaseName, releaseNotes,

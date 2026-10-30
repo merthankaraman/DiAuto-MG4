@@ -1,0 +1,149 @@
+name: Release
+
+# Publishes signed car + phone APKs when a version tag is pushed (e.g. v1.9.9).
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build signed release
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag is on main and matches app version
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "Tag commit is not on main" >&2; exit 1; }
+          tag_version="${GITHUB_REF_NAME#v}"
+          gradle_version="$(sed -n 's/^ *versionName = "\(.*\)"$/\1/p' app/build.gradle.kts | head -n1)"
+          [ "$tag_version" = "$gradle_version" ] \
+            || { echo "Tag $tag_version != versionName $gradle_version" >&2; exit 1; }
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+
+      - name: Install pinned NDK and CMake
+        run: |
+          for attempt in 1 2 3; do
+            sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1" && exit 0
+            echo "sdkmanager attempt $attempt failed; retrying in 15s..." >&2
+            sleep 15
+          done
+          echo "sdkmanager failed after 3 attempts" >&2
+          exit 1
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - name: Unit tests
+        run: ./gradlew :app:testCarDebugUnitTest --stacktrace
+
+      # key.properties is git-ignored and read by app/build.gradle.kts. Values come
+      # from env vars so secrets are never interpolated into the shell script.
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          for v in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            [ -n "${!v}" ] || { echo "Missing secret for $v" >&2; exit 1; }
+          done
+          keystore="$RUNNER_TEMP/release.jks"
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$keystore"
+          {
+            printf 'storeFile=%s\n' "$keystore"
+            printf 'storePassword=%s\n' "$KEYSTORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+          } > key.properties
+
+      - name: Assemble signed car + phone releases
+        run: ./gradlew :app:assembleCarRelease :app:assemblePhoneRelease --stacktrace
+
+      - name: Verify, rename and checksum APKs
+        env:
+          # SHA-256 of the platform certificate the MG4 firmware requires (android.uid.system).
+          PLATFORM_CERT_SHA256: c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8
+        run: |
+          mkdir -p dist
+          apksigner="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          for flavor in car phone; do
+            src="$(ls app/build/outputs/apk/$flavor/release/*.apk)"
+            dest="dist/DiAuto-MG4-${GITHUB_REF_NAME}-${flavor}.apk"
+            if [ "$flavor" = car ]; then
+              # The car APK uses sharedUserId=android.uid.system, so it must carry the
+              # platform signature (tools/platform.*), not the release key.
+              "$apksigner" sign --key tools/platform.pk8 --cert tools/platform.x509.pem --out "$dest" "$src"
+            else
+              cp "$src" "$dest"
+            fi
+            "$apksigner" verify --verbose --print-certs "$dest" | tee "$RUNNER_TEMP/cert-$flavor.txt"
+            if [ "$flavor" = car ]; then
+              grep -qi "certificate SHA-256 digest: $PLATFORM_CERT_SHA256" "$RUNNER_TEMP/cert-car.txt" \
+                || { echo "Car APK is not signed with the platform certificate" >&2; exit 1; }
+            fi
+            (cd dist && sha256sum "$(basename "$dest")" > "$(basename "$dest").sha256")
+          done
+          ls -l dist
+
+      - name: Remove signing material
+        if: always()
+        run: rm -f key.properties "$RUNNER_TEMP/release.jks"
+
+      - name: Upload release files
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-files
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release files
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-files
+          path: dist
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Re-running for an existing tag replaces the release (the tag itself is kept).
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete "$GITHUB_REF_NAME" --yes --repo "$GITHUB_REPOSITORY"
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag

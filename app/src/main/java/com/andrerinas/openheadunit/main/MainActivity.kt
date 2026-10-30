@@ -917,6 +917,21 @@ class MainActivity : BaseActivity() {
                                     Toast.LENGTH_LONG
                                 ).show()
                                 dialog.dismiss()
+                            } else if (result.error == "unavailable") {
+                                sendButton.isEnabled = true
+                                if (com.andrerinas.openheadunit.diag.CrashReportSender.shareReport(
+                                        this@MainActivity,
+                                        report,
+                                        "DiAuto crash report"
+                                    )) {
+                                    dialog.dismiss()
+                                } else {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        R.string.crash_report_send_failed,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             } else {
                                 sendButton.isEnabled = true
                                 Toast.makeText(

@@ -13,6 +13,11 @@ final class OtaReleaseAssets {
     }
 
     static ApkAsset selectGitHubApkAsset(JSONArray assets) {
+        return selectGitHubApkAsset(assets, null);
+    }
+
+    /** Flavor ("car" or "phone") makes sure a head unit never downloads the phone APK and vice versa. */
+    static ApkAsset selectGitHubApkAsset(JSONArray assets, String flavor) {
         if (assets == null || assets.length() == 0) return null;
 
         List<ApkAsset> candidates = new ArrayList<>();
@@ -24,7 +29,7 @@ final class OtaReleaseAssets {
             if (!name.toLowerCase(Locale.US).endsWith(".apk") || downloadUrl.isEmpty()) continue;
             candidates.add(new ApkAsset(name, downloadUrl));
         }
-        return chooseBestApkAsset(candidates);
+        return chooseBestApkAsset(candidates, flavor);
     }
 
     static HashAsset selectGitHubHashAsset(JSONArray assets, String apkFileName) {
@@ -76,13 +81,13 @@ final class OtaReleaseAssets {
         return "";
     }
 
-    private static ApkAsset chooseBestApkAsset(List<ApkAsset> candidates) {
+    private static ApkAsset chooseBestApkAsset(List<ApkAsset> candidates, String flavor) {
         if (candidates == null || candidates.isEmpty()) return null;
         ApkAsset best = candidates.get(0);
-        int bestScore = scoreAsset(best.name);
+        int bestScore = scoreAsset(best.name, flavor);
         for (int i = 1; i < candidates.size(); i++) {
             ApkAsset candidate = candidates.get(i);
-            int score = scoreAsset(candidate.name);
+            int score = scoreAsset(candidate.name, flavor);
             if (score > bestScore) {
                 best = candidate;
                 bestScore = score;
@@ -91,9 +96,15 @@ final class OtaReleaseAssets {
         return best;
     }
 
-    private static int scoreAsset(String name) {
+    private static int scoreAsset(String name, String flavor) {
         String lower = name.toLowerCase(Locale.US);
         int score = 0;
+        if (flavor != null && !flavor.isEmpty()) {
+            String wanted = "-" + flavor.toLowerCase(Locale.US) + ".apk";
+            String other = "-" + ("car".equalsIgnoreCase(flavor) ? "phone" : "car") + ".apk";
+            if (lower.endsWith(wanted)) score += 100;
+            if (lower.endsWith(other)) score -= 100;
+        }
         if (lower.endsWith(".apk")) score += 10;
         if (lower.contains("diauto-mg4") || lower.contains("diauto_mg4") || lower.contains("diauto")) score += 6;
         if (lower.contains("release")) score += 5;

@@ -134,6 +134,11 @@ class SettingsFragment : Fragment() {
     private var pendingHotspotSsid: String? = null
     private var pendingHotspotPassword: String? = null
     private var pendingHotspotInterface: String? = null
+    // Values at load time: Connection setup can change these while this screen is open,
+    // so saving must not write back an untouched, stale copy.
+    private var loadedHotspotSsid: String? = null
+    private var loadedHotspotPassword: String? = null
+    private var loadedHotspotInterface: String? = null
 
     // Flag to determine if the projection should stretch to fill the screen
     private var pendingStretchToFill: Boolean? = null
@@ -270,6 +275,9 @@ class SettingsFragment : Fragment() {
         pendingHotspotSsid = settings.hotspotSsid
         pendingHotspotPassword = settings.hotspotPassword
         pendingHotspotInterface = settings.hotspotInterface
+        loadedHotspotSsid = pendingHotspotSsid
+        loadedHotspotPassword = pendingHotspotPassword
+        loadedHotspotInterface = pendingHotspotInterface
 
         pendingInsetLeft = settings.insetLeft
         pendingInsetTop = settings.insetTop
@@ -405,6 +413,9 @@ class SettingsFragment : Fragment() {
         pendingHotspotSsid = settings.hotspotSsid
         pendingHotspotPassword = settings.hotspotPassword
         pendingHotspotInterface = settings.hotspotInterface
+        loadedHotspotSsid = pendingHotspotSsid
+        loadedHotspotPassword = pendingHotspotPassword
+        loadedHotspotInterface = pendingHotspotInterface
         pendingInsetLeft = settings.insetLeft
         pendingInsetTop = settings.insetTop
         pendingInsetRight = settings.insetRight
@@ -544,9 +555,9 @@ class SettingsFragment : Fragment() {
         pendingManualSecondaryBluetoothServiceName?.let { settings.manualSecondaryBluetoothServiceName = it }
         pendingNativeWifiVersionExchange?.let { settings.nativeWifiVersionExchange = it }
         pendingNativeApTransport?.let { settings.nativeApTransport = it }
-        pendingHotspotSsid?.let { settings.hotspotSsid = it }
-        pendingHotspotPassword?.let { settings.hotspotPassword = it }
-        pendingHotspotInterface?.let { settings.hotspotInterface = it }
+        pendingHotspotSsid?.takeIf { it != loadedHotspotSsid }?.let { settings.hotspotSsid = it }
+        pendingHotspotPassword?.takeIf { it != loadedHotspotPassword }?.let { settings.hotspotPassword = it }
+        pendingHotspotInterface?.takeIf { it != loadedHotspotInterface }?.let { settings.hotspotInterface = it }
 
         pendingInsetLeft?.let { settings.insetLeft = it }
         pendingInsetTop?.let { settings.insetTop = it }

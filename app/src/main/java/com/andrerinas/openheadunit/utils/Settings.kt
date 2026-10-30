@@ -638,13 +638,12 @@ class Settings(private val context: Context) {
             val legacy = prefs.getStringSet("connection-modes", null)
                 ?.mapNotNull { ConnectionMode.fromKey(it) }
                 ?.toSet()
-            // Old auto-default was WiFi-only (NATIVE_AA migrate); expand that to USB+WiFi.
-            // Keep Self / other multi-select choices the user actually made.
+            // Preserve explicit legacy choices; derive a default only when no mode was saved.
             val result = when {
-                legacy == null -> setOf(ConnectionMode.USB, ConnectionMode.WIFI)
-                legacy == setOf(ConnectionMode.WIFI) || legacy == setOf(ConnectionMode.USB) ->
+                legacy != null -> legacy
+                else -> migrateLegacyConnectionModes().ifEmpty {
                     setOf(ConnectionMode.USB, ConnectionMode.WIFI)
-                else -> legacy
+                }
             }
             connectionModes = result
             return result

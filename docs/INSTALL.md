@@ -1,99 +1,75 @@
-# Install DiAuto 0.3.3
+# Install DiAuto-MG4
 
-Install the APK **on the car's Android head unit**, not on your phone.
-Tested: BYD DiLink 5.1, Android 13. Other firmware/head units are not verified.
-Your phone must support Android Auto; no separate DiAuto phone app or dongle is needed.
+DiAuto-MG4 is an Android Auto host for the MG4 Android head unit (operator-reported
+test on MG4 Luxury 64 kWh, firmware SWI68-29958-1300R63, Android 9; not verifiable
+from source, and other revisions, including SWI69, are untested). The `car` build is intended for the head unit and requires
+the matching platform signature for its system UID features. The `phone` build is a
+separate, ordinary Android app for desk testing; it is not verified as a vehicle
+installation.
 
-## Download
+## Choose a build
 
-Use the [multilingual download page](https://shihabal3amri.github.io/DiAuto/) or the
-[GitHub release](https://github.com/shihabal3amri/DiAuto/releases/tag/v0.3.3).
-Download `DiAuto-v0.3.3.apk`. Checksums are provided alongside the APK.
+| Build | Package ID | Intended use |
+| --- | --- | --- |
+| `car` | `com.drivehub.diauto.mg4` | MG4 head unit; platform-signed |
+| `phone` | `com.drivehub.diauto.mg4.phone` | Phone/tablet desk testing; no system UID |
 
-## Install and connect
+The phone build is not expected to read MG4 SoC/BMS through CarProperty or force-stop
+OEM Android Auto apps. These phone-flavor behaviors have not been verified on a
+vehicle; use the platform-signed `car` build for MG4 testing.
 
-1. Park the car. Use the APK installation method permitted by your head unit's firmware.
-   If using a browser/file manager, allow that application to install APKs when prompted.
-   If the car does not offer APK installation, use ADB only if the firmware permits it.
-2. Open DiAuto and complete setup. Grant permissions requested for Bluetooth,
-   Wi-Fi/location, microphone, notifications and overlay features as applicable.
-3. Pair your phone in the **car's Bluetooth settings**. Enable Bluetooth and Wi-Fi on
-   your phone, then choose **Connect phone** in DiAuto.
-4. Accept Android Auto's first-connection prompts on the phone.
-5. For wired operation, use a USB **data** cable and choose **Connect with USB**.
+## Install on the MG4
 
-DiLink 5.1 defaults to **Music through car Bluetooth**. Keep the phone paired to the car
-for media audio. Navigation and assistant audio remain available through Android Auto.
-Changes to this option require reconnecting.
+1. Build or obtain a platform-signed `car` APK: the `DiAuto-MG4-vX.Y.Z-car.apk`
+   release asset or the output of `scripts\build_mg4.ps1` (`DiAuto-MG4-vX.Y.Z.apk`). Do not install an
+   ordinary `phone` APK when testing the MG4 system-UID features, and do not use
+   `app\build\outputs\apk\car\release\*.apk` unless its certificate has been verified:
+   Gradle does not platform-sign it (it is release-signed or unsigned depending on the
+   local keystore), and the head unit rejects it with "App not installed".
+2. Transfer the APK to a USB drive. On the head unit, open Bluetooth Settings and
+   select the car name.
+3. Hold the comma key to open the settings, then choose **Android Keyboard Settings**
+   → **Languages**. Search for **file** to open the Files app.
+4. Select the USB drive and install the APK using the head unit's permitted method.
+   If installation is unavailable, use ADB only if enabled and permitted by the
+   vehicle firmware.
+5. Open DiAuto-MG4, grant the requested permissions, pair the phone in the car's
+   Bluetooth settings, and choose **Connect phone**. Accept Android Auto's prompts
+   on the phone.
 
-## Optional ADB installation
+For USB Android Auto, use a USB data cable and **Connect with USB**.
 
-Install Android platform-tools on your computer, enable ADB using your head unit's
-supported method, and connect the computer and car to the same trusted network.
-Replace `CAR_IP` below with the car's current IP address; no fixed address is assumed.
+## Install a phone build
 
-```sh
-adb connect CAR_IP:5555
-adb -s CAR_IP:5555 install -r DiAuto-v0.3.3.apk
-```
+Install the `phone` APK on a phone or tablet using Android's normal APK installation
+flow. It is intended for UI and desk testing; use **Demo battery values** to supply
+test SoC/range values without MG4 telemetry.
 
-Open DiAuto on the car to finish setup. The optional repository helper also grants
-supported runtime permissions, enables location, allows the overlay and exempts DiAuto
-from idle/background restrictions:
+## Updates and signing
 
-```sh
-./scripts/install.sh CAR_IP:5555 /absolute/path/to/DiAuto-v0.3.3.apk
-```
+Android permits in-place updates only when the package ID and signing certificate
+match. The `car` and `phone` variants have different package IDs and cannot update
+one another. Preserve the existing variant's signing key when updating it. Export
+settings before uninstalling; uninstalling removes local app data.
 
-## Wireless pairing / Static BSSID
-
-DiAuto 0.3.3 can recover the Wi-Fi Direct address automatically on supported
-DiLink firmware, even when Android hides the usual MAC address. **ADB, root and
-a phone helper app are not required for this recovery.**
-
-Leave **Static BSSID** set to **Auto**, pair through the car's Bluetooth settings,
-and choose **Connect phone**. If you previously entered an address manually, you
-can select Auto in **Settings → Display and performance → Static BSSID** (or search
-for **Static BSSID**), save, and reconnect. Existing manual overrides remain supported.
-
-Automatic recovery depends on the firmware exposing a MAC-derived IPv6 address
-on the active Wi-Fi Direct interface. It cannot fix every wireless connection
-failure. If pairing still fails, report the car model/firmware and phone model;
-do not copy another car's address.
-
-If the log says the BSSID could not be recovered, you can still read it without
-ADB: while DiAuto shows it is waiting for the phone, open any Wi-Fi scanner app
-on the phone, find the network named `DIRECT-…` shown by DiAuto, and enter its
-BSSID as **Static BSSID**. That is the address the phone checks when joining.
-
-## Updates and private previews
-
-The first public release uses a dedicated production signing key. Future public releases
-will use that same key so they can update in place.
-
-Private `0.3.x-preview` APKs were development-signed. Upstream Open Headunit builds may
-also share the application ID but use a different key. Android rejects an in-place update
-when signatures differ. Export settings from the existing app first, then uninstall that
-app and install the public APK. Uninstalling removes local settings and may require pairing
-again. Do not uninstall the official BYD phone app; it is unrelated to DiAuto.
+See [README.md](../README.md) for build commands and the Release/MVP signing setup.
+See [MG4 testing](MG4_TESTING.md) for the vehicle checklist.
+Before installing the `car` build, follow the [MG4 rollback and recovery
+runbook](MG4_ROLLBACK.md). Do not proceed without a tested recovery path.
 
 ## Troubleshooting
 
-- If a 2.4 GHz connection repeatedly starts and disconnects before video appears,
-  try lowering resolution and frame rate in Display and performance, then reconnect.
-  This release leaves video preferences under your control; it does not force a
-  lower-resolution profile. This will not resolve every Bluetooth or Wi-Fi join failure.
-
-- If scrolling stutters, compare a USB connection. Wireless conditions and concurrent
-  car Wi-Fi connections can affect performance. DiAuto now prefers a supported matching
-  5 GHz channel but cannot guarantee that firmware or the phone will accept it.
-- If Bluetooth music cuts out, verify **Music through car Bluetooth** is enabled and
-  reconnect. Test assistant prompts and calls too; report the route and circumstances.
-- If the picture is wrong, try the other **View Mode** in Display and performance.
-- For reports, include head-unit model/firmware, phone model/Android, connection type,
-  DiAuto version and reproducible steps. Remove locations, device identifiers and
-  account details from public logs/screenshots.
-
-## BYD navigation
-
-See [BYD navigation displays](BYD_NAVIGATION.md) for the firmware scope, map metadata requirements, settings and cleanup behavior. No runtime ADB starter is required.
+- If installation is blocked, check the head unit's firmware policy; ADB is optional
+  and may not be enabled.
+- "App not installed" for the `car` APK means the signing certificate is not the MG4
+  platform certificate (`android:sharedUserId="android.uid.system"`). Install the
+  `-car.apk` release asset instead.
+- If the phone logs `WifiConnectStatus status=-3` and `pskLen=0`, no hotspot password
+  was available: with no saved password and no readable live configuration an empty
+  passphrase can be advertised, and Android Auto usually refuses to join. Re-enter
+  SSID and password in **Settings → Connection setup** (uninstalling removes local app data).
+- If the phone does not connect, confirm Bluetooth pairing, Wi-Fi is enabled, and the
+  MG4 built-in hotspot details are correct in DiAuto-MG4's connection settings.
+- For reports, include MG4 model/firmware, phone model/Android version, connection
+  type, app version, and reproducible steps. Review diagnostic logs for identifiers
+  or network details before sharing.

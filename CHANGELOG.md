@@ -1,5 +1,14 @@
-# DiAuto 0.3.11 — 2026-10-01
+# DiAuto-MG4 1.9.8 — 2026-10-27
 
+- OTA updates now read releases from the mastroiannim/DiAuto-MG4 GitHub repository.
+- OTA scores APK assets by flavor suffix and prefers the matching `-car` / `-phone` asset; it can still fall back to an opposite-flavor APK if no matching asset exists. Publish both flavors. Known limits are listed in `docs/MG4_TESTING.md`.
+- Hotspot BSSID: prefer the live access-point interface address over the static override, with a mismatch warning.
+- Minor UI tweaks: compacted home screen layout; crash reports can be shared via the Android chooser when Telegram upload is unavailable.
+
+# DiAuto-MG4 1.9.7 — 2026-10-26
+
+- Preserve explicitly selected USB-only or Wi-Fi-only connection modes during preference migration.
+- Keep Telegram crash-report credentials out of release builds unless release-specific credentials are provided.
 - Recover when the built-in car hotspot is enabled after DiAuto opens, without restarting the app.
 - Exclude wired, modem and BYD bridge interfaces from automatic hotspot selection while the real access point is still starting.
 - Refresh cached hotspot credentials after a phone-reported join failure before retrying.

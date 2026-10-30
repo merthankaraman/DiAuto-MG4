@@ -54,6 +54,11 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
     }
 
     private var context: Context? = null
+    private val saicReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            this@CarKeyBroadcastReceiver.onReceive(context, intent)
+        }
+    }
     private val saicDecoder = PhysicalButtonEventDecoder()
 
     override val isSupported = true
@@ -64,7 +69,7 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
 
         val filter = IntentFilter().apply {
             priority = 1000
-            ACTIONS.forEach { addAction(it) }
+            ACTIONS.filterNot { it == ACTION_SAIC_HARDKEY }.forEach { addAction(it) }
         }
 
         ContextCompat.registerReceiver(
@@ -73,10 +78,17 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             filter,
             ContextCompat.RECEIVER_EXPORTED
         )
+        ContextCompat.registerReceiver(
+            context,
+            saicReceiver,
+            IntentFilter(ACTION_SAIC_HARDKEY),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun unregister() {
         this.context?.unregisterReceiver(this)
+        this.context?.unregisterReceiver(saicReceiver)
         this.context = null
     }
 
@@ -90,11 +102,6 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             putExtra("action", action)
             intent.extras?.let { putExtras(it) }
         })
-
-        // Try to abort broadcast to prevent other apps (like built-in radio) from reacting
-        if (isOrderedBroadcast) {
-            abortBroadcast()
-        }
 
         // 1. Standard / OEM Media Button extraction (already has KeyEvent with proper DOWN/UP)
         if (action.endsWith("MEDIA_BUTTON") || action.endsWith("KEY_EVENT")
@@ -139,7 +146,11 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
                 val c3Action = intent.getIntExtra("android.intent.extra.c3_hardkey_action", -1)
                 if (keyCode != -1 && c3Action != -1) handleKey(context, keyCode, c3Action == 0)
             }
-            ACTION_SAIC_HARDKEY -> handleSaicHardkey(context, intent)
+            ACTION_SAIC_HARDKEY -> {
+                if (handleSaicHardkey(context, intent) && isOrderedBroadcast) {
+                    abortBroadcast()
+                }
+            }
 
             // --- Protocols that fire once (no DOWN/UP) → use virtual IDs for mapping ---
             "com.nwd.action.ACTION_KEY_VALUE" -> {
@@ -166,22 +177,23 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
      * MG4 / SAIC steering hardkeys. Hybrid BT music uses AVRCP so these are optional there;
      * Wi‑Fi AA music needs them forwarded to Android Auto or next/prev do nothing.
      */
-    private fun handleSaicHardkey(context: Context, intent: Intent) {
+    private fun handleSaicHardkey(context: Context, intent: Intent): Boolean {
         var keyCode = intent.getIntExtra(EXTRA_SAIC_KEYCODE, -1)
         if (keyCode == -1) keyCode = intent.getIntExtra("keycode", -1)
         if (keyCode == -1) keyCode = intent.getIntExtra("keyCode", -1)
-        if (keyCode == -1) return
+        if (keyCode == -1) return false
 
         val isDown = intent.getBooleanExtra(EXTRA_SAIC_DOWN, false)
         val isLong = intent.getBooleanExtra(EXTRA_SAIC_LONGPRESS, false)
 
         // Play/pause paddle is outside the R69 decoder table.
         if (keyCode == SAIC_KEYCODE_PLAY_PAUSE) {
-            if (!isDown) handleClick(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
-            return
+            if (isDown) return false
+            handleClick(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+            return true
         }
 
-        val event = saicDecoder.accept(keyCode, isDown, isLong) ?: return
+        val event = saicDecoder.accept(keyCode, isDown, isLong) ?: return false
         val androidCode = when (event.button) {
             PhysicalButtonEventDecoder.Button.MEDIA_NEXT -> KeyEvent.KEYCODE_MEDIA_NEXT
             PhysicalButtonEventDecoder.Button.MEDIA_PREVIOUS -> KeyEvent.KEYCODE_MEDIA_PREVIOUS
@@ -190,11 +202,12 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             PhysicalButtonEventDecoder.Button.ASSISTANT -> {
                 if (event.press != PhysicalButtonEventDecoder.Press.LONG) {
                     toggleVoiceAssistant(context)
+                    return true
                 }
-                return
+                return false
             }
             // Volume / source / phone stay with the car stack.
-            else -> return
+            else -> return false
         }
         when (event.press) {
             PhysicalButtonEventDecoder.Press.SHORT,
@@ -204,5 +217,6 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
                 handleClick(context, androidCode)
             }
         }
+        return true
     }
 }
