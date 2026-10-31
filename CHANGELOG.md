@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.1-beta23
+
+- The right-hand steering wheel buttons are left to the car while they drive the instrument cluster's menus (trip stats, etc.), as the stock launcher does: DiAuto no longer sends them to Android Auto then.
+
 # DiAuto MG4+ 2.2.1-beta22
 
 - No more "Switching USB device to accessory mode…" and "Failed" messages when a phone or a wireless Android Auto dongle is plugged in by USB: the connection was made anyway, they now only go to the log.
