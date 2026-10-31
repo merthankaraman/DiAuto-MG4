@@ -197,6 +197,14 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
         AppLog.i("CarKeyReceiver: SAIC hardkey code=$keyCode down=$isDown long=$isLong")
         com.andrerinas.openheadunit.utils.SteeringKeyLog.record(keyCode, isDown, isLong)
 
+        // The right-hand wheel keys (297-301) also drive the instrument cluster's menus: a key on
+        // the wheel switches them over, and the car reports it (ID_SWC_FUNCTION_CHANGE_SWA = 1).
+        // The stock launcher then leaves them alone, and so does DiAuto (issue #10).
+        if (keyCode in 297..301 && com.evsuite.hardware.EVHardware.wheelKeysOnCluster() == true) {
+            AppLog.i("CarKeyReceiver: wheel keys are driving the cluster menus - key $keyCode left to the car")
+            return
+        }
+
         // Voice key: forward the real press to Android Auto as stock AllGo does on this car (search
         // down on press, up on release); the phone decides between a tap and a hold.
         // Phone key (hardkey 291) with Android Auto on screen: the car only forwards it from its own

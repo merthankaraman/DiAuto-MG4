@@ -762,6 +762,20 @@ object EVHardware {
 
     private const val PROP_VEHICLE_CONFIG_BATTERY = 0x21704244
 
+    /**
+     * The right-hand wheel keys are switched to the instrument cluster's menus
+     * (ID_SWC_FUNCTION_CHANGE_SWA 0x21407b14: 1 = cluster, 0 = media), as the stock launcher reads
+     * it before acting on keys 297-301. null when the car does not answer.
+     */
+    fun wheelKeysOnCluster(): Boolean? {
+        val v = getIntPropertyCPM(PROP_SWC_FUNCTION, 0).takeIf { it >= 0 }
+            ?: getIntPropertyCPM(PROP_SWC_FUNCTION, AREA_GLOBAL).takeIf { it >= 0 }
+            ?: return null
+        return v == 1
+    }
+
+    private const val PROP_SWC_FUNCTION = 0x21407b14
+
     /** The whole configuration bytes last read, for the log. */
     @Volatile var lastVehicleConfigBytes: String? = null
         private set
