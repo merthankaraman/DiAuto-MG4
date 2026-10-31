@@ -1,3 +1,12 @@
+# DiAuto MG4+ 2.2.1-beta25
+
+- **Security:** wireless Android Auto only accepts a phone connected to the car's own access point (a device on the car's Wi-Fi client network can no longer start a session). The AllGo-compatible service only answers the car's own apps and MG4 Dash. Updates are HTTPS only. Unused root / Shizuku and diagnostic upload code removed.
+- **Logs off by default:** *Settings → About → Record logs*, to switch on when diagnosing a problem; the Export button shows only then. Bluetooth / Wi-Fi addresses are half-masked in the log, and voice prompts are kept as WAV only in test mode.
+
+# DiAuto MG4+ 2.2.1-beta24
+
+- Night mode *Like the car*: also dark from sunset to sunrise (calculated at the car's last GPS position), as MG4 Dash does, so stopping with the lights off at night stays dark.
+
 # DiAuto MG4+ 2.2.1-beta23
 
 - The right-hand steering wheel buttons are left to the car while they drive the instrument cluster's menus (trip stats, etc.), as the stock launcher does: DiAuto no longer sends them to Android Auto then.
