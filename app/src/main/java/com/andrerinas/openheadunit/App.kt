@@ -52,12 +52,6 @@ class App : Application() {
         if (isUserUnlocked()) {
             // Before anything reads Settings: DiAuto used to be com.drivehub.diauto.mg4.
             com.andrerinas.openheadunit.utils.AllgoPackage.importOldSettings(this)
-            // A platform-signed car build already has the system identity it needs. Avoid
-            // eagerly constructing the root/Shizuku stack before the first Activity on
-            // vendor Android 9; ordinary phone builds retain the original behaviour.
-            if (Process.myUid() != Process.SYSTEM_UID) {
-                component.suExecutor.register()
-            }
 
             val settings = Settings(this) // Create a Settings instance
             AppLog.init(settings, this) // Initialize AppLog with settings for conditional logging

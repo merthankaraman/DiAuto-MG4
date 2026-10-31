@@ -195,10 +195,14 @@ class Settings(private val context: Context) {
         get() = LogLocation.entries.getOrElse(prefs.getInt(KEY_LOG_LOCATION, LogLocation.DOWNLOADS.ordinal)) { LogLocation.DOWNLOADS }
         set(value) { prefs.edit().putInt(KEY_LOG_LOCATION, value.ordinal).apply() }
 
-    /** Whether log capture should be active across restarts. Default: true while in beta. */
+    /**
+     * Logs are written only when the driver switches them on (Settings > About): off by default,
+     * so the head unit's storage is not written all day and nothing personal is kept on it.
+     * New key: installs that had the old always-on default start with logs off.
+     */
     var exporterCaptureEnabled: Boolean
-        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED, true)
-        set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED, value).apply() }
+        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, false)
+        set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED_V2, value).apply() }
     val logLevel: Int get() = exporterLogLevel.logLevel
 
     var viewMode: ViewMode
@@ -1208,6 +1212,8 @@ class Settings(private val context: Context) {
         const val KEY_FPS_LIMIT = "fps-limit-30"
         /** Persist whether log capture should be active across restarts. */
         const val KEY_LOG_CAPTURE_ENABLED = "log-capture-enabled-v2"
+        /** Logs off by default from 2.2.1-beta25 on (the earlier key defaulted to on). */
+        const val KEY_LOG_CAPTURE_ENABLED_V2 = "log-capture-enabled-v3"
 
         const val KEY_MEDIA_VOLUME_OFFSET = "media-volume-offset"
         const val KEY_ASSISTANT_VOLUME_OFFSET = "assistant-volume-offset"

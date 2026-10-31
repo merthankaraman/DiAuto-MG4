@@ -3008,6 +3008,12 @@ class AapService : Service(), UsbReceiver.Listener {
                         val clientSocket = serverSocket?.accept() ?: break
                         AppLog.i("WirelessServer: Incoming connection detected from ${clientSocket.inetAddress}")
                         com.andrerinas.openheadunit.connection.ArpNudger.stop()
+                        if (!com.andrerinas.openheadunit.connection.WirelessPeerPolicy.allowed(clientSocket)) {
+                            AppLog.w("WirelessServer: refusing a connection that did not come through the car's access point (interface " +
+                                com.andrerinas.openheadunit.connection.WirelessPeerPolicy.interfaceOf(clientSocket) + ")")
+                            try { clientSocket.close() } catch (e: Exception) {}
+                            continue
+                        }
                         serviceScope.launch {
                             if (commManager.isBusy || isSwitchingToAccessory.get() || preemptingWirelessForUsb) {
                                 AppLog.w(

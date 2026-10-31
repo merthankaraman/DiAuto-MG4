@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">ჟურნალის ჩაწერა</string>
+    <string name="dset_log_record_summary">ნაგულისხმევად გამორთულია. ჩართეთ პრობლემის დიაგნოსტიკისთვის: DiAuto დაწერს ჟურნალს, რომლის ექსპორტი და GitHub issue-ზე მიმაგრება შეგიძლიათ.</string>
+</resources>

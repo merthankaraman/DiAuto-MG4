@@ -18,6 +18,31 @@ public class AndroidAutoMainService extends Service {
 
     private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
 
+    /** Apps outside the car's own that may still drive the session (MG4 Dash's media controls). */
+    private static final String[] ALLOWED_PACKAGES = { "app.mg4dash" };
+
+    /**
+     * Only the car's own apps (system ids, or signed with the car's platform key like rui and the
+     * launcher) and MG4 Dash: this service hands out the phone's name and Bluetooth address and
+     * drives the assistant and the media, so any other app installed on the car is refused.
+     */
+    private boolean callerAllowed(int uid) {
+        if (uid < android.os.Process.FIRST_APPLICATION_UID || uid == android.os.Process.myUid()) return true;
+        android.content.pm.PackageManager pm = getPackageManager();
+        try {
+            if (pm.checkSignatures(android.os.Process.myUid(), uid) == android.content.pm.PackageManager.SIGNATURE_MATCH) return true;
+            String[] packages = pm.getPackagesForUid(uid);
+            if (packages != null) {
+                for (String pkg : packages) {
+                    for (String allowed : ALLOWED_PACKAGES) if (allowed.equals(pkg)) return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.w(RelayState.TAG, "caller check failed: " + e);
+        }
+        return false;
+    }
+
     private final Binder binder = new Binder() {
         @Override
         protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
@@ -26,7 +51,13 @@ public class AndroidAutoMainService extends Service {
                 return true;
             }
             data.enforceInterface(DESCRIPTOR);
-            Log.i(RelayState.TAG, "call " + code + " from uid " + Binder.getCallingPid());
+            int uid = Binder.getCallingUid();
+            if (!callerAllowed(uid)) {
+                Log.w(RelayState.TAG, "call " + code + " refused for uid " + uid);
+                reply.writeException(new SecurityException("not a car app"));
+                return true;
+            }
+            Log.i(RelayState.TAG, "call " + code + " from uid " + uid);
             switch (code) {
                 case 1: // register(deviceCb, sessionCb)
                     RelayState.register(data.readStrongBinder(), data.readStrongBinder());

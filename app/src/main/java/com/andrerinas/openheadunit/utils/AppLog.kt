@@ -161,7 +161,9 @@ object AppLog {
     @Volatile private var currentLogSource: Settings.LogSource = Settings.LogSource.LOGCAT
 
     fun init(settings: Settings?, context: Context? = null) {
-        context?.let { DiagnosticJournal.init(it.applicationContext) }
+        // Nothing is written to storage unless the driver switched logs on.
+        DiagnosticJournal.enabled = settings?.exporterCaptureEnabled == true
+        if (DiagnosticJournal.enabled) context?.let { DiagnosticJournal.init(it.applicationContext) }
         // Cache the level rather than resolving it per call: every call site below, and every
         // LOG_VERBOSE/LOG_DEBUG guard, used to reach SharedPreferences.getInt() through
         // Settings.exporterLogLevel — a lock plus a map lookup for lines that are mostly discarded.
@@ -273,8 +275,16 @@ object AppLog {
 
     private fun log(priority: Int, msg: String) {
         DiagnosticJournal.record(priority, msg)
-        LOGGER.println(priority, TAG, msg)
+        LOGGER.println(priority, TAG, if (LOGGER is Logger.Android) msg else maskAddresses(msg))
     }
+
+    private val macAddress = Regex("(?i)\\b((?:[0-9a-f]{2}:){2}[0-9a-f]{2}):(?:[0-9a-f]{2}:){2}[0-9a-f]{2}\\b")
+
+    /**
+     * Log files are posted on GitHub: the second half of every Bluetooth / Wi-Fi address is
+     * hidden (the maker part is kept, it is enough to tell devices apart in a log).
+     */
+    internal fun maskAddresses(msg: String): String = msg.replace(macAddress, "$1:XX:XX:XX")
 
     private fun isLoggable(priority: Int): Boolean = priority >= LOG_LEVEL
 

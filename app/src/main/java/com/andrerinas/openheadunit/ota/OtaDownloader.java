@@ -89,6 +89,10 @@ final class OtaDownloader {
     private static HttpURLConnection open(String url) throws Exception {
         URL current = new URL(url);
         for (int hops = 0; ; hops++) {
+            // HTTPS only, redirects included: an update must never come over plain HTTP.
+            if (!"https".equalsIgnoreCase(current.getProtocol())) {
+                throw new IllegalStateException("refusing non-HTTPS URL " + current.getProtocol());
+            }
             HttpURLConnection connection = (HttpURLConnection) current.openConnection();
             connection.setInstanceFollowRedirects(false);
             connection.setConnectTimeout(8000);

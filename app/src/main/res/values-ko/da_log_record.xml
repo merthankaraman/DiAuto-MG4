@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">로그 기록</string>
+    <string name="dset_log_record_summary">기본값은 꺼짐. 문제를 진단할 때 켜면 DiAuto가 로그를 기록하며, 내보내서 GitHub 이슈에 첨부할 수 있습니다.</string>
+</resources>

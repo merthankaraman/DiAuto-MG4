@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">ログを記録</string>
+    <string name="dset_log_record_summary">既定ではオフ。問題を調べるときにオンにすると、DiAuto がログを書き込み、エクスポートして GitHub の issue に添付できます。</string>
+</resources>

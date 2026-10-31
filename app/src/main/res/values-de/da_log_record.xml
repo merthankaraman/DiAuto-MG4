@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Protokolle aufzeichnen</string>
+    <string name="dset_log_record_summary">Standardmäßig aus. Zum Eingrenzen eines Problems einschalten: DiAuto schreibt dann ein Protokoll, das Sie exportieren und an ein GitHub-Issue anhängen können.</string>
+</resources>

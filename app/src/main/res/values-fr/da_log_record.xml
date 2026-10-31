@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Enregistrer les journaux</string>
+    <string name="dset_log_record_summary">Désactivé par défaut. Activez-le pour diagnostiquer un problème : DiAuto écrit alors un journal à exporter et joindre à une issue GitHub.</string>
+</resources>

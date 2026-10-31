@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Записувати журнали</string>
+    <string name="dset_log_record_summary">Типово вимкнено. Увімкніть для діагностики проблеми: DiAuto писатиме журнал, який можна експортувати й додати до issue на GitHub.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Logboek bijhouden</string>
+    <string name="dset_log_record_summary">Standaard uit. Zet het aan om een probleem te onderzoeken: DiAuto schrijft dan een logboek dat je kunt exporteren en bij een GitHub-issue voegen.</string>
+</resources>

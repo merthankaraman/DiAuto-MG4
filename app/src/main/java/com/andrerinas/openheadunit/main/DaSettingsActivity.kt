@@ -303,7 +303,14 @@ class DaSettingsActivity : BaseActivity() {
             // The energy model sent to Maps may change with it.
             appliesOnReconnect()
         })
-        row(R.string.dset_logs, R.string.dset_logs_summary, button(getString(R.string.dset_export)) { exportLogs() })
+        row(R.string.dset_log_record, R.string.dset_log_record_summary, yesNo(settings.exporterCaptureEnabled) {
+            settings.exporterCaptureEnabled = it
+            AppLog.init(settings, applicationContext)
+            showTab(selectedTab)
+        })
+        if (settings.exporterCaptureEnabled) {
+            row(R.string.dset_logs, R.string.dset_logs_summary, button(getString(R.string.dset_export)) { exportLogs() })
+        }
         row(R.string.restore_allgo, R.string.dset_restore_summary, button(getString(R.string.dset_restore), danger = true) {
             MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
                 .setTitle(R.string.restore_allgo)

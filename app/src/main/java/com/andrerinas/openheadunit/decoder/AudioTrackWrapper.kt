@@ -162,7 +162,8 @@ class AudioTrackWrapper(
 
     /** The voice as the phone sent it, kept to compare with what the speakers play. */
     private val voiceCapture: VoiceCapture? =
-        if (!isAac && sampleRateInHz == 16_000 && (channelId == com.andrerinas.openheadunit.aap.protocol.Channel.ID_AU1 ||
+        // Kept only in test mode, to compare the voice settings being tested.
+        if (voiceSettings?.testMode == true && !isAac && sampleRateInHz == 16_000 && (channelId == com.andrerinas.openheadunit.aap.protocol.Channel.ID_AU1 ||
                 channelId == com.andrerinas.openheadunit.aap.protocol.Channel.ID_AU2))
             VoiceCapture.open(com.andrerinas.openheadunit.aap.protocol.Channel.name(channelId), sampleRateInHz, channelCount)
         else null
