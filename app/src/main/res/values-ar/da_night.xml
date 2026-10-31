@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">الشمس</string>
-    <string name="dset_night_summary_modes">ألوان داكنة في Android Auto. مثل السيارة: يتبع وضع النهار/الليل في السيارة (المصابيح الأمامية). الشمس: داكن بين الغروب والشروق في موقع السيارة.</string>
+    <string name="dset_night_summary_modes">ألوان داكنة في Android Auto. مثل السيارة: داكن عند تشغيل المصابيح ومن الغروب إلى الشروق. الشمس: داكن بين الغروب والشروق في موقع السيارة.</string>
 </resources>

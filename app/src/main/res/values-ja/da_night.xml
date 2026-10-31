@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">太陽</string>
-    <string name="dset_night_summary_modes">Android Auto の暗い配色。車と同じ：車の昼夜表示（ヘッドライト）に従います。太陽：車の位置で日没から日の出まで暗くします。</string>
+    <string name="dset_night_summary_modes">Android Auto の暗い配色。車と同じ：ライト点灯時と日没から日の出まで暗くします。太陽：車の位置で日没から日の出まで暗くします。</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Sun</string>
-    <string name="dset_night_summary_modes">Dark colours in Android Auto. Like the car: follows the car\'s own day/night display (headlights). Sun: dark between sunset and sunrise at the car\'s position.</string>
+    <string name="dset_night_summary_modes">Dark colours in Android Auto. Like the car: dark when the car\'s lights are on, and from sunset to sunrise. Sun: dark from sunset to sunrise at the car\'s position.</string>
 </resources>

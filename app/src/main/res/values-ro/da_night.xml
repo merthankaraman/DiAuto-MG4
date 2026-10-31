@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Soare</string>
-    <string name="dset_night_summary_modes">Culori întunecate în Android Auto. Ca mașina: urmează afișajul zi/noapte al mașinii (faruri). Soare: întunecat între apus și răsărit, la poziția mașinii.</string>
+    <string name="dset_night_summary_modes">Culori întunecate în Android Auto. Ca mașina: întunecat cu farurile aprinse și de la apus la răsărit. Soare: întunecat de la apus la răsărit, la poziția mașinii.</string>
 </resources>

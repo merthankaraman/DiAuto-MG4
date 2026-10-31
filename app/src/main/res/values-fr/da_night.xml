@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Soleil</string>
-    <string name="dset_night_summary_modes">Couleurs sombres d\'Android Auto. Comme la voiture : suit l\'affichage jour/nuit de la voiture (phares). Soleil : sombre entre le coucher et le lever du soleil, à la position de la voiture.</string>
+    <string name="dset_night_summary_modes">Couleurs sombres d\'Android Auto. Comme la voiture : sombre quand les phares sont allumés, et du coucher au lever du soleil. Soleil : sombre du coucher au lever du soleil, à la position de la voiture.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">太阳</string>
-    <string name="dset_night_summary_modes">Android Auto 深色配色。跟随车辆：跟随车辆自身的日/夜显示（大灯）。太阳：在车辆所在位置，日落到日出之间为深色。</string>
+    <string name="dset_night_summary_modes">Android Auto 深色配色。跟随车辆：开灯时以及日落到日出之间为深色。太阳：在车辆所在位置，日落到日出之间为深色。</string>
 </resources>

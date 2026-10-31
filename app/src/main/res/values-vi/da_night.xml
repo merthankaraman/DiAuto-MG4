@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Mặt trời</string>
-    <string name="dset_night_summary_modes">Màu tối trong Android Auto. Như xe: theo chế độ ngày/đêm của xe (đèn pha). Mặt trời: tối từ hoàng hôn đến bình minh tại vị trí của xe.</string>
+    <string name="dset_night_summary_modes">Màu tối trong Android Auto. Như xe: tối khi bật đèn và từ hoàng hôn đến bình minh. Mặt trời: tối từ hoàng hôn đến bình minh tại vị trí của xe.</string>
 </resources>

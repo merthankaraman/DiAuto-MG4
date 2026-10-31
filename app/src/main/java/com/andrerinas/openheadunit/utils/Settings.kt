@@ -46,6 +46,10 @@ class Settings(private val context: Context) {
         get() = prefs.getString("bt-address", "")!!
         set(value) = prefs.edit().putString("bt-address", value).apply()
 
+    /** A real position is known for sunset/sunrise: a fixed one, or one the car's GPS gave. */
+    val hasSunriseLocation: Boolean
+        get() = useFixedSunriseLocation || prefs.contains("last-loc-latitude")
+
     var lastKnownLocation: Location
         get() {
             val latitudeBits = prefs.getLong("last-loc-latitude", (32.0864169).toRawBits())

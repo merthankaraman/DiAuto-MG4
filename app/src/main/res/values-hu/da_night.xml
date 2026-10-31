@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Nap</string>
-    <string name="dset_night_summary_modes">Sötét színek az Android Autóban. Mint az autó: az autó nappali/éjszakai kijelzését követi (fényszórók). Nap: sötét napnyugta és napkelte között, az autó helyén.</string>
+    <string name="dset_night_summary_modes">Sötét színek az Android Autóban. Mint az autó: sötét, ha ég a lámpa, és napnyugtától napkeltéig. Nap: sötét napnyugtától napkeltéig, az autó helyén.</string>
 </resources>

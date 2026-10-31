@@ -237,6 +237,16 @@ class NightModeManager(
             try { com.evsuite.hardware.EVHardware.getLightsOn() } catch (_: Throwable) { null }
                 ?: carSkinNight(context)
 
+        /**
+         * Like the car: dark when the car's lights are on, and also from sunset to sunrise (as
+         * MG4Dash does), so stopping with the lights off at night stays dark. The sun only counts
+         * with a real position; without the car's lights at all, the sun decides alone.
+         */
+        fun autoNight(context: Context, settings: Settings, sunNight: () -> Boolean): Boolean {
+            val car = carNight(context) ?: return sunNight()
+            return car || (settings.hasSunriseLocation && sunNight())
+        }
+
         /** True at night, false by day, null on a head unit without the key. */
         fun carSkinNight(context: Context): Boolean? = try {
             SystemSettings.System.getInt(context.contentResolver, CAR_SKIN_KEY) == 0
@@ -304,7 +314,7 @@ class NightModeManager(
             }
             // Auto follows the car's own day/night skin where there is one.
             Settings.NightMode.AUTO -> {
-                isNight = carNight(context) ?: nightModeCalculator.current
+                isNight = autoNight(context, settings) { nightModeCalculator.isSunriseSunsetNight }
             }
             // Delegate to standard calculator for other modes (Day, Night, Manual)
             else -> {

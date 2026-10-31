@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_night_sun">Sole</string>
-    <string name="dset_night_summary_modes">Colori scuri in Android Auto. Come l\'auto: segue la modalità giorno/notte dell\'auto (fari). Sole: scuro tra tramonto e alba, nella posizione dell\'auto.</string>
+    <string name="dset_night_summary_modes">Colori scuri in Android Auto. Come l\'auto: scuro con le luci accese e dal tramonto all\'alba. Sole: scuro dal tramonto all\'alba, nella posizione dell\'auto.</string>
 </resources>
