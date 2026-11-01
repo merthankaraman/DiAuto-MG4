@@ -1,3 +1,8 @@
+# DiAuto MG4+ 2.2.1-beta28
+
+- **Logs on by default again**, ready to send if something goes wrong: *Settings → About → Export logs*, always available. They are small, and can be switched off in *Record logs*.
+- **Logs no longer contain private details:** no destinations, road names or GPS position, and phone and Wi-Fi names are hidden. Please send a new log rather than a file from an earlier version.
+
 # DiAuto MG4+ 2.2.1-beta27
 
 - The battery version no longer changes according to the capacity measured while driving: it comes from the car, or from your choice in *Settings → Car*. The measurement only gives the state of health of that battery.
