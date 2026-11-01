@@ -1,3 +1,9 @@
+# DiAuto MG4+ 2.2.1
+
+- The update window shows how much data will be downloaded, and advises connecting the car to a Wi-Fi network as a client, or updating over USB.
+- Incompatible firmwares (SWI68 R46, SWI131 R05): the banner also mentions a USB wireless Android Auto dongle as a backup.
+- Everything from the 2.2.1 betas below.
+
 # DiAuto MG4+ 2.2.1-beta29
 
 - State of health: until there is a measurement, *Settings → Car* shows it as being measured, with its progress, instead of 100 %. Maps is told 95 % meanwhile.
