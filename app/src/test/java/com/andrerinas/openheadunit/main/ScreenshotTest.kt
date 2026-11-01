@@ -99,7 +99,7 @@ class ScreenshotTest {
             }
         }
         header("Avec MG4 Dash : batterie 51 kWh choisie, 47,0 kWh mesurés")
-        rows(BatteryCapacityResolver.resolve(null, null, null, Mg4DashBattery.Reading(51, true, 47.0f, 95.9f)))
+        rows(BatteryCapacityResolver.resolve(null, null, null, Mg4DashBattery.Reading(51, true, 47.0f)))
         header("Sans MG4 Dash, voiture muette")
         rows(BatteryCapacityResolver.resolve(null, null, null, null))
         header("Forcé à la main")

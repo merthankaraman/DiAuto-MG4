@@ -36,14 +36,13 @@ class Mg4DashBatteryTest {
         """{"t":${now - daysAgo * day},"k":$kwh,"d":$drop,"m":120.0}"""
 
     @Test
-    fun `MG4 Dash health is read as MG4 Dash computes it`() {
+    fun `MG4 Dash's measurement is weighted by charge drop`() {
         val samples = "[${sample(3, 47.0, 20)},${sample(10, 48.0, 30)}]"
         val r = Mg4DashBattery.parse(prefs(51, samples), now)!!
         val measured = (47.0 * 20 + 48.0 * 30) / 50
         assertEquals(51, r.pack)
         assertTrue(r.packChosen)
         assertEquals(measured.toFloat(), r.measuredKwh!!, 0.001f)
-        assertEquals((measured / 49.0 * 100).toFloat(), r.sohPercent!!, 0.01f)
     }
 
     @Test
@@ -51,7 +50,6 @@ class Mg4DashBatteryTest {
         val r = Mg4DashBattery.parse(prefs(null, "[${sample(2, 60.0, 25)}]"), now)!!
         assertEquals(64, r.pack)
         assertFalse(r.packChosen)
-        assertEquals((60.0 / 61.7 * 100).toFloat(), r.sohPercent!!, 0.01f)
     }
 
     @Test
@@ -63,17 +61,10 @@ class Mg4DashBatteryTest {
     }
 
     @Test
-    fun `health never goes above 100 percent`() {
-        val r = Mg4DashBattery.parse(prefs(51, "[${sample(1, 52.0, 18)}]"), now)!!
-        assertEquals(100f, r.sohPercent!!, 0.001f)
-    }
-
-    @Test
-    fun `a chosen battery without measurement gives no health`() {
+    fun `a chosen battery without measurement gives no capacity`() {
         val r = Mg4DashBattery.parse(prefs(77, null), now)!!
         assertEquals(77, r.pack)
         assertNull(r.measuredKwh)
-        assertNull(r.sohPercent)
     }
 
     @Test

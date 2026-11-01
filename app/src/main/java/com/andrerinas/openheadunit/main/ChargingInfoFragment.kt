@@ -457,8 +457,6 @@ internal fun batteryCapacityText(context: Context, resolved: BatteryCapacityReso
 internal fun batteryCapacitySource(context: Context, resolved: BatteryCapacityResolver.Resolved): String =
     when (resolved.netSource) {
         BatteryCapacityResolver.Source.CAR -> context.getString(R.string.battery_source_car)
-        BatteryCapacityResolver.Source.MG4DASH -> context.getString(
-            R.string.battery_source_mg4dash_pack, resolved.pack ?: BatteryCapacityResolver.DEFAULT_PACK)
         BatteryCapacityResolver.Source.MEASURED -> context.getString(
             R.string.battery_source_measured_pack, resolved.pack ?: BatteryCapacityResolver.DEFAULT_PACK)
         else -> context.getString(
@@ -472,12 +470,6 @@ internal fun batterySohText(context: Context, resolved: BatteryCapacityResolver.
         BatteryCapacityResolver.Source.MANUAL -> context.getString(
             R.string.battery_soh_manual_value,
             context.getString(R.string.battery_value_percent, formatBatteryDecimal(resolved.sohPercent)),
-        )
-        BatteryCapacityResolver.Source.MG4DASH -> context.getString(
-            R.string.battery_auto_value,
-            context.getString(R.string.battery_value_percent,
-                String.format(java.util.Locale.getDefault(), "%.1f", resolved.sohPercent)),
-            context.getString(R.string.battery_soh_source_mg4dash),
         )
         BatteryCapacityResolver.Source.MEASURED -> context.getString(
             R.string.battery_auto_value,

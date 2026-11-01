@@ -265,9 +265,7 @@
     <string name="battery_auto_option">Automatic (%1$s, %2$s)</string>
     <string name="battery_pack_option">%1$d kWh battery (%2$.1f kWh usable)</string>
     <string name="battery_source_car">read from the car</string>
-    <string name="battery_source_mg4dash_pack">%1$d kWh battery according to MG4 Dash</string>
     <string name="battery_source_default_pack">%1$d kWh battery by default</string>
-    <string name="battery_soh_source_mg4dash">estimated by MG4 Dash</string>
     <string name="battery_soh_source_default">default</string>
     <string name="battery_soh_auto_description" formatted="false">Automatic uses the estimate of MG4 Dash when it is installed and has measured the battery, otherwise 100 %.</string>
     <string name="battery_value_km">%1$d km</string>

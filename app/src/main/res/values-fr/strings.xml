@@ -265,9 +265,7 @@
     <string name="battery_auto_option">Automatique (%1$s, %2$s)</string>
     <string name="battery_pack_option">Batterie %1$d kWh (%2$.1f kWh utiles)</string>
     <string name="battery_source_car">lue sur la voiture</string>
-    <string name="battery_source_mg4dash_pack">batterie %1$d kWh d’après MG4 Dash</string>
     <string name="battery_source_default_pack">batterie %1$d kWh par défaut</string>
-    <string name="battery_soh_source_mg4dash">estimé par MG4 Dash</string>
     <string name="battery_soh_source_default">par défaut</string>
     <string name="battery_soh_auto_description" formatted="false">Automatique : estimation de MG4 Dash s’il est installé et a déjà mesuré la batterie, sinon 100 %.</string>
     <string name="battery_value_km">%1$d km</string>

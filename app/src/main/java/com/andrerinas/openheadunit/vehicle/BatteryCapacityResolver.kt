@@ -11,16 +11,15 @@ import kotlin.math.abs
  * Usable capacity (when new) and state of health given to Google Maps, found automatically
  * unless the driver set them in Settings.
  *
- * Capacity: the one the car publishes, else the battery MG4 Dash knows (chosen in its settings,
- * or nearest to its measurement), else the battery DiAuto's own measurement points to
- * ([BatteryCapacityMeter]), else the 64 kWh battery. State of health: MG4 Dash's estimate, else
- * DiAuto's measurement, else 100 %.
+ * Capacity: the one the car publishes, else the battery the measurement points to, else the 64 kWh
+ * battery. State of health: the measured capacity over the usable one, else 100 %. The measurement
+ * is DiAuto's own ([BatteryCapacityMeter]); until it has a sample, MG4 Dash's is read if it is there.
  */
 object BatteryCapacityResolver {
     private const val TAG = "DiAuto-MG4"
     private const val CAR_RETRY_MS = 60_000L
 
-    enum class Source { MANUAL, CAR, MG4DASH, MEASURED, DEFAULT }
+    enum class Source { MANUAL, CAR, MEASURED, DEFAULT }
 
     data class Resolved(
         val netKwh: Float,
@@ -76,7 +75,8 @@ object BatteryCapacityResolver {
         carTypeCode: Int? = null,
     ): Resolved {
         val car = carKwh?.let(::carUsableKwh)
-        val measured = measuredKwh?.takeIf { it.isFinite() && it in 30f..100f }
+        val valid = { kwh: Float? -> kwh?.takeIf { it.isFinite() && it in 30f..100f } }
+        val measured = valid(measuredKwh) ?: valid(mg4Dash?.measuredKwh)
         val typePacks = packsForTypeCode(carTypeCode)
         // The car's type settles the battery when it names one; between two, MG4 Dash's choice
         // or the measurement decides, else the larger share (64 kWh).
@@ -91,14 +91,12 @@ object BatteryCapacityResolver {
             manualNetKwh != null -> manualNetKwh.coerceIn(1f, 200f) to Source.MANUAL
             car != null -> car to Source.CAR
             typePack != null -> usableKwh(typePack) to Source.CAR
-            mg4Dash?.pack != null -> usableKwh(mg4Dash.pack) to Source.MG4DASH
+            mg4Dash?.packChosen == true && mg4Dash.pack != null -> usableKwh(mg4Dash.pack) to Source.MEASURED
             measured != null -> usableKwh(packForMeasured(measured)) to Source.MEASURED
             else -> usableKwh(DEFAULT_PACK) to Source.DEFAULT
         }
-        val dashSoh = mg4Dash?.sohPercent?.takeIf { it.isFinite() && it > 0f }
         val (soh, sohSource) = when {
             manualSohPercent != null -> manualSohPercent.coerceIn(1f, 100f) to Source.MANUAL
-            dashSoh != null -> dashSoh.coerceIn(1f, 100f) to Source.MG4DASH
             measured != null -> (measured / net * 100f).coerceIn(1f, 100f) to Source.MEASURED
             else -> 100f to Source.DEFAULT
         }

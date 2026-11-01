@@ -13,19 +13,15 @@ import java.io.InputStream
  * Both apps are platform-signed with the system shared user id, so DiAuto may read MG4 Dash's
  * preferences directly; on a phone build, or without MG4 Dash, [read] returns null.
  *
- * MG4 Dash measures the usable capacity while driving (`cap_samples`) and estimates the state of
- * health against the battery chosen in its settings (`battery_model`). The health below is its
- * own formula: samples of the last 30 days (otherwise all), weighted by their charge drop, over
- * MG4 Dash's usable figure for that battery, at most 100 %. When no battery was chosen there,
- * the one nearest to the measurement is used instead of MG4 Dash's 51 kWh default.
+ * MG4 Dash measures the usable capacity while driving (`cap_samples`: last 30 days, otherwise all,
+ * weighted by their charge drop), which stands in until DiAuto's own measurement has a sample, and
+ * has a battery chosen in its settings (`battery_model`). When none was chosen, the one nearest to
+ * the measurement is used instead of MG4 Dash's 51 kWh default.
  */
 object Mg4DashBattery {
     const val PACKAGE = "app.mg4dash"
     private const val PREFS_FILE = "shared_prefs/mg4launcher.xml"
     private const val MONTH_MS = 30L * 24 * 3600_000L
-
-    /** MG4 Dash's usable figures behind its health estimate (its BatteryCapacity.MODELS). */
-    private val MG4DASH_USABLE = mapOf(51 to 49.0f, 64 to 61.7f, 77 to 74.4f)
 
     data class Reading(
         /** Nameplate kWh (51, 64 or 77), or null when MG4 Dash has neither a choice nor a measurement. */
@@ -34,7 +30,6 @@ object Mg4DashBattery {
         val packChosen: Boolean,
         /** Usable capacity measured by MG4 Dash today, kWh. */
         val measuredKwh: Float?,
-        val sohPercent: Float?,
     )
 
     @Volatile private var cached: Reading? = null
@@ -72,10 +67,9 @@ object Mg4DashBattery {
 
     internal fun fromValues(model: Int?, samplesJson: String?, now: Long): Reading? {
         val measured = measuredKwh(samplesJson, now)
-        val chosen = model?.takeIf { it in MG4DASH_USABLE }
+        val chosen = model?.takeIf { pack -> BatteryCapacityResolver.PACKS.any { it.first == pack } }
         val pack = chosen ?: measured?.let(BatteryCapacityResolver::nearestPack) ?: return null
-        val soh = measured?.let { (it / MG4DASH_USABLE.getValue(pack) * 100f).coerceAtMost(100f) }
-        return Reading(pack, chosen != null, measured, soh)
+        return Reading(pack, chosen != null, measured)
     }
 
     private fun measuredKwh(samplesJson: String?, now: Long): Float? {
