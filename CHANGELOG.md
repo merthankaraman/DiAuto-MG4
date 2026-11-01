@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.1-beta29
+
+- State of health: until there is a measurement, *Settings → Car* shows it as being measured, with its progress, instead of 100 %. Maps is told 95 % meanwhile.
+
 # DiAuto MG4+ 2.2.1-beta28
 
 - **Logs on by default again**, ready to send if something goes wrong: *Settings → About → Export logs*, always available. They are small, and can be switched off in *Record logs*.
