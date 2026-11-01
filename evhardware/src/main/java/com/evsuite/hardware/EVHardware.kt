@@ -751,7 +751,7 @@ object EVHardware {
         try {
             val holder = getProperty.invoke(cpm, ByteArray::class.java, PROP_VEHICLE_CONFIG_BATTERY, AREA_GLOBAL)
             val bytes = holder?.javaClass?.getMethod("getValue")?.invoke(holder) as? ByteArray
-            lastVehicleConfigFailure = if (holder == null) "no value" else if (bytes.isNullOrEmpty()) "empty" else null
+            lastVehicleConfigFailure = if (holder == null) "no value" else if (bytes == null || bytes.isEmpty()) "empty" else null
             bytes?.takeIf { it.isNotEmpty() }
                 ?.also { lastVehicleConfigBytes = it.joinToString(" ") { b -> "%02x".format(b) } }
                 ?.last()?.toInt()
