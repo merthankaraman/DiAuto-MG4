@@ -115,7 +115,7 @@ object HotspotManager {
         if (configIs5Ghz && !pausedStation) return
         if (!isApUp(context)) return // the next start requests 5 GHz with the channel cleared
         AppLog.i(
-            if (pausedStation) "HotspotManager: restarting the AP so it leaves the car Wi-Fi's 2.4 GHz channel for 5 GHz"
+            if (pausedStation) "HotspotManager: restarting the AP so it leaves the car Wi-Fi's channel"
             else "HotspotManager: AP is up on a 2.4 GHz/pinned config - restarting it once on 5 GHz before any phone connects"
         )
         setHotspotEnabled(context, false)
@@ -134,7 +134,9 @@ object HotspotManager {
      * (picture down to 5-9 fps, 2 s gaps, seen on an SWI133). Switch the station off (remembering
      * that we did) while wireless Android Auto is in use.
      *
-     * @return true when the station was on 2.4 GHz, so the AP must be restarted to reach 5 GHz.
+     * @return true when the station was switched off, so the AP must be restarted: it sits on the
+     *   station's channel, 2.4 GHz or a 5 GHz one it may not keep alone (phones could no longer see
+     *   it once the station was off, with a 5 GHz home network on an SWI69).
      */
     private fun pauseStation(context: Context): Boolean {
         val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -150,7 +152,7 @@ object HotspotManager {
         while (ok && wifi.isWifiEnabled && System.currentTimeMillis() < deadline) {
             try { Thread.sleep(200) } catch (e: InterruptedException) { break }
         }
-        return ok && freq in 2400..2500
+        return ok
     }
 
     /** Switches the car's Wi-Fi back on, but only if [pauseStation] switched it off. */
@@ -161,7 +163,7 @@ object HotspotManager {
         val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         @Suppress("DEPRECATION")
         val ok = try { wifi.setWifiEnabled(true) } catch (e: Exception) { false }
-        AppLog.i("HotspotManager: wireless Android Auto has been idle - switching the car Wi-Fi back on (ok=$ok)")
+        AppLog.i("HotspotManager: no phone for wireless Android Auto - switching the car Wi-Fi back on (ok=$ok)")
     }
 
     private fun stationPrefs(context: Context) =

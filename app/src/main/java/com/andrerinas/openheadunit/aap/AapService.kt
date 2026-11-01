@@ -1397,6 +1397,15 @@ class AapService : Service(), UsbReceiver.Listener {
         applyPlaceholderMediaMetadata()
     }
 
+    /** The car's Wi-Fi client comes back unless a session or a linked phone still needs the radio. */
+    private fun scheduleStationRestore() {
+        stationRestoreJob?.cancel()
+        stationRestoreJob = serviceScope.launch(Dispatchers.IO) {
+            delay(settings.stationRestoreDelaySeconds * 1000L)
+            if (!commManager.isBusy && !rememberedPhoneLinked()) HotspotManager.restorePausedStation(this@AapService)
+        }
+    }
+
     /**
      * Called by [CommManager.ConnectionState.Disconnected] observer:
      * 1. Refreshing the notification (unless we are already tearing down)
@@ -1411,11 +1420,7 @@ class AapService : Service(), UsbReceiver.Listener {
         // scan takes the radio off the access point's channel.
         com.andrerinas.openheadunit.utils.WifiChannelPicker.scanSoon(this)
         // Give the car Wi-Fi back once wireless Android Auto has stayed down for a while.
-        stationRestoreJob?.cancel()
-        stationRestoreJob = serviceScope.launch(Dispatchers.IO) {
-            delay(settings.stationRestoreDelaySeconds * 1000L)
-            if (!commManager.isBusy) HotspotManager.restorePausedStation(this@AapService)
-        }
+        scheduleStationRestore()
         isSwitchingToAccessory.set(false)
         releaseWifiLock()
 
@@ -1726,9 +1731,12 @@ class AapService : Service(), UsbReceiver.Listener {
             // The car's Wi-Fi client is only switched off once the phone is linked over Bluetooth
             // (here, or on the Bluetooth auto-start below), so with no phone it stays on.
             val phoneLinked = rememberedPhoneLinked()
+            // A USB session keeps the client: the car uses it for internet (UsbWifiClient).
+            val usbSession = commManager.isConnected && !commManager.isWirelessSession
             serviceScope.launch(Dispatchers.IO) {
-                HotspotManager.ensure5GhzBeforeSession(this@AapService, pauseStation = phoneLinked)
+                HotspotManager.ensure5GhzBeforeSession(this@AapService, pauseStation = phoneLinked && !usbSession)
             }
+            if (!phoneLinked) scheduleStationRestore()
             softApCredentialsProvider?.start()
             // Start the official Bluetooth handshake servers
             nativeAaHandshakeManager?.start()
@@ -1954,8 +1962,7 @@ class AapService : Service(), UsbReceiver.Listener {
                     // for the user to pick the phone on the home screen.
                     lastPhoneBtConnectMs = SystemClock.elapsedRealtime()
                     // The phone is here: free the single Wi-Fi radio from the car's own Wi-Fi
-                    // client before it joins the access point (instant unless that client was on
-                    // 2.4 GHz, where the access point has to restart on 5 GHz first).
+                    // client before it joins the access point, which restarts off its channel.
                     serviceScope.launch {
                         withContext(Dispatchers.IO) {
                             HotspotManager.ensure5GhzBeforeSession(this@AapService, pauseStation = true)
@@ -1964,6 +1971,7 @@ class AapService : Service(), UsbReceiver.Listener {
                     }
                 }
             }
+            ACTION_BT_PHONE_LEFT -> scheduleStationRestore()
             ACTION_DISCONNECT            -> {
                 AppLog.i("Disconnect action received.")
                 // Cancel any pending post-disconnect wait/poke so pill cancel
@@ -3200,6 +3208,7 @@ class AapService : Service(), UsbReceiver.Listener {
         // Service action strings used with startService() and sendBroadcast()
         const val ACTION_START_WIRELESS            = "com.andrerinas.openheadunit.ACTION_START_WIRELESS"
         const val ACTION_BT_AUTO_START              = "com.andrerinas.openheadunit.ACTION_BT_AUTO_START"
+        const val ACTION_BT_PHONE_LEFT              = "com.andrerinas.openheadunit.ACTION_BT_PHONE_LEFT"
         const val ACTION_START_WIRELESS_SCAN       = "com.andrerinas.openheadunit.ACTION_START_WIRELESS_SCAN"
         const val ACTION_STOP_WIRELESS             = "com.andrerinas.openheadunit.ACTION_STOP_WIRELESS"
         const val ACTION_NATIVE_AA_POKE            = "com.andrerinas.openheadunit.ACTION_NATIVE_AA_POKE"

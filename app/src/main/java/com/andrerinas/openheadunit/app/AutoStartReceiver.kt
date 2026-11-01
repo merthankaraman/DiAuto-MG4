@@ -49,6 +49,24 @@ class AutoStartReceiver : BroadcastReceiver() {
             return
         }
 
+        if (action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+            val device: BluetoothDevice? = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+            }
+            if (device != null && targetMacs.contains(device.address)) {
+                AppLog.i("Remembered phone left Bluetooth: the car's Wi-Fi client can come back.")
+                try {
+                    ContextCompat.startForegroundService(context, Intent(context, AapService::class.java).setAction(AapService.ACTION_BT_PHONE_LEFT))
+                } catch (e: Exception) {
+                    AppLog.e("Failed to start AapService from background: ${e.message}")
+                }
+            }
+            return
+        }
+
         if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
             val device = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
