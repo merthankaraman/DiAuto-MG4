@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">الاستهلاك من MG4Dash (تجريبي)</string>
-    <string name="dset_mg4dash_consumption_summary">يقدّر Google Maps البطارية عند الوصول من الاستهلاك الذي يقيسه MG4Dash حسب السرعة والحرارة بدلًا من متوسط السيارة. تجريبي.</string>
-</resources>

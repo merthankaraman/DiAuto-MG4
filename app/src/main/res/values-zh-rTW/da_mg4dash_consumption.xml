@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">MG4Dash 能耗（測試）</string>
-    <string name="dset_mg4dash_consumption_summary">Google 地圖依 MG4Dash 按車速和溫度測得的能耗估算抵達時電量，而非車輛平均值。實驗性。</string>
-</resources>

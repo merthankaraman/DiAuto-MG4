@@ -301,6 +301,12 @@
             </intent-filter>
         </receiver>
 
+        <!-- Test values for the Maps energy model, from adb only (the shell holds DUMP). -->
+        <receiver
+            android:name=".vehicle.MapsModelTestReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP" />
+
         <receiver
             android:name=".app.BootCompleteReceiver"
             android:directBootAware="true"

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Spotřeba z MG4Dash (test)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps odhaduje baterii v cíli podle spotřeby, kterou MG4Dash měří podle rychlosti a teploty, místo průměru auta. Experimentální.</string>
-</resources>

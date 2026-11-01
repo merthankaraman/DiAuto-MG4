@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Zużycie z MG4Dash (test)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps szacuje baterię na miejscu na podstawie zużycia mierzonego przez MG4Dash wg prędkości i temperatury zamiast średniej samochodu. Eksperymentalne.</string>
-</resources>

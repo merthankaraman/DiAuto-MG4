@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">MG4Dash 소비량 (테스트)</string>
-    <string name="dset_mg4dash_consumption_summary">Google 지도가 차량 평균 대신 MG4Dash가 속도와 온도별로 측정한 소비량으로 도착 시 배터리를 추정합니다. 실험 기능.</string>
-</resources>

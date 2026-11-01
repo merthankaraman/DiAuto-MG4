@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Verbrauch aus MG4Dash (Test)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps schätzt den Akkustand bei Ankunft mit dem von MG4Dash nach Geschwindigkeit und Temperatur gemessenen Verbrauch statt mit dem Durchschnitt des Autos. Experimentell.</string>
-</resources>

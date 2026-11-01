@@ -21,6 +21,9 @@ object Mg4EnergyReporter {
     private const val TAG = "DiAuto-MG4"
     private const val INTERVAL_MS = 30_000L
 
+    /** Outside temperature last put in DiAuto's model (see [Mg4MapsEnergyModel.heldTemp]). */
+    @Volatile private var heldTemp: Float? = null
+
     private val requestedTypes = ConcurrentHashMap.newKeySet<Int>()
     private val vemEverSent = AtomicBoolean(false)
     private val transportRef = AtomicReference<AapTransport?>(null)
@@ -68,6 +71,9 @@ object Mg4EnergyReporter {
         }
     }
 
+    /** Sends the model again now, e.g. after test values changed. */
+    fun resend() = executor.execute { sendNow(force = true) }
+
     private fun tick() {
         if (requestedTypes.isEmpty()) return
         val due = SystemClock.elapsedRealtime() - lastSentElapsed >= INTERVAL_MS
@@ -95,11 +101,13 @@ object Mg4EnergyReporter {
         val outsideTemp = if (snap.demo || layout == VehicleEnergyModelEncoder.Layout.LEGACY) null else runCatching {
             com.evsuite.hardware.saic.SaicClimate.outsideTempCelsius() ?: com.evsuite.hardware.EVHardware.getOutsideTempCelsius()
         }.getOrNull()
-        val roadLoad = App.instance?.takeIf { !snap.demo && App.provide(it).settings.mg4dashConsumption }?.let { app ->
-            val temp = outsideTemp ?: runCatching {
+        val model = App.instance?.takeIf { !snap.demo && App.provide(it).settings.mapsEnergyModel }?.let {
+            val live = (outsideTemp ?: runCatching {
                 com.evsuite.hardware.saic.SaicClimate.outsideTempCelsius() ?: com.evsuite.hardware.EVHardware.getOutsideTempCelsius()
-            }.getOrNull()
-            Mg4DashConsumption.roadLoad(app, temp?.takeIf { it in -40f..60f })
+            }.getOrNull())?.takeIf { it in -40f..60f }
+            heldTemp = Mg4MapsEnergyModel.heldTemp(heldTemp, live)
+            val climate = runCatching { com.evsuite.hardware.saic.SaicClimate.powerOn() }.getOrNull()
+            Mg4MapsEnergyModel.build(variant, heldTemp, climate)
         }
         val encoded = VehicleEnergyModelEncoder.Snapshot(
             capacityWh = snap.capacityWh,
@@ -109,7 +117,7 @@ object Mg4EnergyReporter {
             variant = variant,
             outsideTempC = outsideTemp?.takeIf { it in -40f..60f },
             layout = layout,
-            roadLoad = roadLoad,
+            energyModel = model,
         )
 
         // Prefer whichever the phone started; if none yet but force, try both.
@@ -134,7 +142,11 @@ object Mg4EnergyReporter {
                 "$TAG vem tx capacity=${snap.capacityWh}Wh current=${snap.currentWh}Wh " +
                     "range=${snap.rangeKm}km battery=${"%.1f".format(snap.batteryPercent)}% " +
                     "variant=${variant.key} maxDc=${variant.maxDcW / 1000}kW layout=${layout.key} outside=${outsideTemp ?: "-"} types=$types" +
-                    (roadLoad?.let { " roadLoad=%.0f/%.2f/%.3f (%d speeds, %.0f km)".format(it.a, it.b, it.c, it.points, it.km) } ?: ""),
+                    (model?.let { m ->
+                        " model A=%.0fN C=%.3f temp=%s climate=%s aux=%s".format(m.a, m.c, m.tempC ?: "-", m.climateOn ?: "-",
+                            m.aux.joinToString(",") { "${it.first.toInt()}:${it.second}" }) +
+                            (if (Mg4MapsEnergyModel.test.active) " TEST ${Mg4MapsEnergyModel.test}" else "")
+                    } ?: ""),
             )
         } else {
             AppLog.i("$TAG vem tx dropped (sensors $types not started or transport not alive)")

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Fogyasztás az MG4Dashből (teszt)</string>
-    <string name="dset_mg4dash_consumption_summary">A Google Térkép az MG4Dash által sebesség és hőmérséklet szerint mért fogyasztással becsli az érkezéskori akkut az autó átlaga helyett. Kísérleti.</string>
-</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">지도용 소비 모델 (실험적)</string>
+    <string name="dset_maps_model_summary">Google 지도가 차량의 평균 소비 대신 MG4 모델(속도, 추위, 공조)로 도착 시 배터리를 예측합니다.</string>
+    <string name="dset_maps_model_explain">기능: Google 지도가 현재 평균 소비가 아니라 차량의 특성으로 목적지의 배터리 잔량을 예측합니다. 속도, 추위, 난방이 반영됩니다.\n\n방식: DiAuto가 차량의 주행 저항(구름 저항, 추우면 증가, 공기 저항)과 외부 온도별 공조 및 전자 장치의 전력을 지도에 전달합니다. Google 서버가 예상 속도, 교통, 고저차로 경로의 구간별 에너지를 계산합니다.\n\n사용 데이터: 차량 버전(배터리 설정), 배터리 잔량과 용량, 외부 온도, 공조 켜짐 여부. 지금의 배터리 잔량처럼 휴대전화로만 전송됩니다.\n\n실험적: 값은 추정치이며 보정되기 전까지 예측이 어긋날 수 있습니다.</string>
+    <string name="dset_maps_model_enable">켜기</string>
+</resources>

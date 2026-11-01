@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Витрата з MG4Dash (тест)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Карти оцінюють заряд після прибуття за витратою, яку MG4Dash вимірює за швидкістю й температурою, а не за середнім значенням автомобіля. Експериментально.</string>
-</resources>

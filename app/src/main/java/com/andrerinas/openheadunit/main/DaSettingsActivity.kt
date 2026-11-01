@@ -259,12 +259,24 @@ class DaSettingsActivity : BaseActivity() {
         if (settings.testMode) {
             row(R.string.dset_ev_layout, R.string.dset_ev_layout_summary, value(evLayoutLabel(settings.evModelLayout)) { pickEvLayout() })
         }
-        // Only with MG4Dash on the car: it measures the consumption map.
-        if (settings.testMode && com.andrerinas.openheadunit.vehicle.Mg4DashConsumption.installed(this)) {
-            row(R.string.dset_mg4dash_consumption, R.string.dset_mg4dash_consumption_summary, yesNo(settings.mg4dashConsumption) {
-                settings.mg4dashConsumption = it
-            })
-        }
+        // Experimental, off by default: switching it on first explains what it does.
+        row(R.string.dset_maps_model, R.string.dset_maps_model_summary, yesNo(settings.mapsEnergyModel) { on ->
+            if (!on) {
+                settings.mapsEnergyModel = false
+                com.andrerinas.openheadunit.vehicle.Mg4EnergyReporter.resend()
+                return@yesNo
+            }
+            MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
+                .setTitle(R.string.dset_maps_model)
+                .setMessage(R.string.dset_maps_model_explain)
+                .setPositiveButton(R.string.dset_maps_model_enable) { _, _ ->
+                    settings.mapsEnergyModel = true
+                    com.andrerinas.openheadunit.vehicle.Mg4EnergyReporter.resend()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .setOnDismissListener { showTab(selectedTab) }
+                .show()
+        })
         if (com.andrerinas.openheadunit.vehicle.ChargeStopPreheatPolicy.supportedOnThisCar()) {
             row(R.string.dset_preheat, R.string.dset_preheat_summary, yesNo(settings.batteryPreheatBeforeCharger) {
                 settings.batteryPreheatBeforeCharger = it

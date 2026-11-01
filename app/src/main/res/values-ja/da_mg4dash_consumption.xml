@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">MG4Dash の電費（テスト）</string>
-    <string name="dset_mg4dash_consumption_summary">Google マップが到着時のバッテリーを、車の平均ではなく MG4Dash が速度と気温ごとに測った電費で見積もります。試験的。</string>
-</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Maps için tüketim modeli (deneysel)</string>
+    <string name="dset_maps_model_summary">Google Haritalar varıştaki bataryayı aracın ortalama tüketimi yerine bir MG4 modeliyle (hız, soğuk, klima) tahmin eder.</string>
+    <string name="dset_maps_model_explain">Ne yapar: Google Haritalar varış noktasındaki bataryayı o anki ortalama tüketimden değil, aracın bir tanımından tahmin eder. Hız, soğuk ve ısıtma böylece hesaba katılır.\n\nNasıl: DiAuto, Haritalar\'a aracın hareket direncini (yuvarlanma, soğukta artar, ve hava) ve dış sıcaklığa göre klima ile elektroniğin gücünü bildirir. Google sunucuları rotanın her bölümünün enerjisini beklenen hız, trafik ve eğimle hesaplar.\n\nKullanılan veriler: araç sürümü (batarya ayarı), batarya seviyesi ve kapasitesi, dış sıcaklık ve klimanın açık olup olmadığı. Bunlar bugünkü batarya seviyesi gibi yalnızca telefonunuza gider.\n\nDeneysel: değerler tahmindir, kalibre edilene kadar tahmin sapabilir.</string>
+    <string name="dset_maps_model_enable">Aç</string>
+</resources>

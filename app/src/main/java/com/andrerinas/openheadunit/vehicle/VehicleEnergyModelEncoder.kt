@@ -64,8 +64,8 @@ object VehicleEnergyModelEncoder {
         val variant: Mg4Variant? = null,
         val outsideTempC: Float? = null,
         val layout: Layout = Layout.LEGACY,
-        /** Measured road load (MG4Dash's consumption map, experimental); null = from the range. */
-        val roadLoad: ConsumptionMapFit.RoadLoad? = null,
+        /** DiAuto's own road load, climate power and temperature (experimental); null = from the range. */
+        val energyModel: Mg4MapsEnergyModel.Model? = null,
     )
 
     fun encode(snapshot: Snapshot): ByteArray {
@@ -82,14 +82,21 @@ object VehicleEnergyModelEncoder {
         val cos = CodedOutputStream.newInstance(out)
         val layout = snapshot.layout
         val variant = snapshot.variant
-        cos.writeByteArray(1, encodeBattery(snapshot, withVehicle = layout != Layout.LEGACY))
-        val load = snapshot.roadLoad
-        cos.writeByteArray(2, if (load != null) encodeRoadLoad(load.a, load.b, load.c) else encodeRoadLoad(constantForceN))
+        val model = snapshot.energyModel
+        cos.writeByteArray(1, if (model != null) encodeModelBattery(snapshot, model) else encodeBattery(snapshot, withVehicle = layout != Layout.LEGACY))
+        cos.writeByteArray(2, if (model != null) encodeRoadLoad(model.a, 0f, model.c) else encodeRoadLoad(constantForceN))
         val curveOnField4 = variant != null && (layout == Layout.DC_CURVE || layout == Layout.FULL)
         if (curveOnField4) {
             cos.writeByteArray(4, encodeChargeCurve(snapshot.capacityWh, variant!!))
         } else {
             cos.writeByteArray(4, encodeVehicleSpecs())
+        }
+        // 7 = climate and accessories power by outside temperature: {1 °C, 4 W}, as Ford sends it.
+        model?.aux?.forEach { (tempC, watts) ->
+            cos.writeByteArray(7, message { row ->
+                row.writeFloat(1, tempC)
+                row.writeByteArray(4, valueOf(watts))
+            })
         }
         if (variant != null && (layout == Layout.DC_TIMES || layout == Layout.FULL)) {
             cos.writeByteArray(8, encodeChargeTimes(snapshot.capacityWh, variant, withAc = layout == Layout.FULL))
@@ -122,6 +129,21 @@ object VehicleEnergyModelEncoder {
         cos.writeUInt32(10, maxCharge.coerceAtLeast(1))
     }
 
+    /**
+     * Field 1 for DiAuto's model: the mass is left out (its field is not confirmed: Ford's 1.2 looks
+     * like a reserve in Wh), the temperature is the one the model was built for.
+     */
+    private fun encodeModelBattery(snapshot: Snapshot, model: Mg4MapsEnergyModel.Model): ByteArray = message { cos ->
+        cos.writeByteArray(3, valueOf(snapshot.currentWh))
+        cos.writeByteArray(4, valueOf(snapshot.capacityWh))
+        model.tempC?.let { temp ->
+            cos.writeFloat(6, airDensity(temp))
+            cos.writeFloat(7, temp)
+        }
+        cos.writeUInt32(9, snapshot.peakMotorPowerW.coerceAtLeast(1))
+        cos.writeUInt32(10, (snapshot.variant?.maxDcW ?: snapshot.maxChargePowerW).coerceAtLeast(1))
+    }
+
     /** Dry air at sea level, kg/m³. */
     private fun airDensity(tempC: Float): Float = (101_325.0 / (287.05 * (tempC + 273.15))).toFloat()
 
@@ -130,7 +152,7 @@ object VehicleEnergyModelEncoder {
      * Only the constant term is populated so arrival energy tracks the pack's
      * implied Wh/km without a huge v² term.
      */
-    /** All three terms, from a measured consumption curve. */
+    /** All three terms, from DiAuto's model. */
     private fun encodeRoadLoad(a: Float, b: Float, c: Float): ByteArray = message { cos ->
         cos.writeByteArray(1, encodeCoeff(a, 10f))
         cos.writeByteArray(2, encodeCoeff(b, 0.25f))

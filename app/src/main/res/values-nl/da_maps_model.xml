@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Verbruiksmodel voor Maps (experimenteel)</string>
+    <string name="dset_maps_model_summary">Google Maps schat de accu bij aankomst met een model van de MG4 (snelheid, kou, klimaat) in plaats van het gemiddelde verbruik van de auto.</string>
+    <string name="dset_maps_model_explain">Wat het doet: Google Maps schat de accu op de bestemming aan de hand van een beschrijving van de auto, niet meer van het huidige gemiddelde verbruik. Snelheid, kou en verwarming tellen dan mee.\n\nHoe: DiAuto geeft Maps de rijweerstand van de auto door (rolweerstand, hoger bij kou, en luchtweerstand) en het vermogen van klimaat en elektronica per buitentemperatuur. De servers van Google berekenen de energie van elk deel van de route, met de verwachte snelheid, het verkeer en de hoogteverschillen.\n\nGebruikte gegevens: de versie van de auto (accu-instelling), het accuniveau en de capaciteit, de buitentemperatuur en of het klimaat aan staat. Ze gaan alleen naar je telefoon, zoals nu al het accuniveau.\n\nExperimenteel: de waarden zijn schattingen, de voorspelling kan afwijken tot ze gekalibreerd zijn.</string>
+    <string name="dset_maps_model_enable">Aanzetten</string>
+</resources>

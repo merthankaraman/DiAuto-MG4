@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Model de consum pentru Maps (experimental)</string>
+    <string name="dset_maps_model_summary">Google Maps estimează bateria la sosire cu un model al MG4 (viteză, frig, climatizare) în loc de consumul mediu al mașinii.</string>
+    <string name="dset_maps_model_explain">Ce face: Google Maps estimează bateria rămasă la destinație pe baza unei descrieri a mașinii, nu a consumului mediu de moment. Viteza, frigul și încălzirea contează astfel.\n\nCum: DiAuto transmite către Maps rezistența mașinii la înaintare (rulare, mai mare la frig, și aer) și puterea climatizării și a electronicii în funcție de temperatura exterioară. Serverele Google calculează energia fiecărei porțiuni a traseului, cu viteza prevăzută, traficul și diferențele de nivel.\n\nDate folosite: versiunea mașinii (setarea bateriei), nivelul și capacitatea bateriei, temperatura exterioară și dacă climatizarea este pornită. Ajung doar la telefonul dvs., ca nivelul bateriei azi.\n\nExperimental: valorile sunt estimări, prognoza poate fi decalată până la calibrare.</string>
+    <string name="dset_maps_model_enable">Activează</string>
+</resources>

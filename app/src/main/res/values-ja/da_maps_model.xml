@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">マップ用の消費モデル（試験的）</string>
+    <string name="dset_maps_model_summary">Google マップが、車の平均電費ではなく MG4 のモデル（速度、寒さ、空調）で到着時のバッテリー残量を予測します。</string>
+    <string name="dset_maps_model_explain">内容：Google マップは、その時点の平均電費ではなく車の特性から、目的地でのバッテリー残量を予測します。速度、寒さ、暖房が考慮されます。\n\n仕組み：DiAuto は車の走行抵抗（転がり抵抗、寒いと増加、空気抵抗）と、外気温ごとの空調と電装品の電力をマップに伝えます。Google のサーバーが、予想速度、渋滞、高低差を使ってルートの区間ごとのエネルギーを計算します。\n\n使用データ：車のバージョン（バッテリー設定）、バッテリー残量と容量、外気温、空調のオン／オフ。現在のバッテリー残量と同じく、お使いのスマートフォンにだけ送られます。\n\n試験的：値は推定値で、調整されるまで予測がずれることがあります。</string>
+    <string name="dset_maps_model_enable">オンにする</string>
+</resources>

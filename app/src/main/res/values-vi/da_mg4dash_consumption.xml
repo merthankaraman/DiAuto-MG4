@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Mức tiêu thụ từ MG4Dash (thử)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps ước tính pin khi đến dựa trên mức tiêu thụ MG4Dash đo theo tốc độ và nhiệt độ, thay vì mức trung bình của xe. Thử nghiệm.</string>
-</resources>

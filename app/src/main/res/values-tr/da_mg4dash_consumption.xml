@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">MG4Dash tüketimi (test)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Haritalar, varıştaki bataryayı aracın ortalaması yerine MG4Dash\'in hıza ve sıcaklığa göre ölçtüğü tüketimle tahmin eder. Deneysel.</string>
-</resources>

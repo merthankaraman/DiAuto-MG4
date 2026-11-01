@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">მოხმარება MG4Dash-დან (ტესტი)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps ჩასვლისას ბატარეას აფასებს MG4Dash-ის მიერ სიჩქარისა და ტემპერატურის მიხედვით გაზომილი მოხმარებით, მანქანის საშუალოს ნაცვლად. ექსპერიმენტული.</string>
-</resources>

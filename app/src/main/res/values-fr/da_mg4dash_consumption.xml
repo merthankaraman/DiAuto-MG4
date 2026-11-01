@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="dset_mg4dash_consumption">Consommation de MG4Dash (test)</string>
-    <string name="dset_mg4dash_consumption_summary">Google Maps estime la batterie à l\'arrivée avec la consommation mesurée par MG4Dash selon la vitesse et la température, au lieu de la moyenne de la voiture. Expérimental.</string>
-</resources>
