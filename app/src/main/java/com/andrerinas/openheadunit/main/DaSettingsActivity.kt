@@ -276,6 +276,7 @@ class DaSettingsActivity : BaseActivity() {
                 .setNegativeButton(R.string.cancel, null)
                 .setOnDismissListener { showTab(selectedTab) }
                 .show()
+                .apply { findViewById<android.widget.TextView>(android.R.id.message)?.textSize = 26f }
         })
         if (com.andrerinas.openheadunit.vehicle.ChargeStopPreheatPolicy.supportedOnThisCar()) {
             row(R.string.dset_preheat, R.string.dset_preheat_summary, yesNo(settings.batteryPreheatBeforeCharger) {

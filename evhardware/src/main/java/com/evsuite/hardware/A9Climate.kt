@@ -82,6 +82,10 @@ internal object A9Climate {
     fun driverTemp(): Int? =
         (get("getDriverTemperature") as? Float)?.takeIf { !it.isNaN() && it > 0f }?.toInt()
 
+    /** Same read as the car's own launcher (getOutSideTemperature, e.g. 13.5). */
+    fun outsideTemp(): Float? =
+        (get("getOutSideTemperature") as? Float)?.takeIf { !it.isNaN() && it > -60f && it < 70f }
+
     // ── Writes ───────────────────────────────────────────────────────────────
 
     fun setPower(on: Boolean): Boolean =
