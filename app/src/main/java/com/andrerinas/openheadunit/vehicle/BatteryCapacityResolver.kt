@@ -13,7 +13,7 @@ import kotlin.math.abs
  *
  * Capacity: the one the car publishes or its battery type, else the battery chosen in MG4 Dash, else
  * the 64 kWh battery: a measurement cannot tell a worn large battery from a small one. State of
- * health: the measured capacity over that usable one, else 100 %. The measurement is DiAuto's own
+ * health: the measured capacity over that usable one, else [DEFAULT_SOH] until it is measured. The measurement is DiAuto's own
  * ([BatteryCapacityMeter]); until it has a sample, MG4 Dash's is read if it is there.
  */
 object BatteryCapacityResolver {
@@ -36,6 +36,9 @@ object BatteryCapacityResolver {
     /** MG4 batteries: nameplate kWh to usable kWh (ev-database). */
     val PACKS = listOf(51 to 50.8f, 64 to 61.7f, 77 to 74.4f)
     const val DEFAULT_PACK = 64
+
+    /** What Maps is told while there is no measurement yet: most cars are not new. */
+    const val DEFAULT_SOH = 95f
 
     fun usableKwh(pack: Int): Float = PACKS.first { it.first == pack }.second
 
@@ -98,7 +101,7 @@ object BatteryCapacityResolver {
         val (soh, sohSource) = when {
             manualSohPercent != null -> manualSohPercent.coerceIn(1f, 100f) to Source.MANUAL
             measured != null -> (measured / net * 100f).coerceIn(1f, 100f) to Source.MEASURED
-            else -> 100f to Source.DEFAULT
+            else -> DEFAULT_SOH to Source.DEFAULT
         }
         return Resolved(net, netSource, packOf(net), soh, sohSource)
     }

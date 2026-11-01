@@ -51,12 +51,12 @@ class BatteryCapacityResolverTest {
     }
 
     @Test
-    fun `without any source the 64 kWh battery and 100 percent are used`() {
+    fun `without any source the 64 kWh battery and 95 percent are used`() {
         val r = resolve()
         assertEquals(61.7f, r.netKwh, 0.001f)
         assertEquals(Source.DEFAULT, r.netSource)
         assertEquals(64, r.pack)
-        assertEquals(100f, r.sohPercent, 0.001f)
+        assertEquals(95f, r.sohPercent, 0.001f)
         assertEquals(Source.DEFAULT, r.sohSource)
     }
 
@@ -92,11 +92,11 @@ class BatteryCapacityResolverTest {
     }
 
     @Test
-    fun `MG4 Dash without a measurement leaves the health at 100 percent`() {
+    fun `MG4 Dash without a measurement leaves the default health`() {
         val dash = Mg4DashBattery.Reading(pack = 77, packChosen = true, measuredKwh = null)
         val r = resolve(dash = dash)
         assertEquals(74.4f, r.netKwh, 0.001f)
-        assertEquals(100f, r.sohPercent, 0.001f)
+        assertEquals(95f, r.sohPercent, 0.001f)
         assertEquals(Source.DEFAULT, r.sohSource)
     }
 
