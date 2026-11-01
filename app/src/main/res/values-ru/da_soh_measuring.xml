@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_soh_measuring">Идёт измерение (%1$d из %2$d %%)</string>
+</resources>

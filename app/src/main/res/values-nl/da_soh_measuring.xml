@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_soh_measuring">Wordt gemeten (%1$d van %2$d %%)</string>
+</resources>

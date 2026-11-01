@@ -473,10 +473,11 @@ internal fun batterySohText(context: Context, resolved: BatteryCapacityResolver.
                 String.format(java.util.Locale.getDefault(), "%.1f", resolved.sohPercent)),
             context.getString(R.string.battery_soh_source_measured),
         )
+        // No figure to show yet: Maps still gets the battery's full usable capacity meanwhile.
         else -> context.getString(
-            R.string.battery_auto_value,
-            context.getString(R.string.battery_value_percent, "100"),
-            context.getString(R.string.battery_soh_source_default),
+            R.string.battery_soh_measuring,
+            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.progressPercent(context).toInt(),
+            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.MIN_DROP.toInt(),
         )
     }
 
