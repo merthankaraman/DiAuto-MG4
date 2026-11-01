@@ -27,6 +27,15 @@ class Mg4MapsEnergyModelTest {
     }
 
     @Test
+    fun `only versions with a heat pump get its table`() {
+        val off = Mg4MapsEnergyModel.TestOverrides()
+        assertEquals(Mg4MapsEnergyModel.AUX_W, Mg4MapsEnergyModel.build(Mg4Variant.STANDARD, 0f, true, off).aux)
+        assertEquals(Mg4MapsEnergyModel.AUX_W, Mg4MapsEnergyModel.build(Mg4Variant.COMFORT, 0f, true, off).aux)
+        assertEquals(Mg4MapsEnergyModel.AUX_HEAT_PUMP_W, Mg4MapsEnergyModel.build(Mg4Variant.LONG_RANGE, 0f, true, off).aux)
+        assertEquals(Mg4MapsEnergyModel.AUX_HEAT_PUMP_W, Mg4MapsEnergyModel.build(Mg4Variant.EXTENDED_RANGE, 0f, true, off).aux)
+    }
+
+    @Test
     fun `test values replace the live ones`() {
         val t = Mg4MapsEnergyModel.TestOverrides(auxW = 2500, aScale = 2f, cScale = 0.5f, tempC = 20f)
         val m = Mg4MapsEnergyModel.build(Mg4Variant.STANDARD, -5f, false, t)

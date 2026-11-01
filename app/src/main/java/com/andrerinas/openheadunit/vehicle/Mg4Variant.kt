@@ -19,8 +19,10 @@ enum class Mg4Variant(
     STANDARD("standard", "Standard 51 kWh", 50.8f, 1655, 6_600, intArrayOf(
         20, 76, 81, 85, 85, 86, 84, 79, 75, 72, 70, 67, 63, 51, 42, 41, 27, 24, 15, 12, 10,
     )),
-    /** Comfort / Luxury, and the XPower: same 64 kWh pack and charging speed. */
-    LONG_RANGE("long_range", "Comfort / Luxury / XPower 64 kWh", 61.7f, 1765, 11_000, NMC_CURVE),
+    /** Luxury and XPower: same 64 kWh pack and charging speed. */
+    LONG_RANGE("long_range", "Luxury / XPower 64 kWh", 61.7f, 1765, 11_000, NMC_CURVE),
+    /** Same pack, no heat pump. Chosen by hand: the car does not tell it from a Luxury. */
+    COMFORT("comfort", "Comfort 64 kWh", 61.7f, 1765, 11_000, NMC_CURVE),
     EXTENDED_RANGE("extended_range", "Extended Range 77 kWh", 74.4f, 1823, 11_000, NMC_CURVE);
 
     /** Peak DC power, W. */

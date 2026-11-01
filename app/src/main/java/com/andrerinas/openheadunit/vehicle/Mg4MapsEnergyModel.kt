@@ -30,13 +30,23 @@ object Mg4MapsEnergyModel {
         -10f to 2_500, 0f to 1_800, 10f to 900, 20f to 400, 30f to 800, 35f to 1_200,
     )
 
+    /** The same with a heat pump: heating divided by an estimated COP of 1.5 / 2 / 2.5, A/C unchanged. */
+    val AUX_HEAT_PUMP_W: List<Pair<Float, Int>> = listOf(
+        -10f to 1_800, 0f to 1_100, 10f to 600, 20f to 400, 30f to 800, 35f to 1_200,
+    )
+
+    /** Standard and Comfort heat with a resistance, the others with a heat pump. */
+    fun hasHeatPump(variant: Mg4Variant): Boolean =
+        variant != Mg4Variant.STANDARD && variant != Mg4Variant.COMFORT
+
     /** The outside temperature sent is held until it moves this much, so Maps does not re-route for nothing. */
     const val TEMP_HYSTERESIS_C = 3f
 
-    /** Kerb weight + 75 kg driver; the 64 kWh pack is taken as a Luxury (Comfort and XPower within 30 N). */
+    /** Kerb weight + 75 kg driver; the XPower is taken as a Luxury (within 15 N). */
     fun massKg(variant: Mg4Variant): Int = when (variant) {
         Mg4Variant.STANDARD -> 1_710
         Mg4Variant.LONG_RANGE -> 1_747
+        Mg4Variant.COMFORT -> 1_723
         Mg4Variant.EXTENDED_RANGE -> 1_823
     }
 
@@ -80,6 +90,7 @@ object Mg4MapsEnergyModel {
         val aux = when {
             test.auxW != null -> AUX_W.map { it.first to test.auxW }
             climate == false -> AUX_W.map { it.first to ELECTRONICS_W }
+            hasHeatPump(variant) -> AUX_HEAT_PUMP_W
             else -> AUX_W
         }
         return Model(a(variant, temp) * test.aScale, C * test.cScale, temp, climate, aux)
