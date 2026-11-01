@@ -188,7 +188,7 @@ public final class OtaController {
                 activity,
                 OtaDialogs.withDataWarning(
                         activity.getString(R.string.ota_data_warning, size),
-                        activity.getString(R.string.ota_dialog_install_message, info.latestVersion, size)),
+                        activity.getString(R.string.ota_dialog_install_short, info.latestVersion)),
                 activity.getString(R.string.ota_action_install_update),
                 () -> startDownload(info)
         );

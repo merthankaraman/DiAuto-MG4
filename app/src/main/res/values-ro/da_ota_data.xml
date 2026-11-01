@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ota_data_warning">Această actualizare descarcă %1$s de date, care pot consuma abonamentul mașinii. Dacă se poate, conectați mai întâi mașina la o rețea Wi-Fi în mod client sau actualizați prin USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s va fi descărcat și instalat. Apoi DiAuto repornește și Android Auto se întrerupe câteva secunde.</string>
 </resources>

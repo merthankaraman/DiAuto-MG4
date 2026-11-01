@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ota_data_warning">Bu güncelleme %1$s veri indirir ve aracın veri paketini kullanabilir. Mümkünse önce aracı istemci olarak bir Wi-Fi ağına bağlayın veya USB ile güncelleyin.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s indirilip kurulacak. Ardından DiAuto yeniden başlar ve Android Auto birkaç saniye kesilir.</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ota_data_warning">此更新將下載 %1$s 資料，可能消耗車輛的數據方案。如有可能，請先將車輛作為用戶端連線到 Wi-Fi 網路，或透過 USB 更新。</string>
+    <string name="ota_dialog_install_short">將下載並安裝 DiAuto %1$s。之後 DiAuto 會重新啟動，Android Auto 會中斷幾秒鐘。</string>
 </resources>

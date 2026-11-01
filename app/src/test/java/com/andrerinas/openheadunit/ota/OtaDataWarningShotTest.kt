@@ -31,7 +31,7 @@ class OtaDataWarningShotTest {
         val root = LayoutInflater.from(ContextThemeWrapper(context, R.style.AppTheme)).inflate(R.layout.dialog_ota_refresh, null)
         val text = OtaDialogs.withDataWarning(
             context.getString(R.string.ota_data_warning, "31.3 MB"),
-            context.getString(R.string.ota_dialog_install_message, "2.2.1-beta30", "31.3 MB"))
+            context.getString(R.string.ota_dialog_install_short, "2.2.1-beta30"))
         root.findViewById<TextView>(R.id.tvOtaRefreshMessage).text = text
         root.findViewById<TextView>(R.id.btnOtaRefresh).text = context.getString(R.string.ota_action_install_update)
         root.measure(View.MeasureSpec.makeMeasureSpec(540, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))

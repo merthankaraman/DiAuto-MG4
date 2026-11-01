@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ota_data_warning">Tato aktualizace stáhne %1$s dat, která mohou jít z datového tarifu auta. Pokud je to možné, nejprve připojte auto k síti Wi-Fi jako klienta, nebo aktualizujte přes USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s se stáhne a nainstaluje. Poté se DiAuto restartuje a Android Auto se na několik sekund přeruší.</string>
 </resources>
