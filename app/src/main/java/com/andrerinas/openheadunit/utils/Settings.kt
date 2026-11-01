@@ -201,7 +201,7 @@ class Settings(private val context: Context) {
      * New key: installs that had the old always-on default start with logs off.
      */
     var exporterCaptureEnabled: Boolean
-        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, false)
+        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, true)
         set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED_V2, value).apply() }
     val logLevel: Int get() = exporterLogLevel.logLevel
 
@@ -1218,7 +1218,7 @@ class Settings(private val context: Context) {
         /** Persist whether log capture should be active across restarts. */
         const val KEY_LOG_CAPTURE_ENABLED = "log-capture-enabled-v2"
         /** Logs off by default from 2.2.1-beta25 on (the earlier key defaulted to on). */
-        const val KEY_LOG_CAPTURE_ENABLED_V2 = "log-capture-enabled-v3"
+        const val KEY_LOG_CAPTURE_ENABLED_V2 = "log-capture-enabled-v4"
 
         const val KEY_MEDIA_VOLUME_OFFSET = "media-volume-offset"
         const val KEY_ASSISTANT_VOLUME_OFFSET = "assistant-volume-offset"

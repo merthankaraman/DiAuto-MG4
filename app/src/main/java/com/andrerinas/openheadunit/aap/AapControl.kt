@@ -333,6 +333,7 @@ internal class AapControlService(
 
 
     private fun serviceDiscoveryRequest(request: Control.ServiceDiscoveryRequest): Int {
+        AppLog.hide(request.phoneName)
         AppLog.i("Service Discovery Request: %s", request.phoneName)
 
         val msg = ServiceDiscoveryResponse(context)

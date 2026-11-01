@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Naplózás</string>
-    <string name="dset_log_record_summary">Alapból kikapcsolva. Hiba kereséséhez kapcsolja be: a DiAuto ekkor naplót ír, amelyet exportálhat és GitHub-issue-hoz csatolhat.</string>
+    <string name="dset_log_record_summary">Alapból bekapcsolva, hiba esetén GitHub-issue-hoz csatolható. Kis méretű, úti célok és nevek nélkül. Kapcsolja ki, ha semmit sem szeretne íratni.</string>
 </resources>

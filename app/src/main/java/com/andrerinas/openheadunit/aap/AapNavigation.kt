@@ -78,7 +78,7 @@ class AapNavigation(
                             "side=${if (detail.hasSide()) detail.side.name else "-"} " +
                             "turnNumber=${if (detail.hasTurnNumber()) detail.turnNumber else "-"} " +
                             "turnAngle=${if (detail.hasTurnAngle()) detail.turnAngle else "-"} " +
-                            "imageBytes=${if (detail.hasImage()) detail.image.size() else 0} road=${detail.road}"
+                            "imageBytes=${if (detail.hasImage()) detail.image.size() else 0}"
                     )
                     snapshot.nextTurnDetail = AapNavigationHelper.TimedMessage(detail, helper.nowElapsedRealtimeMs())
                     val road = detail.road.takeIf { it.isNotBlank() }
@@ -87,7 +87,7 @@ class AapNavigation(
                     }
                     if (AppLog.LOG_DEBUG) {
                         AppLog.d(
-                            "Nav: NextTurnDetail road=${detail.road} " +
+                            "Nav: NextTurnDetail " +
                                     "hasNextTurn=${detail.hasNextTurn()} nextTurn=${detail.nextTurn}"
                         )
                     }
@@ -133,13 +133,8 @@ class AapNavigation(
                             "exitNumber=${if (maneuver?.hasRoundaboutExitNumber() == true) maneuver.roundaboutExitNumber else "-"} " +
                             "exitAngle=${if (maneuver?.hasRoundaboutExitAngle() == true) maneuver.roundaboutExitAngle else "-"}"
                     )
-                    // Which stops the phone names, and how (charging stops for battery preheating).
-                    logOnChange(
-                        "destinations",
-                        "${state.destinationsCount}: " + state.destinationsList.joinToString(" | ") {
-                            if (it.hasAddress()) it.address.take(40) else "-"
-                        }
-                    )
+                    // How many stops the phone names, never where: log files are posted on GitHub.
+                    logOnChange("destinations", "${state.destinationsCount}")
                     snapshot.navigationState = AapNavigationHelper.TimedMessage(state, helper.nowElapsedRealtimeMs())
                     val firstStepRoad = state.stepsList.firstOrNull()
                         ?.takeIf { it.hasRoad() && it.road.hasName() }

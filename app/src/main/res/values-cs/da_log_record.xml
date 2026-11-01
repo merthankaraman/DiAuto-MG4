@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Zaznamenávat protokoly</string>
-    <string name="dset_log_record_summary">Ve výchozím stavu vypnuto. Zapněte pro diagnostiku problému: DiAuto pak zapisuje protokol k exportu a připojení k issue na GitHubu.</string>
+    <string name="dset_log_record_summary">Ve výchozím stavu zapnuto, k připojení k issue na GitHubu při problému. Malé, bez cílů a jmen. Vypnutím se nezapisuje nic.</string>
 </resources>

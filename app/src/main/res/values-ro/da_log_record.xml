@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Înregistrează jurnale</string>
-    <string name="dset_log_record_summary">Dezactivat implicit. Activați pentru a diagnostica o problemă: DiAuto scrie un jurnal de exportat și atașat la un issue GitHub.</string>
+    <string name="dset_log_record_summary">Activat implicit, pentru a fi atașate la un issue GitHub dacă apare o problemă. Mici, fără destinații sau nume. Dezactivați pentru a nu scrie nimic.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Record logs</string>
-    <string name="dset_log_record_summary">Off by default. Switch on to diagnose a problem: DiAuto then writes a log you can export and attach to a GitHub issue.</string>
+    <string name="dset_log_record_summary">On by default, to send with a GitHub issue if there is a problem. Small, no destinations or names. Switch it off to write nothing.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Ghi nhật ký</string>
-    <string name="dset_log_record_summary">Mặc định tắt. Bật để chẩn đoán sự cố: DiAuto sẽ ghi nhật ký để bạn xuất và đính kèm vào issue trên GitHub.</string>
+    <string name="dset_log_record_summary">Mặc định bật, để đính kèm vào issue trên GitHub khi có sự cố. Dung lượng nhỏ, không có điểm đến hay tên. Tắt để không ghi gì.</string>
 </resources>

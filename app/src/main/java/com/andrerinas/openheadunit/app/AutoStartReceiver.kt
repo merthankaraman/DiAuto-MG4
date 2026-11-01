@@ -86,6 +86,7 @@ class AutoStartReceiver : BroadcastReceiver() {
             } catch (_: SecurityException) {
                 null
             }
+            AppLog.hide(name)
             AppLog.i("BT Device connected: ${name ?: "unnamed"} ($address)")
 
             if (targetMacs.contains(address)) {

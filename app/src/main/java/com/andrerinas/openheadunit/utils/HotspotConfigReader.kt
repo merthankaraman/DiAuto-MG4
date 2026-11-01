@@ -44,6 +44,8 @@ object HotspotConfigReader {
                         val rawSsid = getSsidMethod.invoke(softApConfig) as? String
                         val rawPass = getPassphraseMethod.invoke(softApConfig) as? String
                         val ssid = unquote(rawSsid)
+                    AppLog.hide(ssid)
+                        AppLog.hide(ssid)
                         val pass = unquote(rawPass)
                         if (ssid.isNotEmpty()) {
                             AppLog.i(
@@ -69,6 +71,7 @@ object HotspotConfigReader {
                     val rawSsid = ssidField.get(wifiConfig) as? String
                     val rawPass = preSharedKeyField.get(wifiConfig) as? String
                     val ssid = unquote(rawSsid)
+                    AppLog.hide(ssid)
                     val pass = unquote(rawPass)
                     if (ssid.isNotEmpty() || pass.isNotEmpty()) {
                         AppLog.i(

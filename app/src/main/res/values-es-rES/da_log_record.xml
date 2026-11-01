@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Guardar registros</string>
-    <string name="dset_log_record_summary">Desactivado por defecto. Actívalo para diagnosticar un problema: DiAuto escribe entonces un registro que puedes exportar y adjuntar a una issue de GitHub.</string>
+    <string name="dset_log_record_summary">Activado por defecto, para adjuntarlos a una issue de GitHub si hay un problema. Ocupan poco, sin destinos ni nombres. Desactívalo para no escribir nada.</string>
 </resources>

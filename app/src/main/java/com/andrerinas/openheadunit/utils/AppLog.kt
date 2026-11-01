@@ -161,7 +161,8 @@ object AppLog {
     @Volatile private var currentLogSource: Settings.LogSource = Settings.LogSource.LOGCAT
 
     fun init(settings: Settings?, context: Context? = null) {
-        // Nothing is written to storage unless the driver switched logs on.
+        hidePairedPhones()
+        // Nothing is written to storage if the driver switched logs off.
         DiagnosticJournal.enabled = settings?.exporterCaptureEnabled == true
         if (DiagnosticJournal.enabled) context?.let { DiagnosticJournal.init(it.applicationContext) }
         // Cache the level rather than resolving it per call: every call site below, and every
@@ -274,8 +275,8 @@ object AppLog {
     }
 
     private fun log(priority: Int, msg: String) {
-        DiagnosticJournal.record(priority, msg)
-        LOGGER.println(priority, TAG, if (LOGGER is Logger.Android) msg else maskAddresses(msg))
+        DiagnosticJournal.record(priority, maskPrivate(msg))
+        LOGGER.println(priority, TAG, if (LOGGER is Logger.Android) msg else maskPrivate(msg))
     }
 
     private val macAddress = Regex("(?i)\\b((?:[0-9a-f]{2}:){2}[0-9a-f]{2}):(?:[0-9a-f]{2}:){2}[0-9a-f]{2}\\b")
@@ -286,12 +287,34 @@ object AppLog {
      */
     internal fun maskAddresses(msg: String): String = msg.replace(macAddress, "$1:XX:XX:XX")
 
+    private val ssidValue = Regex("(?i)(ssid\\s*[=:]\\s*)(?!false\\b|true\\b)[^,\\s]+")
+    private val hiddenValues = java.util.concurrent.CopyOnWriteArraySet<String>()
+
+    /** A name that must not reach the log files, a phone's or a Wi-Fi network's. */
+    fun hide(value: String?) {
+        if (value != null && value.length >= MIN_HIDDEN_LENGTH) hiddenValues.add(value)
+    }
+
+    /** What log files may keep of a line: they are on shared storage, and posted on GitHub. */
+    internal fun maskPrivate(msg: String): String {
+        var masked = maskAddresses(msg).replace(ssidValue, "$1[hidden]")
+        for (value in hiddenValues) masked = masked.replace(value, "[hidden]")
+        return masked
+    }
+
+    @android.annotation.SuppressLint("MissingPermission")
+    private fun hidePairedPhones() {
+        runCatching { android.bluetooth.BluetoothAdapter.getDefaultAdapter()?.bondedDevices?.forEach { hide(it.name) } }
+    }
+
+    private const val MIN_HIDDEN_LENGTH = 3
+
     private fun isLoggable(priority: Int): Boolean = priority >= LOG_LEVEL
 
     private fun loge(message: String, tr: Throwable?) {
         val trace = if (LOGGER is Logger.Android) Log.getStackTraceString(tr) else ""
-        DiagnosticJournal.record(Log.ERROR, message)
-        LOGGER.println(Log.ERROR, TAG, message + '\n' + trace)
+        DiagnosticJournal.record(Log.ERROR, maskPrivate(message))
+        LOGGER.println(Log.ERROR, TAG, (if (LOGGER is Logger.Android) message else maskPrivate(message)) + '\n' + trace)
     }
 
     private fun closeAppLogFileLogger() {

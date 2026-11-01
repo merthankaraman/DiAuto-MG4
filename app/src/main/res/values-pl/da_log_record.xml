@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Zapisuj dzienniki</string>
-    <string name="dset_log_record_summary">Domyślnie wyłączone. Włącz, aby zdiagnozować problem: DiAuto zapisze dziennik do wyeksportowania i dołączenia do zgłoszenia na GitHubie.</string>
+    <string name="dset_log_record_summary">Domyślnie włączone, do dołączenia do zgłoszenia na GitHubie w razie problemu. Małe, bez celów podróży i nazw. Wyłącz, aby nic nie zapisywać.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_log_record">Registra i log</string>
-    <string name="dset_log_record_summary">Disattivato per impostazione predefinita. Attivalo per diagnosticare un problema: DiAuto scrive un log da esportare e allegare a una issue GitHub.</string>
+    <string name="dset_log_record_summary">Attivo per impostazione predefinita, da allegare a una issue GitHub in caso di problemi. Occupano poco, senza destinazioni né nomi. Disattivalo per non scrivere nulla.</string>
 </resources>

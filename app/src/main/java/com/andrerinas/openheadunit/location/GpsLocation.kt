@@ -90,7 +90,7 @@ class GpsLocation constructor(private val context: Context): LocationListener {
                 LocationManager.GPS_PROVIDER, UPDATE_INTERVAL_MS, 0f, this
             )
             val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            AppLog.i("Last known location:  ${location?.toString() ?: "Unknown"}")
+            AppLog.i("Last known location: ${if (location != null) "known" else "unknown"}")
             requested = true
             subscribedAtMs = SystemClock.elapsedRealtime()
             handler.postDelayed(periodicResend, RESEND_INTERVAL_MS)
