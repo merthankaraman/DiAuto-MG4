@@ -1,3 +1,8 @@
+# DiAuto MG4+ 2.2.1-beta27
+
+- The battery version no longer changes according to the capacity measured while driving: it comes from the car, or from your choice in *Settings → Car*. The measurement only gives the state of health of that battery.
+- The log now says why the battery type could not be read from the car, when that happens.
+
 # DiAuto MG4+ 2.2.1-beta26
 
 - **Consumption model for Google Maps (experimental, off by default, *Settings → Car*):** Maps gets a description of the car (rolling and air resistance, outside temperature, climate power) instead of its average consumption, so speed, cold and heating count. A window explains it when you switch it on. It replaces the test option that read MG4 Dash's consumption map.

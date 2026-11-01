@@ -30,23 +30,23 @@ class BatteryCapacityResolverTest {
     }
 
     @Test
-    fun `a measured capacity picks the battery and its health`() {
-        // Issue #8: a Standard 51 kWh at 92 %, measured 46.7 kWh.
-        val r = resolve(measured = 46.7f)
+    fun `a measured capacity gives the health of the known battery, never another battery`() {
+        // A Standard 51 kWh known from its type code, measured 46.7 kWh.
+        val r = resolve(type = 16, measured = 46.7f)
         assertEquals(51, r.pack)
-        assertEquals(Source.MEASURED, r.netSource)
         assertEquals(Source.MEASURED, r.sohSource)
         assertEquals(91.9f, r.sohPercent, 0.1f)
-        // A 64 kWh at 85 %.
-        assertEquals(64, resolve(measured = 52.4f).pack)
-        // A 77 kWh at 95 %.
-        assertEquals(77, resolve(measured = 70.7f).pack)
+        // The car says nothing (issue #8): the battery stays the default one, what Maps gets is still the measurement.
+        val unknown = resolve(measured = 46.7f)
+        assertEquals(64, unknown.pack)
+        assertEquals(Source.DEFAULT, unknown.netSource)
+        assertEquals(46.7f, unknown.effectiveKwh, 0.01f)
     }
 
     @Test
     fun `DiAuto's own measurement wins over MG4 Dash's, and the car over both`() {
         val dash = Mg4DashBattery.Reading(pack = 51, packChosen = false, measuredKwh = 44f)
-        assertEquals(46.7f / 50.8f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
+        assertEquals(46.7f / 61.7f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
         assertEquals(Source.CAR, resolve(car = 64f, measured = 46.7f).netSource)
     }
 
@@ -81,14 +81,14 @@ class BatteryCapacityResolverTest {
     }
 
     @Test
-    fun `MG4 Dash's measurement stands in when DiAuto has none, shown as measured`() {
-        val dash = Mg4DashBattery.Reading(pack = 51, packChosen = false, measuredKwh = 47f)
+    fun `MG4 Dash's measurement stands in when DiAuto has none, its chosen battery when the car says nothing`() {
+        val dash = Mg4DashBattery.Reading(pack = 51, packChosen = true, measuredKwh = 47f)
         val r = resolve(dash = dash)
         assertEquals(50.8f, r.netKwh, 0.001f)
-        assertEquals(Source.MEASURED, r.netSource)
         assertEquals(Source.MEASURED, r.sohSource)
         assertEquals(51, r.pack)
         assertEquals(47f, r.effectiveKwh, 0.01f)
+        assertEquals(64, resolve(dash = dash.copy(packChosen = false)).pack)
     }
 
     @Test

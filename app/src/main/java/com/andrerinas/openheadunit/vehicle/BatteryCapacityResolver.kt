@@ -11,9 +11,10 @@ import kotlin.math.abs
  * Usable capacity (when new) and state of health given to Google Maps, found automatically
  * unless the driver set them in Settings.
  *
- * Capacity: the one the car publishes, else the battery the measurement points to, else the 64 kWh
- * battery. State of health: the measured capacity over the usable one, else 100 %. The measurement
- * is DiAuto's own ([BatteryCapacityMeter]); until it has a sample, MG4 Dash's is read if it is there.
+ * Capacity: the one the car publishes or its battery type, else the battery chosen in MG4 Dash, else
+ * the 64 kWh battery: a measurement cannot tell a worn large battery from a small one. State of
+ * health: the measured capacity over that usable one, else 100 %. The measurement is DiAuto's own
+ * ([BatteryCapacityMeter]); until it has a sample, MG4 Dash's is read if it is there.
  */
 object BatteryCapacityResolver {
     private const val TAG = "DiAuto-MG4"
@@ -91,8 +92,7 @@ object BatteryCapacityResolver {
             manualNetKwh != null -> manualNetKwh.coerceIn(1f, 200f) to Source.MANUAL
             car != null -> car to Source.CAR
             typePack != null -> usableKwh(typePack) to Source.CAR
-            mg4Dash?.packChosen == true && mg4Dash.pack != null -> usableKwh(mg4Dash.pack) to Source.MEASURED
-            measured != null -> usableKwh(packForMeasured(measured)) to Source.MEASURED
+            mg4Dash?.packChosen == true && mg4Dash.pack != null -> usableKwh(mg4Dash.pack) to Source.DEFAULT
             else -> usableKwh(DEFAULT_PACK) to Source.DEFAULT
         }
         val (soh, sohSource) = when {

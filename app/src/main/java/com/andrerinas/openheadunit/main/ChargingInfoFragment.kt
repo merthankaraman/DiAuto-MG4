@@ -457,12 +457,8 @@ internal fun batteryCapacityText(context: Context, resolved: BatteryCapacityReso
 internal fun batteryCapacitySource(context: Context, resolved: BatteryCapacityResolver.Resolved): String =
     when (resolved.netSource) {
         BatteryCapacityResolver.Source.CAR -> context.getString(R.string.battery_source_car)
-        BatteryCapacityResolver.Source.MEASURED -> context.getString(
-            R.string.battery_source_measured_pack, resolved.pack ?: BatteryCapacityResolver.DEFAULT_PACK)
         else -> context.getString(
-            R.string.battery_source_measuring, BatteryCapacityResolver.DEFAULT_PACK,
-            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.progressPercent(context).toInt(),
-            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.MIN_DROP.toInt())
+            R.string.battery_source_default_pack, resolved.pack ?: BatteryCapacityResolver.DEFAULT_PACK)
     }
 
 internal fun batterySohText(context: Context, resolved: BatteryCapacityResolver.Resolved): String =
