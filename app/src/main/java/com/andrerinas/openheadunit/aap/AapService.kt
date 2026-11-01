@@ -1431,7 +1431,11 @@ class AapService : Service(), UsbReceiver.Listener {
                     nativeAaHandshakeManager?.stop()
                     serviceScope.launch {
                         delay(1500) // Give hardware time to settle before re-initializing P2P
-                        if (!preemptingWirelessForUsb && !isSwitchingToAccessory.get()) {
+                        if (commManager.isBusy) {
+                            // The phone reconnects within ~300 ms; re-initialising now would tear
+                            // down the Bluetooth handshake server under the new session.
+                            AppLog.i("AapService: a new session is already up - skipping the delayed wireless re-init")
+                        } else if (!preemptingWirelessForUsb && !isSwitchingToAccessory.get()) {
                             initWifiMode(force = true)
                         }
                     }
