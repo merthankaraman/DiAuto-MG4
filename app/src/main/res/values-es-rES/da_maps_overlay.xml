@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Cifras del modelo de Maps en pantalla</string>
+    <string name="dset_maps_overlay_summary">Muestra sobre Android Auto lo que prevé el modelo y lo que consume realmente la batería, para viajes de prueba.</string>
+</resources>

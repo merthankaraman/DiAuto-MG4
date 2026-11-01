@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">지도 모델 수치를 화면에 표시</string>
+    <string name="dset_maps_overlay_summary">시험 주행용으로 모델의 예측과 실제 배터리 소비를 Android Auto 위에 표시합니다.</string>
+</resources>

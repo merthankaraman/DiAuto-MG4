@@ -267,6 +267,11 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("maps-energy-model", false)
         set(value) { prefs.edit().putBoolean("maps-energy-model", value).apply() }
 
+    /** Test mode: live figures of the Maps energy model over the projection (vehicle/MapsModelTrip). */
+    var mapsModelOverlay: Boolean
+        get() = testMode && prefs.getBoolean("maps-model-overlay", false)
+        set(value) { prefs.edit().putBoolean("maps-model-overlay", value).apply() }
+
     /** The car access point's 5 GHz channel: 0 automatic, or 36, 40, 44, 48 (see WifiChannelPicker). */
     var wifiChannel: Int
         get() = prefs.getInt("wifi-channel", 0).let { if (it in WifiChannelPicker.CHANNELS) it else 0 }

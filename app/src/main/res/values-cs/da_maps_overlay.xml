@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Údaje modelu pro Mapy na obrazovce</string>
+    <string name="dset_maps_overlay_summary">Zobrazí přes Android Auto, co model očekává a co baterie skutečně spotřebuje, pro zkušební jízdy.</string>
+</resources>

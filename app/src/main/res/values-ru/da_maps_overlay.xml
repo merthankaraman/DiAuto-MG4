@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Данные модели Карт на экране</string>
+    <string name="dset_maps_overlay_summary">Показывает поверх Android Auto прогноз модели и реальный расход батареи, для пробных поездок.</string>
+</resources>

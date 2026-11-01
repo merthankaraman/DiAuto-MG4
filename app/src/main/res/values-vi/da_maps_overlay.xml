@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Hiện số liệu mô hình Maps trên màn hình</string>
+    <string name="dset_maps_overlay_summary">Hiển thị trên Android Auto dự đoán của mô hình và mức pin thực tế tiêu thụ, cho các chuyến chạy thử.</string>
+</resources>

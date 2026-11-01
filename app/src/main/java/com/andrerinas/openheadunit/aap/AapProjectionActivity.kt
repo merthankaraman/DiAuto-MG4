@@ -961,6 +961,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     }
 
     override fun onPause() {
+        performanceHandler.removeCallbacks(mapsModelOverlayRunnable)
         isForeground = false
         AppLog.i("AapProjectionActivity: onPause")
         com.allgo.app.androidauto.RelayState.screen(false)
@@ -994,6 +995,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     }
 
     override fun onResume() {
+        startMapsModelOverlay()
         super.onResume()
         isForeground = true
         AppLog.i("AapProjectionActivity: onResume")
@@ -2031,6 +2033,40 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
 
         videoDecoder.onFpsChanged = fpsListener
         startPerformanceOverlayUpdates()
+    }
+
+    /** Debug figures of the Maps energy model, top right; touches go through to the projection. */
+    private var mapsModelOverlayView: android.widget.TextView? = null
+    private val mapsModelOverlayRunnable = object : Runnable {
+        override fun run() {
+            val text = com.andrerinas.openheadunit.vehicle.MapsModelTrip.overlayText()
+            mapsModelOverlayView?.let { it.text = text; it.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE }
+            performanceHandler.postDelayed(this, 1000L)
+        }
+    }
+
+    private fun startMapsModelOverlay() {
+        performanceHandler.removeCallbacks(mapsModelOverlayRunnable)
+        if (!App.provide(this).settings.mapsModelOverlay) {
+            mapsModelOverlayView?.visibility = View.GONE
+            return
+        }
+        if (mapsModelOverlayView == null) {
+            mapsModelOverlayView = android.widget.TextView(this).apply {
+                setTextColor(android.graphics.Color.WHITE)
+                setBackgroundColor(0xB0000000.toInt())
+                textSize = 15f
+                typeface = android.graphics.Typeface.MONOSPACE
+                setPadding(16, 10, 16, 10)
+                isClickable = false
+                isFocusable = false
+                visibility = View.GONE
+            }
+            addContentView(mapsModelOverlayView, android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                android.view.Gravity.TOP or android.view.Gravity.END))
+        }
+        mapsModelOverlayRunnable.run()
     }
 
     private fun startPerformanceOverlayUpdates() {

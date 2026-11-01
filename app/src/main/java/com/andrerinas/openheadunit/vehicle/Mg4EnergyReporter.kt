@@ -23,6 +23,7 @@ object Mg4EnergyReporter {
 
     /** Outside temperature last put in DiAuto's model (see [Mg4MapsEnergyModel.heldTemp]). */
     @Volatile private var heldTemp: Float? = null
+    @Volatile private var lastModel: Mg4MapsEnergyModel.Model? = null
 
     private val requestedTypes = ConcurrentHashMap.newKeySet<Int>()
     private val vemEverSent = AtomicBoolean(false)
@@ -38,6 +39,7 @@ object Mg4EnergyReporter {
     @Synchronized
     fun bind(transport: AapTransport) {
         transportRef.set(transport)
+        MapsModelTrip.reset()
         // App.onCreate starts the provider only if the profile was already unlocked; a process born
         // during the locked boot never does, and no reading ever reached the phone. A connection
         // means the profile is unlocked, and start() is harmless when it is already running.
@@ -71,10 +73,24 @@ object Mg4EnergyReporter {
         }
     }
 
+    /** For the debug overlay: the last model sent against the battery's real power. */
+    private fun sampleDebugTrip() {
+        val settings = App.instance?.let { App.provide(it).settings } ?: return
+        if (!settings.mapsModelOverlay) return
+        val model = lastModel ?: return
+        val snap = Mg4EnergyProvider.snapshot() ?: return
+        runCatching {
+            MapsModelTrip.sample(SystemClock.elapsedRealtime(), model,
+                com.evsuite.hardware.EVHardware.getVehicleSpeedKmh(), com.evsuite.hardware.EVHardware.getPackPowerW(),
+                snap.batteryPercent, snap.currentWh, snap.capacityWh)
+        }
+    }
+
     /** Sends the model again now, e.g. after test values changed. */
     fun resend() = executor.execute { sendNow(force = true) }
 
     private fun tick() {
+        sampleDebugTrip()
         if (requestedTypes.isEmpty()) return
         val due = SystemClock.elapsedRealtime() - lastSentElapsed >= INTERVAL_MS
         if (due || !vemEverSent.get()) sendNow(force = !vemEverSent.get())
@@ -109,6 +125,7 @@ object Mg4EnergyReporter {
             val climate = runCatching { com.evsuite.hardware.saic.SaicClimate.powerOn() }.getOrNull()
             Mg4MapsEnergyModel.build(variant, heldTemp, climate)
         }
+        lastModel = model
         val encoded = VehicleEnergyModelEncoder.Snapshot(
             capacityWh = snap.capacityWh,
             currentWh = snap.currentWh,

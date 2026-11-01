@@ -278,6 +278,11 @@ class DaSettingsActivity : BaseActivity() {
                 .show()
                 .apply { findViewById<android.widget.TextView>(android.R.id.message)?.textSize = 26f }
         })
+        if (settings.testMode && settings.mapsEnergyModel) {
+            row(R.string.dset_maps_overlay, R.string.dset_maps_overlay_summary, yesNo(settings.mapsModelOverlay) {
+                settings.mapsModelOverlay = it
+            })
+        }
         if (com.andrerinas.openheadunit.vehicle.ChargeStopPreheatPolicy.supportedOnThisCar()) {
             row(R.string.dset_preheat, R.string.dset_preheat_summary, yesNo(settings.batteryPreheatBeforeCharger) {
                 settings.batteryPreheatBeforeCharger = it
