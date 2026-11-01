@@ -16,6 +16,10 @@ can plan your charging stops.
 > ("connecting to Android Auto", then nothing). This is a bug in the car's firmware that DiAuto
 > cannot work around. On SWI68, ask your dealer to update the car to **SWI68 R63** or later, where
 > it works; on SWI131, ask whether a newer firmware is available.
+>
+> Another way out: a **USB wireless Android Auto dongle** also works with DiAuto, and the connection
+> seems more stable and reliable than with the car's original Android Auto app (still to be
+> confirmed, but early reports and our own tests point that way).
 
 <p align="center"><img src="docs/screenshots/tutorial_1.png" width="800" alt="DiAuto first-start tutorial"></p>
 

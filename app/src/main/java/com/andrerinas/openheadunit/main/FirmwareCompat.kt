@@ -15,10 +15,11 @@ object FirmwareCompat {
     fun warning(context: Context, firmware: String): String? {
         val m = version.find(firmware.trim()) ?: return null
         val name = "${m.groupValues[1]} R${m.groupValues[2]}"
-        return when ("${m.groupValues[1]} ${m.groupValues[2].toInt()}") {
+        val warning = when ("${m.groupValues[1]} ${m.groupValues[2].toInt()}") {
             "SWI68 46" -> context.getString(R.string.da_firmware_incompatible_update, name, "SWI68 R63")
             "SWI131 5" -> context.getString(R.string.da_firmware_incompatible, name)
-            else -> null
+            else -> return null
         }
+        return warning + " " + context.getString(R.string.da_firmware_dongle_backup)
     }
 }

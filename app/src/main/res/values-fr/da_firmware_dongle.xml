@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_dongle_backup">Autre solution de secours : un dongle USB Android Auto sans fil fonctionne aussi avec DiAuto, et la connexion semble plus stable et fiable qu\'avec l\'application Android Auto d\'origine (à confirmer, mais les premiers retours et nos essais vont dans ce sens).</string>
+</resources>

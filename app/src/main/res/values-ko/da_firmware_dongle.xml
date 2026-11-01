@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_dongle_backup">다른 방법: USB 무선 Android Auto 동글도 DiAuto에서 작동하며, 차량 순정 Android Auto 앱보다 연결이 더 안정적이고 신뢰할 수 있어 보입니다(아직 확인 중이지만 초기 사용자 의견과 자체 테스트에서 그렇게 나타납니다).</string>
+</resources>

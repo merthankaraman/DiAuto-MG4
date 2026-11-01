@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_dongle_backup">სხვა გამოსავალი: უსადენო Android Auto-ს USB დონგლი DiAuto-სთანაც მუშაობს, და კავშირი უფრო სტაბილური და საიმედო ჩანს, ვიდრე მანქანის ორიგინალ Android Auto აპთან (ჯერ დასადასტურებელია, მაგრამ პირველი გამოხმაურებები და ჩვენი ტესტები ამაზე მიუთითებს).</string>
+</resources>
