@@ -1,3 +1,11 @@
+# DiAuto MG4+ 2.2.1-beta26
+
+- **Consumption model for Google Maps (experimental, off by default, *Settings → Car*):** Maps gets a description of the car (rolling and air resistance, outside temperature, climate power) instead of its average consumption, so speed, cold and heating count. A window explains it when you switch it on. It replaces the test option that read MG4 Dash's consumption map.
+- With the model on, test mode can show its figures over Android Auto, against what the battery really uses.
+- Outside temperature now reaches Maps on SWI69, SWI131 and SWI132.
+- The car's Wi-Fi client is switched off and the access point restarted once a phone is linked, whichever network the car was on, and comes back when no phone is linked. Meant to fix the phone not finding the car's Wi-Fi after a 5 GHz home network.
+- State of health from DiAuto's own measurement, with MG4 Dash's only until a first sample. Comfort 64 kWh can be chosen in the battery versions.
+
 # DiAuto MG4+ 2.2.1-beta25
 
 - **Security:** wireless Android Auto only accepts a phone connected to the car's own access point (a device on the car's Wi-Fi client network can no longer start a session). The AllGo-compatible service only answers the car's own apps and MG4 Dash. Updates are HTTPS only. Unused root / Shizuku and diagnostic upload code removed.
