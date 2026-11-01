@@ -131,6 +131,7 @@ object BatteryCapacityResolver {
 
     /** Car capacity, read once; retried every minute while the car has not answered. */
     @Volatile private var typeLogged = false
+    @Volatile private var typeFailureLogged: String? = null
 
     /** Battery type code from the car's configuration, logged once (see EVHardware.getBatteryTypeCode). */
     @Volatile private var typeCode: Int? = null
@@ -138,13 +139,21 @@ object BatteryCapacityResolver {
     /** Read once: the configuration does not change while the car runs. */
     fun carBatteryType(): Int? {
         typeCode?.let { return it }
-        return runCatching { EVHardware.getBatteryTypeCode() }.getOrNull()?.also {
-            typeCode = it
-            if (!typeLogged) {
-                typeLogged = true
-                AppLog.i("$TAG battery type code from the car configuration: $it (bytes ${EVHardware.lastVehicleConfigBytes})")
+        val code = runCatching { EVHardware.getBatteryTypeCode() }.getOrNull()
+        if (code == null) {
+            val failure = EVHardware.lastVehicleConfigFailure
+            if (failure != null && failure != typeFailureLogged) {
+                typeFailureLogged = failure
+                AppLog.w("$TAG battery type not read from the car configuration: $failure")
             }
+            return null
         }
+        typeCode = code
+        if (!typeLogged) {
+            typeLogged = true
+            AppLog.i("$TAG battery type code from the car configuration: $code (bytes ${EVHardware.lastVehicleConfigBytes})")
+        }
+        return code
     }
 
     fun carCapacityKwh(): Float? {

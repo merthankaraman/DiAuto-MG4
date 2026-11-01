@@ -750,12 +750,13 @@ object EVHardware {
         val getProperty = sCpmGetPropertyMethod ?: return@supportedTelemetryRead null
         try {
             val holder = getProperty.invoke(cpm, ByteArray::class.java, PROP_VEHICLE_CONFIG_BATTERY, AREA_GLOBAL)
-                ?: return@supportedTelemetryRead null
-            (holder.javaClass.getMethod("getValue").invoke(holder) as? ByteArray)
-                ?.takeIf { it.isNotEmpty() }
+            val bytes = holder?.javaClass?.getMethod("getValue")?.invoke(holder) as? ByteArray
+            lastVehicleConfigFailure = if (holder == null) "no value" else if (bytes.isNullOrEmpty()) "empty" else null
+            bytes?.takeIf { it.isNotEmpty() }
                 ?.also { lastVehicleConfigBytes = it.joinToString(" ") { b -> "%02x".format(b) } }
                 ?.last()?.toInt()
         } catch (e: Exception) {
+            lastVehicleConfigFailure = (e.cause ?: e).toString()
             null
         }
     }
@@ -778,6 +779,9 @@ object EVHardware {
 
     /** The whole configuration bytes last read, for the log. */
     @Volatile var lastVehicleConfigBytes: String? = null
+
+    /** Why [getBatteryTypeCode] last got nothing from a car that was connected. */
+    @Volatile var lastVehicleConfigFailure: String? = null
         private set
 
     private fun probeProperty(name: String, propId: Int, areaId: Int, boxed: Class<*>): PropertyReport {
