@@ -1377,7 +1377,6 @@ class NativeAaHandshakeManager(
                     val st = if (s.hasStatus()) s.status else null
                     AppLog.i("NativeAA: [RX] WifiConnectStatus status=${st ?: "-"} (0 = the phone got onto our network)")
                     if (st == 0) {
-                        context.onPhoneJoinedHotspot()
                         AppLog.i(
                             "NativeAA: Phone is on our WiFi. Now waiting for TCP Incoming on " +
                                 "${credentials?.ip ?: "?"}:${context.wirelessPort} " +

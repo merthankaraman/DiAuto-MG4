@@ -2657,32 +2657,12 @@ class AapService : Service(), UsbReceiver.Listener {
         }.apply { name = "AapService-LinkLossTeardown"; start() }
     }
 
-    @Volatile private var joinFailures = 0
-    @Volatile private var lastJoinRecoveryAt: Long? = null
-
     fun refreshHotspotCredentialsAfterJoinFailure() {
-        // A delayed report from an old handshake must not alter a live session.
+        // A delayed report from an old handshake must not alter a live session. This only
+        // re-reads the car AP; it never restarts its radio.
         if (commManager.isBusy) return
         AppLog.i("AapService: Phone could not join the hotspot — discarding credentials and resolving the access point again.")
         softApCredentialsProvider?.refresh()
-        // The access point can be up for Android and off the air for phones: started beside the
-        // car's Wi-Fi on a home network's channel, it stayed silent once that Wi-Fi was off (phone
-        // could not even see it, on an SWI69). Only restarting it brings it back.
-        val failures = ++joinFailures
-        val now = SystemClock.elapsedRealtime()
-        val recent = lastJoinRecoveryAt?.let { now - it < JOIN_RECOVERY_INTERVAL_MS } == true
-        if (failures < JOIN_FAILURES_BEFORE_RESTART || recent || settings.hotspotTeardownProvenUnsafe) return
-        lastJoinRecoveryAt = now
-        joinFailures = 0
-        AppLog.i("AapService: Phone failed to join $failures times — restarting the access point.")
-        Thread {
-            if (HotspotManager.restart(this)) softApCredentialsProvider?.refresh()
-            else settings.hotspotTeardownProvenUnsafe = true
-        }.apply { name = "AapService-JoinRecovery"; start() }
-    }
-
-    fun onPhoneJoinedHotspot() {
-        joinFailures = 0
     }
 
     fun refreshAccessPoint() {
@@ -3201,8 +3181,6 @@ class AapService : Service(), UsbReceiver.Listener {
 
 
     companion object {
-        private const val JOIN_FAILURES_BEFORE_RESTART = 2
-        private const val JOIN_RECOVERY_INTERVAL_MS = 5 * 60_000L
         /** Bind attempts before the wireless server gives up and reports the port unusable. */
         private const val BIND_ATTEMPTS = 3
 

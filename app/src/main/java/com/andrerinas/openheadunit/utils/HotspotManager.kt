@@ -134,8 +134,7 @@ object HotspotManager {
      * (picture down to 5-9 fps, 2 s gaps, seen on an SWI133). Switch the station off (remembering
      * that we did) while wireless Android Auto is in use.
      *
-     * @return true when the station was switched off: the AP sits on its channel, on 2.4 GHz or on a
-     *   5 GHz one it may not keep alone (seen silent for phones afterwards), so it must be restarted.
+     * @return true when the station was on 2.4 GHz, so the AP must be restarted to reach 5 GHz.
      */
     private fun pauseStation(context: Context): Boolean {
         val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -151,7 +150,7 @@ object HotspotManager {
         while (ok && wifi.isWifiEnabled && System.currentTimeMillis() < deadline) {
             try { Thread.sleep(200) } catch (e: InterruptedException) { break }
         }
-        return ok && freq > 0
+        return ok && freq in 2400..2500
     }
 
     /** Switches the car's Wi-Fi back on, but only if [pauseStation] switched it off. */
