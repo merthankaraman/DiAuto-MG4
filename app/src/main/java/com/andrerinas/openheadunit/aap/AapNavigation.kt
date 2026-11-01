@@ -16,7 +16,10 @@ class AapNavigation(
     private val context: Context,
     private val settings: Settings
 ) {
-    init { com.andrerinas.openheadunit.hud.BydNavigationOutputs.start(context) }
+    init {
+        com.andrerinas.openheadunit.hud.BydNavigationOutputs.start(context)
+        com.andrerinas.openheadunit.hud.SaicClusterNavigation.start(context)
+    }
 
     private val helper = AapNavigationHelper(context)
     private val snapshot = AapNavigationHelper.NavigationSnapshot()
@@ -27,6 +30,9 @@ class AapNavigation(
     private val debouncedBroadcastEmitter = Runnable {
         isBroadcastScheduled = false
         helper.sendFullNavigationBroadcast(snapshot, pendingNavEventType)
+        com.andrerinas.openheadunit.hud.SaicClusterNavigation.publish(
+            snapshot, navigationEnded = pendingNavEventType == NAV_EVENT_TYPE_STOP
+        )
     }
 
     fun process(message: AapMessage): Boolean {
