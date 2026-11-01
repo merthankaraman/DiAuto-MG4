@@ -245,6 +245,10 @@ class AapService : Service(), UsbReceiver.Listener {
      */
     private var isDestroying = false
     private var hasEverConnected = false
+    // Set by every Connected, cleared by the Disconnected that follows. onConnected() runs on each
+    // TCP connect (it pauses the radio, takes the WifiLock, starts GPS…), so its teardown has to
+    // run for a connection that failed before TransportStarted too, not only after a session.
+    private var connectedSinceLastDisconnect = false
     private var accessoryHandshakeFailures = 0
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private var wifiLock: WifiManager.WifiLock? = null
@@ -309,6 +313,7 @@ class AapService : Service(), UsbReceiver.Listener {
      */
     @Volatile
     private var userExitedAA = false
+    private var discoveryRearmJob: Job? = null
     @Volatile private var userExitCooldownUntil = 0L
 
     /** In-flight poke that may be waiting out [USER_EXIT_COOLDOWN_MS]. */
@@ -889,7 +894,10 @@ class AapService : Service(), UsbReceiver.Listener {
         serviceScope.launch {
             commManager.connectionState.collect { state ->
                 when (state) {
-                    is CommManager.ConnectionState.Connected -> onConnected()
+                    is CommManager.ConnectionState.Connected -> {
+                        connectedSinceLastDisconnect = true
+                        onConnected()
+                    }
                     is CommManager.ConnectionState.HandshakeComplete -> {
                         automaticReconnectAttempts = 0
                         launchAapProjectionActivity()
@@ -916,7 +924,10 @@ class AapService : Service(), UsbReceiver.Listener {
                         }
                     }
                     is CommManager.ConnectionState.Disconnected -> {
-                        if (hasEverConnected) onDisconnected(state)
+                        if (hasEverConnected || connectedSinceLastDisconnect) {
+                            connectedSinceLastDisconnect = false
+                            onDisconnected(state)
+                        }
                     }
                     else -> {}
                 }
@@ -1754,6 +1765,12 @@ class AapService : Service(), UsbReceiver.Listener {
                 serviceScope.launch {
                     delay(500)
                     val discovery = networkDiscovery ?: return@launch
+                    // A probe of port 5277 during a live session is accepted and then closed by
+                    // onServiceFound, which leaves the phone's head unit server bound to it.
+                    if (commManager.isBusy) {
+                        AppLog.d("NetworkMonitor: a connection is live or being set up; not scanning")
+                        return@launch
+                    }
                     if (!discovery.startScan()) {
                         // Folded into a sweep that was already running — which was started for the
                         // network we have just left. Do not cancel it; just do not make the next
@@ -1923,6 +1940,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
             // Mode 1: Headunit Server Mode
             if (mode == 1) {
+                ensureHeadunitServerHotspot()
                 // Auto discovery for standard server mode via NSD/mDNS
                 startDiscovery(oneShot = false)
             }
@@ -2243,6 +2261,12 @@ class AapService : Service(), UsbReceiver.Listener {
                     commManager.connectionState.value is CommManager.ConnectionState.Connecting
                 if (sessionUp) {
                     AppLog.d("AapService: Bluetooth auto-start ignored — session already up.")
+                } else if (settings.wifiConnectionMode == 1) {
+                    // Headunit Server mode was chosen on purpose (on the MG4 SWI68 the Bluetooth
+                    // stack refuses the Native AA RFCOMM channel, and the phone's head unit server
+                    // over Wi-Fi is the path that works). Keep the mode; make sure the scan runs.
+                    AppLog.i("AapService: Bluetooth auto-start — keeping Headunit Server mode, scanning for the phone")
+                    scheduleHeadunitServerScan(reason = "bt auto-start")
                 } else {
                     // Trusted Bluetooth phone just linked — go straight to Native AA; do not wait
                     // for the user to pick the phone on the home screen.
@@ -3131,12 +3155,18 @@ class AapService : Service(), UsbReceiver.Listener {
                 } else {
                     UnresponsivePeerPolicy.rescanDelayMs(commManager.silentPeerFailures)
                 }
-                serviceScope.launch {
+                // One re-arm at a time: every finished scan used to launch its own, so each extra
+                // start (Bluetooth auto-start, a network change) added a loop that never ended.
+                discoveryRearmJob?.cancel()
+                discoveryRearmJob = serviceScope.launch {
                     delay(delayMs)
+                    // A connection that is being set up may still fail its handshake before it
+                    // becomes a session, and then nothing else restarts the loop. Wait it out.
+                    while (wirelessServer != null && commManager.isBusy) {
+                        delay(DISCOVERY_BUSY_RECHECK_MS)
+                    }
                     if (wirelessServer == null) {
                         AppLog.i("AapService: Discovery loop ends — the wireless server is gone")
-                    } else if (commManager.isBusy) {
-                        AppLog.i("AapService: Discovery loop ends — a connection is live or being set up")
                     } else {
                         startDiscovery()
                     }
@@ -3881,6 +3911,48 @@ class AapService : Service(), UsbReceiver.Listener {
         }
     }
 
+    /**
+     * Headunit Server counterpart of [scheduleNativeAaArm]: waits out a user exit like the Native
+     * AA path, then makes sure the mode is set up before scanning. startDiscovery() alone returns
+     * without a word when the wireless server is gone (after ACTION_STOP_WIRELESS, for one);
+     * initWifiMode() rebuilds it and is a no-op when the mode is already running.
+     */
+    private fun scheduleHeadunitServerScan(reason: String) {
+        nativeAaPokeJob?.cancel()
+        nativeAaPokeJob = serviceScope.launch {
+            awaitUserExitCooldown(reason)
+            // The wait above can last 15 s; a session may have come up in the meantime, and
+            // starting the access point under it would drop the link it rides on.
+            if (commManager.isBusy) {
+                AppLog.i("AapService: $reason — a connection came up while waiting; leaving it alone")
+                return@launch
+            }
+            initWifiMode()
+            // initWifiMode() returns early when the mode is already set up, so the hotspot it would
+            // have started is checked here too: the car may have dropped it since.
+            ensureHeadunitServerHotspot()
+            startDiscovery(oneShot = false)
+        }
+    }
+
+    /**
+     * Headunit Server mode finds the phone on this unit's own hotspot, and nothing else turns that
+     * hotspot on in this mode (Native AA and Helper strategy 4 bring it up for themselves). Start it
+     * when auto-enable is on; HotspotManager leaves an access point that is already up alone.
+     * Users who put the head unit on the phone's hotspot instead can turn auto-enable off, since
+     * starting an access point drops this unit's Wi-Fi client connection.
+     */
+    private fun ensureHeadunitServerHotspot() {
+        if (!App.provide(this).settings.autoEnableHotspot) return
+        // Same rule as initWifiMode(): while the boot-loop guard has wireless paused, bringing the
+        // access point up would invite the phone straight back into the crash it guards against.
+        if (Settings.isWirelessPausedByBootLoop(this)) return
+        Thread {
+            AppLog.i("AapService: Auto-enabling hotspot for Headunit Server mode...")
+            HotspotManager.setHotspotEnabled(this, true)
+        }.start()
+    }
+
     private suspend fun awaitUserExitCooldown(reason: String) {
         while (true) {
             val remaining = userExitCooldownUntil - android.os.SystemClock.elapsedRealtime()
@@ -4006,6 +4078,7 @@ class AapService : Service(), UsbReceiver.Listener {
         /** Cooldown after user-initiated exit. SoftAP restart on MG4 often needs ~10–20s;
          *  poking while :5288 / hotspot are still down fails with a short wait. */
         private const val USER_EXIT_COOLDOWN_MS = 15_000L
+        private const val DISCOVERY_BUSY_RECHECK_MS = 10_000L
 
         /** Delay before AapService tries to handle a normal-mode USB attach as a fallback
          *  when UsbAttachedActivity doesn't fire (common on Chinese MediaTek headunits). */

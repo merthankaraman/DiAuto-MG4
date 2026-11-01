@@ -215,51 +215,61 @@ class NetworkDiscovery(private val context: Context, private val listener: Liste
     }
 
     private suspend fun scanSubnet(): Unit = coroutineScope {
-        val subnet = getSubnet()
-        if (subnet == null) {
+        // Every IPv4 interface, not just the first one enumerated: on a head unit the phone sits on
+        // the unit's own hotspot, and a telematics or modem link listed before it would otherwise be
+        // the only /24 swept, every time.
+        val subnets = localSubnets()
+        if (subnets.isEmpty()) {
             AppLog.e("NetworkDiscovery: Could not determine subnet for deep scan")
             return@coroutineScope
         }
 
-        val myIp = getLocalIpAddress()
-        AppLog.i("NetworkDiscovery: Scanning subnet: $subnet.*")
+        for ((iface, subnet, myIp) in subnets) {
+            AppLog.i("NetworkDiscovery: Scanning subnet: $subnet.* ($iface)")
 
-        val tasks = mutableListOf<Deferred<Boolean>>()
+            val tasks = mutableListOf<Deferred<Boolean>>()
 
-        // Scan range 1..254
-        for (i in 1..254) {
-            val ip = "$subnet.$i"
-            if (ip == myIp) continue // Skip self
+            // Scan range 1..254
+            for (i in 1..254) {
+                val ip = "$subnet.$i"
+                if (ip == myIp) continue // Skip self
 
-            // Children of the scan job, not of a detached scope: stop() has to be able to
-            // reach these. Detached, they outlived the scan that started them and kept
-            // probing a subnet the device had already left.
-            tasks.add(async(Dispatchers.IO) {
-                checkAndReport(ip)
-            })
+                // Children of the scan job, not of a detached scope: stop() has to be able to
+                // reach these. Detached, they outlived the scan that started them and kept
+                // probing a subnet the device had already left.
+                tasks.add(async(Dispatchers.IO) {
+                    checkAndReport(ip)
+                })
+            }
+
+            // Stop at the first subnet that answered: the phone has been handed over, and probing
+            // on would only risk a second connection to its server.
+            if (tasks.awaitAll().any { it }) return@coroutineScope
         }
-
-        tasks.awaitAll()
     }
 
-    private fun getLocalIpAddress(): String? {
-        try {
-            val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-            for (intf in interfaces) {
-                if (intf.isLoopback || !intf.isUp) continue
+    private data class LocalSubnet(val iface: String, val prefix: String, val ip: String)
 
-                val addrs = Collections.list(intf.inetAddresses)
-                for (addr in addrs) {
-                    if (addr is java.net.Inet4Address) {
-                        return addr.hostAddress
-                    }
+    /** IPv4 /24 prefixes of every up interface, access-point interfaces first. */
+    private fun localSubnets(): List<LocalSubnet> = try {
+        Collections.list(NetworkInterface.getNetworkInterfaces())
+            .filter { it.isUp && !it.isLoopback }
+            .flatMap { nif ->
+                Collections.list(nif.inetAddresses).filterIsInstance<Inet4Address>().mapNotNull { addr ->
+                    val host = addr.hostAddress ?: return@mapNotNull null
+                    val lastDot = host.lastIndexOf('.')
+                    if (lastDot <= 0) null else LocalSubnet(nif.name, host.substring(0, lastDot), host)
                 }
             }
-        } catch (e: Exception) {
-            AppLog.e("NetworkDiscovery: Error getting local IP", e)
-        }
-        return null
+            .distinctBy { it.prefix }
+            .sortedBy { if (isAccessPointInterface(it.iface)) 0 else 1 }
+    } catch (e: Exception) {
+        AppLog.e("NetworkDiscovery: Failed to list local subnets", e)
+        emptyList()
     }
+
+    private fun isAccessPointInterface(name: String): Boolean =
+        name.startsWith("ap") || name.startsWith("swlan") || name.startsWith("softap")
 
     private suspend fun checkAndReport(ip: String): Boolean {
         if (reportedIps.contains(ip)) return true
@@ -374,29 +384,6 @@ class NetworkDiscovery(private val context: Context, private val listener: Liste
         } catch (e: Exception) {
             AppLog.e("NetworkDiscovery: Interface collection failed", e)
         }
-    }
-
-    private fun getSubnet(): String? {
-        // Reuse similar logic to collectInterfaceSuspects but return subnet string
-        try {
-             val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-             for (networkInterface in interfaces) {
-                 if (!networkInterface.isUp || networkInterface.isLoopback) continue
-
-                 for (addr in Collections.list(networkInterface.inetAddresses)) {
-                     if (addr is Inet4Address) {
-                         val host = addr.hostAddress
-                         val lastDot = host.lastIndexOf('.')
-                         if (lastDot > 0) {
-                             return host.substring(0, lastDot)
-                         }
-                     }
-                 }
-             }
-        } catch (e: Exception) {
-            AppLog.e("NetworkDiscovery: Failed to get subnet", e)
-        }
-        return null
     }
 
     fun stop() {
