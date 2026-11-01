@@ -35,13 +35,6 @@ required; phone internet availability depends on its network settings.
 If you change the car hotspot name or password, update it in the app too.
 Test one projection app at a time.
 
-OPTIONAL: DIPLAY AUTOMATIC INSTRUMENT MAP
-On the supported DiLink 5.1 firmware, open Settings → BYD navigation →
-Automatic map setup · ADB. Follow the displayed one-time computer setup,
-then tap Check and enable. Open the cluster's map card or select Map theme.
-This permission is for automatic cluster theme/card detection, not hotspot
-connection. The guide explains the exact command for the installed app.
-
 WHAT TO TEST / REPORT
 Check first connection, reconnect after restarting the app/car, maps,
 music/audio, and any instrument-map features supported by your car.

@@ -946,8 +946,6 @@
     <string name="diagnostic_save_failure_hint">تحقق من المساحة المتاحة أو اختر موقع حفظ آخر.</string>
     <string name="diagnostic_choose_location">اختيار الموقع</string>
     <string name="no_files_found">لم يتم العثور على ملفات</string>
-    <string name="byd_navigation_title">شاشة BYD الأمامية ولوحة العدادات</string>
-    <string name="byd_navigation_description">عرض إرشادات Android Auto على شاشات BYD المدعومة. تجريبي؛ يختلف التوافق حسب السيارة.</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>

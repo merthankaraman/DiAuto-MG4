@@ -16,7 +16,9 @@ class AapNavigation(
     private val context: Context,
     private val settings: Settings
 ) {
-    init { com.andrerinas.openheadunit.hud.BydNavigationOutputs.start(context) }
+    init {
+        com.andrerinas.openheadunit.hud.SaicNavigationOutputs.start(context)
+    }
 
     private val helper = AapNavigationHelper(context)
     private val snapshot = AapNavigationHelper.NavigationSnapshot()
@@ -27,6 +29,15 @@ class AapNavigation(
     private val debouncedBroadcastEmitter = Runnable {
         isBroadcastScheduled = false
         helper.sendFullNavigationBroadcast(snapshot, pendingNavEventType)
+    }
+
+    private val lastLogged = HashMap<String, String>()
+
+    /** Logs a navigation line at info level, only when it differs from the last one of its kind (the phone repeats them). */
+    private fun logOnChange(kind: String, text: String) {
+        if (lastLogged[kind] == text) return
+        lastLogged[kind] = text
+        AppLog.i("NavDiag $kind: $text")
     }
 
     fun process(message: AapMessage): Boolean {
@@ -61,6 +72,14 @@ class AapNavigation(
             NavigationStatus.MsgType.NEXTTURNDETAILS_VALUE -> {
                 try {
                     val detail = message.parse(NavigationStatus.NextTurnDetail.newBuilder()).buildPartial()
+                    logOnChange(
+                        "legacy",
+                        "nextTurn=${if (detail.hasNextTurn()) detail.nextTurn.name else "-"} " +
+                            "side=${if (detail.hasSide()) detail.side.name else "-"} " +
+                            "turnNumber=${if (detail.hasTurnNumber()) detail.turnNumber else "-"} " +
+                            "turnAngle=${if (detail.hasTurnAngle()) detail.turnAngle else "-"} " +
+                            "imageBytes=${if (detail.hasImage()) detail.image.size() else 0} road=${detail.road}"
+                    )
                     snapshot.nextTurnDetail = AapNavigationHelper.TimedMessage(detail, helper.nowElapsedRealtimeMs())
                     val road = detail.road.takeIf { it.isNotBlank() }
                     road?.let {
@@ -107,6 +126,13 @@ class AapNavigation(
             NavigationStatus.MsgType.INSTRUMENT_CLUSTER_NAVIGATION_STATE_VALUE -> {
                 try {
                     val state = message.parse(NavigationStatus.NavigationState.newBuilder()).build()
+                    val maneuver = state.stepsList.firstOrNull()?.takeIf { it.hasManeuver() }?.maneuver
+                    logOnChange(
+                        "state",
+                        "steps=${state.stepsCount} type=${if (maneuver?.hasType() == true) maneuver.type.name else "-"} " +
+                            "exitNumber=${if (maneuver?.hasRoundaboutExitNumber() == true) maneuver.roundaboutExitNumber else "-"} " +
+                            "exitAngle=${if (maneuver?.hasRoundaboutExitAngle() == true) maneuver.roundaboutExitAngle else "-"}"
+                    )
                     snapshot.navigationState = AapNavigationHelper.TimedMessage(state, helper.nowElapsedRealtimeMs())
                     val firstStepRoad = state.stepsList.firstOrNull()
                         ?.takeIf { it.hasRoad() && it.road.hasName() }
@@ -180,12 +206,9 @@ class AapNavigation(
     }
 
     private fun scheduleDebouncedBroadcast(navEventType: Int) {
-        val bydFrame = if (settings.bydNavigationEnabled) com.andrerinas.openheadunit.hud.BydNavigationMapper.from(snapshot) else null
-        AppLog.i("BYD nav input event=$navEventType enabled=${settings.bydNavigationEnabled} " +
-            "status=${snapshot.clusterStatus?.payload?.status} steps=${snapshot.navigationState?.payload?.stepsCount} " +
-            "legacy=${snapshot.nextTurnDetail?.payload?.nextTurn} position=${snapshot.currentPosition != null} " +
-            "distance=${bydFrame?.distanceMeters} icon=${bydFrame?.clusterIcon}")
-        com.andrerinas.openheadunit.hud.BydNavigationOutputs.update(bydFrame)
+        val guidance = com.andrerinas.openheadunit.hud.SaicNavigationMapper.from(snapshot, settings.rightHandDrive)
+        logOnChange("cluster", guidance?.let { "icon=${it.icon.name} (${it.icon.id})" } ?: "none")
+        com.andrerinas.openheadunit.hud.SaicNavigationOutputs.update(guidance)
         pendingNavEventType = navEventType
         if (isBroadcastScheduled) return
         isBroadcastScheduled = true

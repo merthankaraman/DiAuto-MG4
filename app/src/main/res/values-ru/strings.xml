@@ -947,8 +947,6 @@
     <string name="diagnostic_save_failure_hint">Проверьте свободное место или выберите другое место сохранения.</string>
     <string name="diagnostic_choose_location">Выбрать место</string>
     <string name="no_files_found">Файлы не найдены</string>
-    <string name="byd_navigation_title">HUD и приборная панель BYD</string>
-    <string name="byd_navigation_description">Показывать указания Android Auto на поддерживаемых дисплеях BYD. Экспериментально; совместимость зависит от автомобиля.</string>
     <string name="da_connection_setup">Настройка подключения</string>
     <string name="da_connection_setup_hint">Выберите подключение и настройте точку доступа автомобиля.</string>
     <string name="da_diagnostics">Диагностика</string>

@@ -93,7 +93,3 @@ again. Do not uninstall the official BYD phone app; it is unrelated to DiAuto.
 - For reports, include head-unit model/firmware, phone model/Android, connection type,
   DiAuto version and reproducible steps. Remove locations, device identifiers and
   account details from public logs/screenshots.
-
-## BYD navigation
-
-See [BYD navigation displays](BYD_NAVIGATION.md) for the firmware scope, map metadata requirements, settings and cleanup behavior. No runtime ADB starter is required.

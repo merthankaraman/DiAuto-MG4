@@ -116,10 +116,6 @@ class Settings(private val context: Context) {
             prefs.edit().putBoolean("gps-navigation", value).apply()
         }
 
-    var bydNavigationEnabled: Boolean
-        get() = prefs.getBoolean("byd-navigation-enabled", false)
-        set(value) { prefs.edit().putBoolean("byd-navigation-enabled", value).apply() }
-
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {

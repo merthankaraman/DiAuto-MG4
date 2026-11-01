@@ -977,8 +977,6 @@
     <string name="native_local_hotspot_wifi_settings_unavailable">Wi‑Fi’yi aracın Ayarlar uygulamasından aç.</string>
     <string name="native_ap_transport_local_hotspot">Yerel erişim noktası</string>
     <string name="native_ap_transport_local_hotspot_hint">Deneysel. DiAuto, Android Auto için ayrı bir yerel erişim noktası kullanır; araç internet paketi gerekmez. Eski Android sürümlerinde uygulamanın Wi‑Fi sürücüsünden 5 GHz erişim noktasını doğrulamasına izin verilmelidir. DiLink 5.1’de harita veya müzik takılırsa araç ayarlarından Wi‑Fi anahtarını kapatmayı dene. Bluetooth ve telefon Wi‑Fi’si açık kalsın. Uyumluluk araca bağlıdır.</string>
-    <string name="byd_navigation_title">BYD HUD ve gösterge paneli</string>
-    <string name="byd_navigation_description">Desteklenen BYD ekranlarında Android Auto yol tarifini göster. Deneysel; araç uyumluluğu değişir.</string>
     <string name="da_connection_setup">Bağlantı kurulumu</string>
     <string name="da_connection_setup_hint">Bir bağlantı seç ve araç erişim noktasını ayarla.</string>
     <string name="da_diagnostics">Tanılama</string>

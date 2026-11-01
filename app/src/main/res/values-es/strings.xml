@@ -956,8 +956,6 @@
     <string name="diagnostic_save_failure_hint">Comprueba el espacio disponible o elige otra ubicación.</string>
     <string name="diagnostic_choose_location">Elegir ubicación</string>
     <string name="no_files_found">No se encontraron archivos</string>
-    <string name="byd_navigation_title">HUD y cuadro de instrumentos BYD</string>
-    <string name="byd_navigation_description">Muestra las indicaciones de Android Auto en pantallas BYD compatibles. Experimental; la compatibilidad varía según el coche.</string>
     <string name="da_connection_setup">Configuración de conexión</string>
     <string name="da_connection_setup_hint">Elige una conexión y configura el punto de acceso del coche.</string>
     <string name="da_diagnostics">Diagnóstico</string>

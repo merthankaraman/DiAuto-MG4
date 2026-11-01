@@ -11,9 +11,6 @@
         <intent>
             <action android:name="android.settings.WIFI_SETTINGS" />
         </intent>
-        <package android:name="com.byd.clusterdebug" />
-        <package android:name="com.byd.amapservice" />
-        <package android:name="com.ts.car.someip.service" />
         <package android:name="com.google.android.projection.gearhead" />
     </queries>
 
@@ -200,6 +197,18 @@
                 <data
                     android:host="maps.google.com"
                     android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".main.NavTestActivity"
+            android:label="DiAuto Nav Test"
+            android:exported="true"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

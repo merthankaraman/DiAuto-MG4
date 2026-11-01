@@ -87,7 +87,6 @@ class SettingsFragment : Fragment() {
 
     // Local state to hold changes before saving
     private var pendingUseGps: Boolean? = null
-    private var pendingBydNavigationEnabled: Boolean? = null
     private var pendingShowNavigationNotifications: Boolean? = null
     private var pendingSyncMediaSessionAaMetadata: Boolean? = null
     private var pendingResolution: Int? = null
@@ -215,7 +214,6 @@ class SettingsFragment : Fragment() {
 
         // Initialize local state with current values
         pendingUseGps = settings.useGpsForNavigation
-        pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -356,7 +354,6 @@ class SettingsFragment : Fragment() {
 
     private fun reloadPendingStateFromSettings() {
         pendingUseGps = settings.useGpsForNavigation
-        pendingBydNavigationEnabled = settings.bydNavigationEnabled
         pendingShowNavigationNotifications = settings.showNavigationNotifications
         pendingSyncMediaSessionAaMetadata = settings.syncMediaSessionWithAaMetadata
         pendingResolution = settings.resolutionId
@@ -480,7 +477,6 @@ class SettingsFragment : Fragment() {
         val languageChanged = pendingAppLanguage != settings.appLanguage
 
         pendingUseGps?.let { settings.useGpsForNavigation = it }
-        pendingBydNavigationEnabled?.let { settings.bydNavigationEnabled = it }
         pendingShowNavigationNotifications?.let { settings.showNavigationNotifications = it }
         pendingSyncMediaSessionAaMetadata?.let { settings.syncMediaSessionWithAaMetadata = it }
         pendingResolution?.let { settings.resolutionId = it }
@@ -605,7 +601,6 @@ class SettingsFragment : Fragment() {
     private fun checkChanges() {
         // Check for any changes
         val anyChange = pendingUseGps != settings.useGpsForNavigation ||
-                        pendingBydNavigationEnabled != settings.bydNavigationEnabled ||
                         pendingShowNavigationNotifications != settings.showNavigationNotifications ||
                         pendingSyncMediaSessionAaMetadata != settings.syncMediaSessionWithAaMetadata ||
                         pendingResolution != settings.resolutionId ||
@@ -1214,20 +1209,6 @@ class SettingsFragment : Fragment() {
                 isChecked = pendingUseGps!!,
                 onCheckedChanged = { isChecked ->
                     pendingUseGps = isChecked
-                    checkChanges()
-                    updateSettingsList()
-                }
-            ))
-        }
-
-        if (com.andrerinas.openheadunit.hud.BydNavigationOutputs.available(requireContext())) {
-            items.add(SettingItem.ToggleSettingEntry(
-                stableId = "bydNavigation",
-                nameResId = R.string.byd_navigation_title,
-                descriptionResId = R.string.byd_navigation_description,
-                isChecked = pendingBydNavigationEnabled ?: false,
-                onCheckedChanged = { enabled ->
-                    pendingBydNavigationEnabled = enabled
                     checkChanges()
                     updateSettingsList()
                 }

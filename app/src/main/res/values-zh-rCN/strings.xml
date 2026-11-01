@@ -947,8 +947,6 @@
     <string name="diagnostic_save_failure_hint">请检查可用存储空间或选择其他保存位置。</string>
     <string name="diagnostic_choose_location">选择位置</string>
     <string name="no_files_found">未找到文件</string>
-    <string name="byd_navigation_title">比亚迪抬头显示和仪表盘</string>
-    <string name="byd_navigation_description">在支持的比亚迪显示屏上显示 Android Auto 导航。实验功能；兼容性因车型而异。</string>
     <string name="da_connection_setup">连接设置</string>
     <string name="da_connection_setup_hint">选择连接方式并设置车载热点。</string>
     <string name="da_diagnostics">诊断</string>
