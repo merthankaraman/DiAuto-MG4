@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">此更新将下载 %1$s 数据，可能消耗车辆的流量套餐。如有可能，请先将车辆作为客户端连接到 Wi-Fi 网络，或通过 USB 更新。</string>
+</resources>

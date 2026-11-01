@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Bản cập nhật này tải xuống %1$s dữ liệu, có thể dùng vào gói dữ liệu của xe. Nếu có thể, trước tiên hãy kết nối xe với mạng Wi-Fi ở chế độ máy khách hoặc cập nhật qua USB.</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Cette mise à jour télécharge %1$s de données, qui peuvent être prises sur le forfait de la voiture. Si possible, connectez d\'abord la voiture à un réseau Wi-Fi en mode client, ou faites la mise à jour par USB.</string>
+</resources>

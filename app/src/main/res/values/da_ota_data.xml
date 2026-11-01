@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">This update downloads %1$s of data, which may use the car\'s data plan. If possible, first connect the car to a Wi-Fi network as a client, or update over USB.</string>
+</resources>

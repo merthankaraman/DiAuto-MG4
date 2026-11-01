@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">このアップデートは %1$s のデータをダウンロードし、車のデータ通信量を消費する場合があります。可能であれば、先に車をクライアントとして Wi-Fi ネットワークに接続するか、USB でアップデートしてください。</string>
+</resources>

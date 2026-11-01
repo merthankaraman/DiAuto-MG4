@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Questo aggiornamento scarica %1$s di dati, che possono essere presi dal piano dati dell\'auto. Se possibile, collega prima l\'auto a una rete Wi-Fi come client, oppure aggiorna via USB.</string>
+</resources>

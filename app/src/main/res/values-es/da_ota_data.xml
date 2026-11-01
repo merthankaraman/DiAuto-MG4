@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Esta actualización descarga %1$s de datos, que pueden consumir la tarifa del coche. Si es posible, conecta antes el coche a una red Wi-Fi como cliente, o actualiza por USB.</string>
+</resources>

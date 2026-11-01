@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">يُنزّل هذا التحديث %1$s من البيانات، وقد تُخصم من باقة السيارة. إن أمكن، صِل السيارة أولًا بشبكة Wi-Fi كعميل، أو حدّث عبر USB.</string>
+</resources>

@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,13 +26,23 @@ final class OtaDialogs {
 
     private static final String TAG = "OtaDialogs";
     private static final int ACCENT_COLOR = 0xFF03A9F4;
+    private static final int WARNING_COLOR = 0xFFFF9100;
+    private static final float WARNING_SCALE = 1.3f;
 
     private OtaDialogs() {
     }
 
+    /** The download size and the advice on what connection to use, in orange and larger, above [message]. */
+    static CharSequence withDataWarning(String warning, String message) {
+        SpannableStringBuilder text = new SpannableStringBuilder(warning);
+        text.setSpan(new ForegroundColorSpan(WARNING_COLOR), 0, warning.length(), 0);
+        text.setSpan(new RelativeSizeSpan(WARNING_SCALE), 0, warning.length(), 0);
+        return text.append("\n\n").append(message);
+    }
+
     static Dialog showConfirmDialog(
             Context context,
-            String message,
+            CharSequence message,
             String confirmText,
             Runnable onConfirm
     ) {

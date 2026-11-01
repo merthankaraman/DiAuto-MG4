@@ -186,7 +186,9 @@ public final class OtaController {
         String size = info.assetSize > 0L ? formatBytes(info.assetSize) : "?";
         OtaDialogs.showConfirmDialog(
                 activity,
-                activity.getString(R.string.ota_dialog_install_message, info.latestVersion, size),
+                OtaDialogs.withDataWarning(
+                        activity.getString(R.string.ota_data_warning, size),
+                        activity.getString(R.string.ota_dialog_install_message, info.latestVersion, size)),
                 activity.getString(R.string.ota_action_install_update),
                 () -> startDownload(info)
         );

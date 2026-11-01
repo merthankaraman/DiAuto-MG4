@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Ez a frissítés %1$s adatot tölt le, ami az autó adatcsomagját terhelheti. Ha lehet, először csatlakoztassa az autót kliensként egy Wi-Fi-hálózathoz, vagy frissítsen USB-n keresztül.</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Esta atualização baixa %1$s de dados, que podem consumir o plano do carro. Se possível, conecte antes o carro a uma rede Wi-Fi como cliente ou atualize por USB.</string>
+</resources>

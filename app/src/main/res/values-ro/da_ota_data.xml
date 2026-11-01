@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Această actualizare descarcă %1$s de date, care pot consuma abonamentul mașinii. Dacă se poate, conectați mai întâi mașina la o rețea Wi-Fi în mod client sau actualizați prin USB.</string>
+</resources>
