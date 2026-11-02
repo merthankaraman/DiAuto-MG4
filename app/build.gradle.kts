@@ -72,8 +72,8 @@ android {
         applicationId = "com.allgo.app.androidauto"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2131
-        versionName = "2.2.1"
+        versionCode = 2132
+        versionName = "2.2.2-beta1"
         setProperty("archivesBaseName", "${applicationId}_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true

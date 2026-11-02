@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta1
+
+- Phone already plugged in when the car starts: DiAuto finds it and connects over USB, ahead of wireless. If USB doesn't come up, wireless takes over again.
+
 # DiAuto MG4+ 2.2.1
 
 - The update window shows how much data will be downloaded, and advises connecting the car to a Wi-Fi network as a client, or updating over USB.
