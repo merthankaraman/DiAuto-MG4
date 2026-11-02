@@ -268,6 +268,7 @@ class AapService : Service(), UsbReceiver.Listener {
      */
     @Volatile
     private var preemptingWirelessForUsb = false
+    private var presentUsbPhoneJob: Job? = null
 
     /**
      * Set when the phone sends VIDEO_FOCUS_NATIVE (user tapped "Exit" in AA).
@@ -635,6 +636,7 @@ class AapService : Service(), UsbReceiver.Listener {
             return
         }
         lastWakeHandledTimestamp = now
+        takeOverPresentUsbPhone("wake $trigger")
 
         if (commManager.isConnected ||
             commManager.connectionState.value is CommManager.ConnectionState.Connecting ||
@@ -782,6 +784,7 @@ class AapService : Service(), UsbReceiver.Listener {
         initWifiMode()
         startPhoneReconnectWatchdog()
         checkAlreadyConnectedUsb()
+        if (SystemClock.elapsedRealtime() < PRESENT_USB_BOOT_WINDOW_MS) takeOverPresentUsbPhone("boot")
     }
 
     /** Enables Android Automotive UI mode so the system uses car-optimised layouts. */
@@ -2162,6 +2165,52 @@ class AapService : Service(), UsbReceiver.Listener {
      * Native AA already aborts when USB is up; the reverse was missing after v1.6 SoftAP
      * made wireless stay Connected/Connecting and silently block [checkAlreadyConnectedUsb].
      */
+    /**
+     * A phone plugged in before the car starts: the system does not announce a device that is
+     * already there, so no attach event reaches [onUsbAttach], and the startup scan only takes a
+     * known device. Bluetooth then reconnects and the session starts wireless. So look for a phone
+     * for a while after a start and take it over USB, ahead of wireless, as a cable plugged in
+     * during a session is. If USB does not come up, wireless is put back.
+     */
+    private fun takeOverPresentUsbPhone(trigger: String) {
+        if (presentUsbPhoneJob?.isActive == true || !settings.showsUsb()) return
+        presentUsbPhoneJob = serviceScope.launch {
+            val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+            repeat(PRESENT_USB_ATTEMPTS) {
+                if (commManager.isConnected && !commManager.isWirelessSession) return@launch
+                val phones = usbManager.deviceList.values.filter {
+                    UsbDeviceCompat.isAndroidDevice(it) && !it.deviceName.contains(INTERNAL_USB_BUS)
+                }
+                if (phones.any { UsbDeviceCompat.isInAccessoryMode(it) }) {
+                    checkAlreadyConnectedUsb(force = true)
+                    return@launch
+                }
+                val phone = phones.singleOrNull()
+                if (phone != null && !isSwitchingToAccessory.get()) {
+                    AppLog.i("AapService: phone already on USB (${UsbDeviceCompat(phone).uniqueName}, $trigger) - taking it over")
+                    preemptingWirelessForUsb = true
+                    try {
+                        preemptWirelessForUsb()
+                        performSingleUsbConnect(phone)
+                        var waited = 0
+                        while (waited < PRESENT_USB_SESSION_WAIT_S && !(commManager.isBusy && !commManager.isWirelessSession)) {
+                            delay(1_000)
+                            waited++
+                        }
+                    } finally {
+                        preemptingWirelessForUsb = false
+                    }
+                    if (!commManager.isBusy && !isSwitchingToAccessory.get()) {
+                        AppLog.i("AapService: USB did not come up for the phone already plugged in - back to wireless.")
+                        initWifiMode(force = true)
+                    }
+                    return@launch
+                }
+                delay(PRESENT_USB_RETRY_MS)
+            }
+        }
+    }
+
     private suspend fun preemptWirelessForUsb() {
         AppLog.i(
             "AapService: Preempting wireless for USB attach " +
@@ -3259,6 +3308,13 @@ class AapService : Service(), UsbReceiver.Listener {
         /** Delay before AapService tries to handle a normal-mode USB attach as a fallback
          *  when UsbAttachedActivity doesn't fire (common on Chinese MediaTek headunits). */
         private const val USB_ATTACH_FALLBACK_DELAY_MS = 2000L
+        /** A process started this long after boot is a restart, not a car start. */
+        private const val PRESENT_USB_BOOT_WINDOW_MS = 5 * 60_000L
+        private const val PRESENT_USB_ATTEMPTS = 15
+        private const val PRESENT_USB_RETRY_MS = 4_000L
+        private const val PRESENT_USB_SESSION_WAIT_S = 20
+        /** Bus 001 holds the car's own modem, MCU and internal hub; the phone is on the other one. */
+        private const val INTERNAL_USB_BUS = "/001/"
 
         /** Screen-off duration (ms) above which SCREEN_ON is treated as a hibernate wake.
          *  60 seconds filters out normal screen timeouts while catching any hibernate/quick boot. */
