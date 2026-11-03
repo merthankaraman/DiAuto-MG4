@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">Uncompressed music (PCM)</string>
+    <string name="dset_music_pcm_summary">The phone sends music without AAC compression. About 1.5 Mb/s over Wi-Fi: it may stutter. From the next connection.</string>
+</resources>

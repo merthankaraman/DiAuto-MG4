@@ -199,6 +199,12 @@ class DaSettingsActivity : BaseActivity() {
             appliesOnReconnect()
             showTab(selectedTab)
         })
+        if (settings.testMode && !settings.musicViaBluetooth) {
+            row(R.string.dset_music_pcm, R.string.dset_music_pcm_summary, yesNo(!settings.useAacAudio) {
+                settings.useAacAudio = !it
+                appliesOnReconnect()
+            })
+        }
         // On its own channel the voice can be cleaned up instead (from the next prompt on).
         // Voice processing is still being tested: only in test mode (Settings > About).
         if (settings.testMode && (settings.separateAudioStreams || settings.musicViaBluetooth)) {

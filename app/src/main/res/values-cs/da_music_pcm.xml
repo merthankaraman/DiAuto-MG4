@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">Nekomprimovaná hudba (PCM)</string>
+    <string name="dset_music_pcm_summary">Telefon posílá hudbu bez komprese AAC. Asi 1,5 Mb/s přes Wi-Fi: může se zadrhávat. Od příštího připojení.</string>
+</resources>
