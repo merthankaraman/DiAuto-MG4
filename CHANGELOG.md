@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta4
+
+- Steering wheel in climate mode: the right-hand buttons no longer change the Android Auto track. DiAuto leaves them to the car in every mode except media, as the stock launcher does.
+
 # DiAuto MG4+ 2.2.2-beta3
 
 - Test mode: uncompressed music (PCM) instead of AAC, to compare (*Sound*, from the next connection). It uses more Wi-Fi and may stutter.
