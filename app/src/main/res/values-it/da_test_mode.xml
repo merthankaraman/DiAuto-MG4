@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Modalità test</string>
-    <string name="dset_test_mode_summary">Mostra nelle impostazioni le funzioni in prova: il modello inviato a Maps, il consumo da MG4Dash e acuti, chiarezza e margine della voce. Disattivata, usano i valori predefiniti.</string>
+    <string name="dset_test_mode_summary">Mostra le funzioni in prova nelle Impostazioni: il modello inviato a Maps, i dati del modello di consumo a schermo, la musica non compressa e acuti, chiarezza e margine della voce. Disattivato, usano i valori predefiniti.</string>
 </resources>

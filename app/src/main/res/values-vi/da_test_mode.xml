@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Chế độ thử nghiệm</string>
-    <string name="dset_test_mode_summary">Hiện trong cài đặt các tính năng đang thử nghiệm: mô hình gửi cho Maps, mức tiêu thụ từ MG4Dash, và âm cao, độ rõ, khoảng dư của giọng. Tắt: dùng giá trị mặc định.</string>
+    <string name="dset_test_mode_summary">Hiển thị các tính năng đang thử trong Cài đặt: mô hình gửi đến Maps, số liệu mô hình tiêu thụ trên màn hình, nhạc không nén, và âm cao, độ rõ, khoảng dư của giọng nói. Tắt thì dùng giá trị mặc định.</string>
 </resources>

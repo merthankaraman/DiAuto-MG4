@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Tesztmód</string>
-    <string name="dset_test_mode_summary">Megjeleníti a beállításokban a tesztelés alatt álló funkciókat: a Térképnek küldött modellt, az MG4Dash fogyasztását, valamint a hang magasait, tisztaságát és tartalékát. Kikapcsolva az alapértékeket használják.</string>
+    <string name="dset_test_mode_summary">Megjeleníti a tesztelt funkciókat a Beállításokban: a Mapsnek küldött modellt, a fogyasztási modell adatait a képernyőn, a tömörítetlen zenét, valamint a hang magasait, tisztaságát és tartalékát. Kikapcsolva alapértékek.</string>
 </resources>

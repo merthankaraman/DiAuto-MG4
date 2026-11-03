@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Testovací režim</string>
-    <string name="dset_test_mode_summary">Zobrazí v nastavení testované funkce: model odesílaný do Map, spotřebu z MG4Dash a výšky, srozumitelnost a rezervu hlasu. Vypnuto: použijí výchozí hodnoty.</string>
+    <string name="dset_test_mode_summary">Zobrazí testované funkce v Nastavení: model odesílaný do Map, údaje modelu spotřeby na obrazovce, nekomprimovanou hudbu a výšky, zřetelnost a rezervu hlasu. Vypnuto: výchozí hodnoty.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Tryb testowy</string>
-    <string name="dset_test_mode_summary">Pokazuje w ustawieniach testowane funkcje: model wysyłany do Map, zużycie z MG4Dash oraz wysokie tony, wyrazistość i zapas głosu. Wyłączony: używają wartości domyślnych.</string>
+    <string name="dset_test_mode_summary">Pokazuje funkcje testowe w Ustawieniach: model wysyłany do Map, dane modelu zużycia na ekranie, muzykę bez kompresji oraz wysokie tony, wyrazistość i zapas głosu. Wyłączone: wartości domyślne.</string>
 </resources>

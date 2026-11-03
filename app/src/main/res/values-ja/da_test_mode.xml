@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">テストモード</string>
-    <string name="dset_test_mode_summary">設定にテスト中の機能を表示します：マップに送るモデル、MG4Dash の電費、音声の高音・明瞭さ・余裕。オフのときは既定値を使います。</string>
+    <string name="dset_test_mode_summary">設定にテスト中の機能を表示します：マップに送るモデル、消費モデルの数値の画面表示、非圧縮の音楽、音声の高音・明瞭さ・余裕。オフのときは既定値を使います。</string>
 </resources>

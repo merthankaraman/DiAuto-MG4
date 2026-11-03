@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Testmodus</string>
-    <string name="dset_test_mode_summary">Toont in de instellingen de functies die getest worden: het model naar Maps, het verbruik van MG4Dash en de hoge tonen, helderheid en marge van de stem. Uit: ze gebruiken hun standaardwaarden.</string>
+    <string name="dset_test_mode_summary">Toont de testfuncties in Instellingen: het model dat naar Maps gaat, live cijfers van het verbruiksmodel, ongecomprimeerde muziek en hoge tonen, helderheid en marge van de stem. Uit: standaardwaarden.</string>
 </resources>

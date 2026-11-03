@@ -27,12 +27,16 @@ can plan your charging stops.
 
 ### Android Auto, wireless and automatic
 - Once your phone is paired with the car over Bluetooth, it joins the car's own Wi-Fi hotspot and
-  Android Auto starts by itself every trip. A USB cable works too.
+  Android Auto starts by itself every trip. A USB cable works too: a phone already plugged in when
+  the car starts connects over USB, ahead of wireless.
 - The car has a single Wi-Fi radio. When your phone connects over Bluetooth, DiAuto switches the
-  car's own Wi-Fi client off so the Android Auto hotspot gets the whole radio (smooth picture and
-  sound), and switches it back on once the session has ended for a while (1 minute by default,
-  10 s to 5 min in *Settings → Connection*). With no phone in the car, the car keeps joining its own
-  Wi-Fi networks, such as your home network.
+  car's own Wi-Fi client off and restarts the hotspot, so Android Auto gets the whole radio (smooth
+  picture and sound). The client comes back once no phone is linked (after 10 s by default, 10 s to
+  5 min in *Settings → Connection*). At a car start with no phone linked, DiAuto switches it on, so
+  the car joins its own Wi-Fi networks, such as your home network.
+- The hotspot's 5 GHz channel is chosen automatically, or by you in *Settings → Connection*.
+- Calls go through the car's hands-free. On SWI69, the car's call window no longer covers Android
+  Auto (SWI68 is still being looked at).
 - DiAuto installs as an **update of the car's original Android Auto app** (AllGo). The car's
   launcher sees it as its Android Auto: the Android Auto tile works and the media card shows the
   song, artist and cover.
@@ -58,8 +62,15 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
 - DiAuto sends Maps the battery level, range, consumption and the **real fast-charging power of your
   MG4 version** (Standard 51 kWh, Comfort / Luxury / XPower 64 kWh, Extended Range 77 kWh). Maps
   then shows the battery at arrival and adds charging stops to long routes.
-- The version, net battery capacity and state of health are detected from the car. Each can be
-  changed in *Settings → Car*, with a button to go back to automatic.
+- The battery version comes from the car when it reports it, otherwise from your choice in
+  *Settings → Car* (64 kWh by default, and Comfort can only be chosen by hand). The state of health
+  is measured while you drive, after about 15 % of charge used: until then the setting shows it as
+  being measured, and Maps is told 95 %. Each can be changed, with a button to go back to automatic.
+- **Consumption model for Maps (experimental, off by default):** instead of the car's average
+  consumption, Maps gets a description of the car: rolling and air resistance, outside temperature
+  and climate power. Google's servers then work out each part of the route with the expected speed,
+  traffic and climb. A window explains it when you switch it on. The figures are estimates, still
+  being calibrated on real trips.
 - **Battery preheating before a charging stop** (off by default): when the next stop on the Maps
   route is a charger, DiAuto turns battery heating on a set time before you arrive (30 min by
   default, 5 to 60 min) and turns it off again if the route changes. It uses the battery
@@ -69,9 +80,10 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
 
 ### Sound
 - Navigation prompts and the assistant get their own channel, so they are heard over the radio or
-  your music, at a voice level you choose (up to +200 %).
+  your music.
 - Music plays over Android Auto by default. *Music over Bluetooth* keeps the music on the car's
   Bluetooth and the rest on Android Auto.
+- *Wi-Fi audio buffer*: shorter makes play and pause quicker, longer gives fewer dropouts.
 
 <p align="center"><img src="docs/screenshots/settings_sound.png" width="800" alt="Settings, Sound tab"></p>
 
@@ -80,7 +92,16 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   buttons, in the car's language (22 languages).
 - A short **tutorial** at first start shows the gestures and the main features. It can be skipped,
   and shown again from *Settings → About*.
-- Updates from this repository, from the app (*Settings → About*, betas optional).
+- Night mode follows the car's lights and sunset to sunrise, or the sun only.
+- Updates from this repository, from the app (*Settings → About*, betas optional). The update window
+  shows how much data will be downloaded, and advises using a Wi-Fi network or USB if you can.
+- **Test mode** (*Settings → About*, off by default) shows the features still being tested, such as
+  uncompressed music or live figures for the consumption model.
+
+### Privacy
+DiAuto sends no data anywhere: its only Internet access is checking this repository for updates.
+Wireless Android Auto only accepts a phone on the car's own hotspot. Logs stay on the car unless you
+export them, and contain no destinations, road names, GPS position, or phone and Wi-Fi names.
 
 ## Gestures over Android Auto
 
@@ -130,7 +151,8 @@ Uninstall updates*) or with `adb shell pm uninstall com.allgo.app.androidauto`.
 Open an [issue](https://github.com/Skittle6938/DiAuto-MG4/issues) and add:
 - *Settings → About → Compatibility report*: a short summary of your setup (car firmware, Android,
   DiAuto settings), with no personal data.
-- *Settings → About → Logs → Export*, taken right after the problem.
+- The log from *Settings → About → Logs → Export*, taken right after the problem. Logs are on by
+  default (about 0.6 MB per hour of driving, 20 MB at most) and can be switched off.
 
 <p align="center"><img src="docs/screenshots/settings_about.png" width="800" alt="Settings, About tab"></p>
 

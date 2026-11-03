@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">测试模式</string>
-    <string name="dset_test_mode_summary">在设置中显示测试中的功能：发送给地图的模型、MG4Dash 能耗以及语音高音、清晰度和余量。关闭时使用默认值。</string>
+    <string name="dset_test_mode_summary">在设置中显示测试中的功能：发送给地图的模型、屏幕上的能耗模型数据、无压缩音乐，以及语音高音、清晰度和余量。关闭时使用默认值。</string>
 </resources>

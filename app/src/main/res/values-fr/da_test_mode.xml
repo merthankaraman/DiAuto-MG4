@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Mode test</string>
-    <string name="dset_test_mode_summary">Affiche dans les réglages les fonctions en cours de test : le modèle envoyé à Maps, la consommation de MG4Dash, ainsi que les aigus, la clarté et la marge de la voix. Désactivé, elles reprennent leurs valeurs par défaut.</string>
+    <string name="dset_test_mode_summary">Affiche les fonctions en test dans les réglages : le modèle envoyé à Maps, les chiffres du modèle de consommation à l\'écran, la musique non compressée, et les aigus, la clarté et la marge de la voix. Désactivé, elles gardent leurs valeurs par défaut.</string>
 </resources>

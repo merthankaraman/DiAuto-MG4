@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Test modu</string>
-    <string name="dset_test_mode_summary">Ayarlarda test edilen özellikleri gösterir: Haritalar\'a gönderilen model, MG4Dash tüketimi ve sesin tizleri, netliği ve payı. Kapalıyken varsayılan değerler kullanılır.</string>
+    <string name="dset_test_mode_summary">Ayarlarda test edilen özellikleri gösterir: Maps\'e gönderilen model, ekranda tüketim modeli verileri, sıkıştırılmamış müzik ve sesin tizi, netliği ve payı. Kapalıyken varsayılanlar kullanılır.</string>
 </resources>
