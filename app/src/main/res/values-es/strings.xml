@@ -979,7 +979,7 @@
     <string name="battery_for_google_maps">Battery for Google Maps</string>
     <string name="battery_for_google_maps_description">Send MG4 charge and range to Android Auto so Google Maps can show battery level. Set net capacity and SOH below. Needs a platform-signed install on the car.</string>
     <string name="battery_net_capacity_kwh">Net capacity (kWh)</string>
-    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 50.8, 61.7 or 74.4 kWh. Maps uses capacity × SOH.</string>
+    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 49, 61 or 72.5 kWh. Maps uses capacity × SOH.</string>
     <string name="battery_net_capacity_enter">Enter net (usable) capacity when new, in kWh</string>
     <string name="battery_soh_percent">Battery SOH (%)</string>
     <string name="battery_soh_description">Enter battery state of health from 1 to 100. Decimal values such as 98.75 are supported. Effective usable capacity = capacity × SOH / 100.</string>

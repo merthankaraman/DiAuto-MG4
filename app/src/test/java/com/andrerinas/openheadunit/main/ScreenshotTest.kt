@@ -103,7 +103,7 @@ class ScreenshotTest {
         header("Sans MG4 Dash, voiture muette")
         rows(BatteryCapacityResolver.resolve(null, null, null, null))
         header("Forcé à la main")
-        rows(BatteryCapacityResolver.resolve(50.8f, 97.5f, null, null))
+        rows(BatteryCapacityResolver.resolve(49f, 97.5f, null, null))
         save(column, 1920, 900, "battery_settings.png")
     }
 

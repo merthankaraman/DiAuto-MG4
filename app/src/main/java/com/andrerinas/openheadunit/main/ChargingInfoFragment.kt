@@ -444,7 +444,7 @@ class ChargingInfoFragment : Fragment() {
     private fun formatDecimal(value: Float): String = formatBatteryDecimal(value)
 }
 
-/** "61.7 kWh · automatic (64 kWh battery by default)", or the value set by hand. */
+/** "61.0 kWh · automatic (64 kWh battery by default)", or the value set by hand. */
 internal fun batteryCapacityText(context: Context, resolved: BatteryCapacityResolver.Resolved): String {
     val kwh = context.getString(R.string.battery_value_kwh, resolved.netKwh)
     return if (resolved.netSource == BatteryCapacityResolver.Source.MANUAL) {

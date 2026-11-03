@@ -33,8 +33,11 @@ object BatteryCapacityResolver {
         val effectiveKwh: Float get() = (netKwh * sohPercent / 100f).coerceIn(1f, 200f)
     }
 
-    /** MG4 batteries: nameplate kWh to usable kWh (ev-database). */
-    val PACKS = listOf(51 to 50.8f, 64 to 61.7f, 77 to 74.4f)
+    /**
+     * MG4 batteries: nameplate kWh to the energy estimated between 100 % and 0 % shown by the car.
+     * This is less than the battery's full usable capacity, as the battery keeps a buffer.
+     */
+    val PACKS = listOf(51 to 49f, 64 to 61f, 77 to 72.5f)
     const val DEFAULT_PACK = 64
 
     /** What Maps is told while there is no measurement yet: most cars are not new. */
@@ -50,12 +53,12 @@ object BatteryCapacityResolver {
 
     /**
      * The battery a measured capacity belongs to: the one whose state of health it gives between
-     * 80 and 102 %, the highest if two do (a worn 64 kWh and a new 51 kWh overlap below ~83 %),
+     * 80 and 105 %, the highest if two do (a worn 64 kWh and a new 51 kWh overlap below ~84 %),
      * else the nearest.
      */
     fun packForMeasured(kwh: Float, among: List<Int> = PACKS.map { it.first }): Int {
         val candidates = PACKS.filter { it.first in among }
-        return candidates.filter { kwh / it.second in 0.80f..1.02f }.maxByOrNull { kwh / it.second }?.first
+        return candidates.filter { kwh / it.second in 0.80f..1.05f }.maxByOrNull { kwh / it.second }?.first
             ?: candidates.minByOrNull { abs(it.second - kwh) }!!.first
     }
 

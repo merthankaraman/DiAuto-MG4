@@ -541,29 +541,41 @@ class Settings(private val context: Context) {
 
     /**
      * User-declared net (usable) pack capacity when new, in kWh.
-     * Placeholder default 61.7 is only a MG4 Long Range suggestion — not measured on the car.
+     * Placeholder default 61 is only a MG4 Long Range suggestion — not measured on the car.
      * Effective energy for Maps = [batteryNetCapacityKwh] × [batteryStateOfHealthPercent] / 100.
      */
     var batteryNetCapacityKwh: Float
         get() {
+            if (prefs.contains("battery-net-capacity-v2-kwh")) {
+                return prefs.getFloat("battery-net-capacity-v2-kwh", 61f).coerceIn(1f, 200f)
+            }
             if (prefs.contains("battery-net-capacity-kwh")) {
-                return prefs.getFloat("battery-net-capacity-kwh", 61.7f).coerceIn(1f, 200f)
+                return currentPackFigure(prefs.getFloat("battery-net-capacity-kwh", 61f)).coerceIn(1f, 200f)
             }
             if (prefs.contains("battery-demo-capacity-kwh-f")) {
-                return prefs.getFloat("battery-demo-capacity-kwh-f", 61.7f).coerceIn(1f, 200f)
+                return currentPackFigure(prefs.getFloat("battery-demo-capacity-kwh-f", 61f)).coerceIn(1f, 200f)
             }
             if (prefs.contains("battery-demo-capacity-kwh")) {
                 return prefs.getInt("battery-demo-capacity-kwh", 64).toFloat().coerceIn(1f, 200f)
             }
-            return 61.7f
+            return 61f
         }
         set(value) {
             prefs.edit()
-                .putFloat("battery-net-capacity-kwh", value.coerceIn(1f, 200f))
+                .putFloat("battery-net-capacity-v2-kwh", value.coerceIn(1f, 200f))
+                .remove("battery-net-capacity-kwh")
                 .remove("battery-demo-capacity-kwh-f")
                 .remove("battery-demo-capacity-kwh")
                 .apply()
         }
+
+    /** A battery version saved with its former figure (before 2.2.2) moves to the current one. */
+    private fun currentPackFigure(kwh: Float): Float = when {
+        kotlin.math.abs(kwh - 50.8f) < 0.05f -> 49f
+        kotlin.math.abs(kwh - 61.7f) < 0.05f -> 61f
+        kotlin.math.abs(kwh - 74.4f) < 0.05f -> 72.5f
+        else -> kwh
+    }
 
     /** Pack state of health 1–100%, including decimal values such as 98.75. */
     var batteryStateOfHealthPercent: Float
@@ -586,8 +598,8 @@ class Settings(private val context: Context) {
     var batteryCapacityManual: Boolean
         get() = prefs.getBoolean(
             "battery-capacity-manual",
-            listOf("battery-net-capacity-kwh", "battery-demo-capacity-kwh-f", "battery-demo-capacity-kwh")
-                .any(prefs::contains) && kotlin.math.abs(batteryNetCapacityKwh - 61.7f) > 0.05f,
+            listOf("battery-net-capacity-v2-kwh", "battery-net-capacity-kwh", "battery-demo-capacity-kwh-f", "battery-demo-capacity-kwh")
+                .any(prefs::contains) && kotlin.math.abs(batteryNetCapacityKwh - 61f) > 0.05f,
         )
         set(value) { prefs.edit().putBoolean("battery-capacity-manual", value).apply() }
 

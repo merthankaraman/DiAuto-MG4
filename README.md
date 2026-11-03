@@ -68,7 +68,9 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   *Settings → Car* (64 kWh by default, and Comfort can only be chosen by hand). The state of health
   is measured while you drive, after about 15 % of charge used: until then the setting shows it as
   being measured, and Maps is told 95 %. The usable capacity and the state of health can also be set
-  by hand, with a button to go back to automatic.
+  by hand, with a button to go back to automatic. The default capacities (49, 61 and 72.5 kWh) are
+  estimates of the energy between 100 % and 0 % shown by the car, not the battery's full usable
+  capacity, as the battery keeps a buffer.
 - **Consumption model for Maps (on by default):** instead of the car's average consumption, Maps gets
   a description of the car: rolling and air resistance, outside temperature and climate power,
   refreshed every 30 s. Google's servers then work out each part of

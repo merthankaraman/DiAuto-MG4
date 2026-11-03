@@ -64,7 +64,7 @@
     <string name="battery_for_google_maps">Google Maps için batarya</string>
     <string name="battery_for_google_maps_description">MG4 şarj ve menzil bilgisini Android Auto’ya gönderir; Google Maps pil seviyesini gösterebilir. Aşağıda net kapasite ve SOH’u ayarlayın. Araçta platform imzalı kurulum gerekir.</string>
     <string name="battery_net_capacity_kwh">Net kapasite (kWh)</string>
-    <string name="battery_net_capacity_description">MG4 için kullanılabilir batarya kapasitesini seçin: 50,8, 61,7 veya 74,4 kWh. Maps kapasite × SOH değerini kullanır.</string>
+    <string name="battery_net_capacity_description">MG4 için kullanılabilir batarya kapasitesini seçin: 49, 61 veya 72,5 kWh. Maps kapasite × SOH değerini kullanır.</string>
     <string name="battery_net_capacity_enter">Yeni haldeki net (kullanılabilir) kapasiteyi kWh olarak girin</string>
     <string name="battery_soh_percent">Batarya SOH (%)</string>
     <string name="battery_soh_description">Batarya sağlık oranını 1–100 arasında elle girin. 98,75 gibi ondalıklı değerler desteklenir. Etkin kullanılabilir kapasite = kapasite × SOH / 100.</string>

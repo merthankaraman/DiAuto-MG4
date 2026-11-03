@@ -35,7 +35,7 @@ class BatteryCapacityResolverTest {
         val r = resolve(type = 16, measured = 46.7f)
         assertEquals(51, r.pack)
         assertEquals(Source.MEASURED, r.sohSource)
-        assertEquals(91.9f, r.sohPercent, 0.1f)
+        assertEquals(95.31f, r.sohPercent, 0.1f)
         // The car says nothing (issue #8): the battery stays the default one, what Maps gets is still the measurement.
         val unknown = resolve(measured = 46.7f)
         assertEquals(64, unknown.pack)
@@ -46,14 +46,14 @@ class BatteryCapacityResolverTest {
     @Test
     fun `DiAuto's own measurement wins over MG4 Dash's, and the car over both`() {
         val dash = Mg4DashBattery.Reading(pack = 51, packChosen = false, measuredKwh = 44f)
-        assertEquals(46.7f / 61.7f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
+        assertEquals(46.7f / 61f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
         assertEquals(Source.CAR, resolve(car = 64f, measured = 46.7f).netSource)
     }
 
     @Test
     fun `without any source the 64 kWh battery and 95 percent are used`() {
         val r = resolve()
-        assertEquals(61.7f, r.netKwh, 0.001f)
+        assertEquals(61f, r.netKwh, 0.001f)
         assertEquals(Source.DEFAULT, r.netSource)
         assertEquals(64, r.pack)
         assertEquals(95f, r.sohPercent, 0.001f)
@@ -64,16 +64,16 @@ class BatteryCapacityResolverTest {
     fun `a capacity published by the car wins over MG4 Dash`() {
         val dash = Mg4DashBattery.Reading(pack = 51, packChosen = true, measuredKwh = 55f)
         val r = resolve(car = 64f, dash = dash)
-        assertEquals(61.7f, r.netKwh, 0.001f)
+        assertEquals(61f, r.netKwh, 0.001f)
         assertEquals(Source.CAR, r.netSource)
         assertEquals(Source.MEASURED, r.sohSource)
-        assertEquals(55f / 61.7f * 100f, r.sohPercent, 0.01f)
+        assertEquals(55f / 61f * 100f, r.sohPercent, 0.01f)
     }
 
     @Test
     fun `nameplate figures from the car become usable ones, other figures are kept`() {
-        assertEquals(50.8f, BatteryCapacityResolver.carUsableKwh(51f)!!, 0.001f)
-        assertEquals(74.4f, BatteryCapacityResolver.carUsableKwh(77.2f)!!, 0.001f)
+        assertEquals(49f, BatteryCapacityResolver.carUsableKwh(51f)!!, 0.001f)
+        assertEquals(72.5f, BatteryCapacityResolver.carUsableKwh(77.2f)!!, 0.001f)
         assertEquals(58.0f, BatteryCapacityResolver.carUsableKwh(58f)!!, 0.001f)
         assertNull(BatteryCapacityResolver.carUsableKwh(0f))
         assertNull(BatteryCapacityResolver.carUsableKwh(0.064f))
@@ -84,7 +84,7 @@ class BatteryCapacityResolverTest {
     fun `MG4 Dash's measurement stands in when DiAuto has none, its chosen battery when the car says nothing`() {
         val dash = Mg4DashBattery.Reading(pack = 51, packChosen = true, measuredKwh = 47f)
         val r = resolve(dash = dash)
-        assertEquals(50.8f, r.netKwh, 0.001f)
+        assertEquals(49f, r.netKwh, 0.001f)
         assertEquals(Source.MEASURED, r.sohSource)
         assertEquals(51, r.pack)
         assertEquals(47f, r.effectiveKwh, 0.01f)
@@ -95,7 +95,7 @@ class BatteryCapacityResolverTest {
     fun `MG4 Dash without a measurement leaves the default health`() {
         val dash = Mg4DashBattery.Reading(pack = 77, packChosen = true, measuredKwh = null)
         val r = resolve(dash = dash)
-        assertEquals(74.4f, r.netKwh, 0.001f)
+        assertEquals(72.5f, r.netKwh, 0.001f)
         assertEquals(95f, r.sohPercent, 0.001f)
         assertEquals(Source.DEFAULT, r.sohSource)
     }
@@ -103,17 +103,23 @@ class BatteryCapacityResolverTest {
     @Test
     fun `settings forced by hand win over everything`() {
         val dash = Mg4DashBattery.Reading(pack = 64, packChosen = true, measuredKwh = 60f)
-        val r = resolve(manualNet = 50.8f, manualSoh = 98.75f, car = 64f, dash = dash)
-        assertEquals(50.8f, r.netKwh, 0.001f)
+        val r = resolve(manualNet = 49f, manualSoh = 98.75f, car = 64f, dash = dash)
+        assertEquals(49f, r.netKwh, 0.001f)
         assertEquals(Source.MANUAL, r.netSource)
         assertEquals(98.75f, r.sohPercent, 0.001f)
         assertEquals(Source.MANUAL, r.sohSource)
     }
 
     @Test
+    fun `a measurement slightly above the 64 kWh figure does not read as a worn 77 kWh`() {
+        assertEquals(64, BatteryCapacityResolver.packForMeasured(63f, listOf(64, 77)))
+        assertEquals(77, BatteryCapacityResolver.packForMeasured(68f, listOf(64, 77)))
+    }
+
+    @Test
     fun `the nearest battery is picked from a usable capacity`() {
         assertEquals(51, BatteryCapacityResolver.nearestPack(46.5f))
-        assertEquals(51, BatteryCapacityResolver.nearestPack(55.5f))
+        assertEquals(51, BatteryCapacityResolver.nearestPack(54.5f))
         assertEquals(64, BatteryCapacityResolver.nearestPack(57f))
         assertEquals(77, BatteryCapacityResolver.nearestPack(70f))
     }
