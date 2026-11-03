@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Modo de prueba</string>
-    <string name="dset_test_mode_summary">Muestra las funciones en prueba en Ajustes: el modelo enviado a Maps, las cifras del modelo de consumo en pantalla, la música sin comprimir y los agudos, la claridad y el margen de la voz. Desactivado, usan sus valores por defecto.</string>
+    <string name="dset_test_mode_summary">Muestra las funciones en prueba en Ajustes: el modelo enviado a Maps, las cifras del modelo de consumo en pantalla y los agudos, la claridad y el margen de la voz. Desactivado, usan sus valores por defecto.</string>
 </resources>

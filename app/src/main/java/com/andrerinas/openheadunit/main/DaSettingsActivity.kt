@@ -199,7 +199,7 @@ class DaSettingsActivity : BaseActivity() {
             appliesOnReconnect()
             showTab(selectedTab)
         })
-        if (settings.testMode && !settings.musicViaBluetooth) {
+        if (!settings.musicViaBluetooth) {
             row(R.string.dset_music_pcm, R.string.dset_music_pcm_summary, yesNo(!settings.useAacAudio) {
                 settings.useAacAudio = !it
                 appliesOnReconnect()

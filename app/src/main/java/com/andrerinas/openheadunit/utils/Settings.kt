@@ -834,8 +834,7 @@ class Settings(private val context: Context) {
      * over Wi‑Fi (hybrid off). Phone must accept the codec; turn off if audio fails to start.
      */
     var useAacAudio: Boolean
-        // Off (PCM) is a test-mode choice: back to AAC when test mode is left.
-        get() = !testMode || prefs.getBoolean(KEY_USE_AAC_AUDIO, true)
+        get() = prefs.getBoolean(KEY_USE_AAC_AUDIO, true)
         set(value) { prefs.edit().putBoolean(KEY_USE_AAC_AUDIO, value).apply() }
 
     var micEchoCanceler: Boolean

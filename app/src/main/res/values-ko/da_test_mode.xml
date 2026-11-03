@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">테스트 모드</string>
-    <string name="dset_test_mode_summary">설정에 시험 중인 기능을 표시합니다: 지도로 보내는 모델, 화면의 소비 모델 수치, 비압축 음악, 음성 고음·선명도·여유. 끄면 기본값을 사용합니다.</string>
+    <string name="dset_test_mode_summary">설정에 시험 중인 기능을 표시합니다: 지도로 보내는 모델, 화면의 소비 모델 수치, 음성 고음·선명도·여유. 끄면 기본값을 사용합니다.</string>
 </resources>

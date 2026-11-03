@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Tryb testowy</string>
-    <string name="dset_test_mode_summary">Pokazuje funkcje testowe w Ustawieniach: model wysyłany do Map, dane modelu zużycia na ekranie, muzykę bez kompresji oraz wysokie tony, wyrazistość i zapas głosu. Wyłączone: wartości domyślne.</string>
+    <string name="dset_test_mode_summary">Pokazuje funkcje testowe w Ustawieniach: model wysyłany do Map, dane modelu zużycia na ekranie oraz wysokie tony, wyrazistość i zapas głosu. Wyłączone: wartości domyślne.</string>
 </resources>

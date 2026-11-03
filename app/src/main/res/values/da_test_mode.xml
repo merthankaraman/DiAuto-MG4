@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Test mode</string>
-    <string name="dset_test_mode_summary">Shows the features being tested in Settings: the model sent to Maps, live figures for the consumption model, uncompressed music, and voice treble, clarity and headroom. Off, they use their defaults.</string>
+    <string name="dset_test_mode_summary">Shows the features being tested in Settings: the model sent to Maps, live figures for the consumption model, and voice treble, clarity and headroom. Off, they use their defaults.</string>
 </resources>

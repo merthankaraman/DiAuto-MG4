@@ -83,6 +83,8 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   your music.
 - Music plays over Android Auto by default. *Music over Bluetooth* keeps the music on the car's
   Bluetooth and the rest on Android Auto.
+- *Uncompressed music (PCM)*, off by default: the phone sends music without AAC compression. It uses
+  more Wi-Fi (about 1.5 Mb/s) and may stutter on some phones or cars.
 - *Wi-Fi audio buffer*: shorter makes play and pause quicker, longer gives fewer dropouts.
 
 <p align="center"><img src="docs/screenshots/settings_sound.png" width="800" alt="Settings, Sound tab"></p>
@@ -96,7 +98,7 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
 - Updates from this repository, from the app (*Settings → About*, betas optional). The update window
   shows how much data will be downloaded, and advises using a Wi-Fi network or USB if you can.
 - **Test mode** (*Settings → About*, off by default) shows the features still being tested, such as
-  uncompressed music or live figures for the consumption model.
+  live figures for the consumption model.
 
 ### Privacy
 DiAuto sends no data anywhere: its only Internet access is checking this repository for updates.

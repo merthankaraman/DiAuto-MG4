@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dset_test_mode">Mod test</string>
-    <string name="dset_test_mode_summary">Afișează funcțiile în test în Setări: modelul trimis către Maps, cifrele modelului de consum pe ecran, muzica necomprimată și acutele, claritatea și rezerva vocii. Dezactivat: valori implicite.</string>
+    <string name="dset_test_mode_summary">Afișează funcțiile în test în Setări: modelul trimis către Maps, cifrele modelului de consum pe ecran și acutele, claritatea și rezerva vocii. Dezactivat: valori implicite.</string>
 </resources>
