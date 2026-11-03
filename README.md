@@ -70,7 +70,7 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   being measured, and Maps is told 95 %. The usable capacity and the state of health can also be set
   by hand, with a button to go back to automatic. The default capacities (49, 61 and 72.5 kWh) are
   estimates of the energy between 100 % and 0 % shown by the car, not the battery's full usable
-  capacity, as the battery keeps a buffer.
+  capacity, as the battery keeps a buffer (see the [appendix](#appendix-mg4-battery-capacities)).
 - **Consumption model for Maps (on by default):** instead of the car's average consumption, Maps gets
   a description of the car: rolling and air resistance, outside temperature and climate power,
   refreshed every 30 s. Google's servers then work out each part of
@@ -180,6 +180,23 @@ Studio, open the project and pick **carDebug** or **phoneDebug**. Tests: `gradle
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version and
 [docs/MG4_TESTING.md](docs/MG4_TESTING.md) for the in-car checklist.
+
+## Appendix: MG4 battery capacities
+
+The most likely values for a new battery, measured from 100 % until the car stops, at the battery
+(without charging losses):
+
+- **51 kWh LFP: about 50 kWh**
+  - Between the 49.5 kWh measured in tests and the 50.8 kWh reported by owners.
+  - From 100 % to 0 % shown: about 49 kWh.
+- **64 kWh NMC: about 62.5 kWh**
+  - Between the official 61.7 kWh and the 63.2 kWh measured by Green NCAP.
+  - From 100 % to 0 % shown: about 61 kWh.
+- **77 kWh NMC: about 74.5 kWh**
+  - The official 74.4 kWh are probably reached or slightly exceeded, as on the 64 kWh.
+  - From 100 % to 0 % shown: about 72.5 kWh.
+
+For range, rely on the "0 % shown" values. These are the ones DiAuto uses by default.
 
 ## License
 
