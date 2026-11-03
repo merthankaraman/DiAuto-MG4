@@ -80,7 +80,7 @@
     <string name="reconnect_now">Połącz ponownie</string>
     <string name="reconnect_later">Później</string>
     <string name="dset_variant">Wersja MG4</string>
-    <string name="dset_variant_summary">Maksymalna moc szybkiego ładowania wysyłana do Google Maps</string>
+    <string name="dset_variant_summary">Pojemność, moc ładowania i model zużycia dla Map Google</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Podgrzej baterię przed ładowarką</string>
     <string name="dset_preheat_summary">Gdy następny przystanek trasy Map to ładowarka, ogrzewanie baterii włącza się na czas i wyłącza po zmianie trasy.</string>

@@ -80,7 +80,7 @@
     <string name="reconnect_now">Opnieuw verbinden</string>
     <string name="reconnect_later">Later</string>
     <string name="dset_variant">MG4-versie</string>
-    <string name="dset_variant_summary">Maximaal snellaadvermogen voor Google Maps</string>
+    <string name="dset_variant_summary">Capaciteit, laadvermogen en verbruiksmodel voor Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Accu voorverwarmen voor een laadpaal</string>
     <string name="dset_preheat_summary">Is de volgende stop op de Maps-route een laadpaal, dan gaat de accuverwarming op tijd aan en weer uit als de route verandert.</string>

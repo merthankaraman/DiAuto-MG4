@@ -80,7 +80,7 @@
     <string name="reconnect_now">Reconectare</string>
     <string name="reconnect_later">Mai târziu</string>
     <string name="dset_variant">Versiunea MG4</string>
-    <string name="dset_variant_summary">Puterea maximă de încărcare rapidă trimisă către Google Maps</string>
+    <string name="dset_variant_summary">Capacitate, putere de încărcare și model de consum pentru Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Preîncălzește bateria înainte de o stație</string>
     <string name="dset_preheat_summary">Când următoarea oprire a traseului Maps este o stație de încărcare, încălzirea bateriei pornește la timp și se oprește dacă traseul se schimbă.</string>

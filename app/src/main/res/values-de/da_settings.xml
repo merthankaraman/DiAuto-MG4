@@ -80,7 +80,7 @@
     <string name="reconnect_now">Neu verbinden</string>
     <string name="reconnect_later">Später</string>
     <string name="dset_variant">MG4-Version</string>
-    <string name="dset_variant_summary">Maximale Schnellladeleistung für Google Maps</string>
+    <string name="dset_variant_summary">Kapazität, Ladeleistung und Verbrauchsmodell für Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Akku vor dem Laden vorheizen</string>
     <string name="dset_preheat_summary">Ist der nächste Halt der Maps-Route eine Ladesäule, schaltet sich die Akkuheizung rechtzeitig ein und bei geänderter Route wieder aus.</string>

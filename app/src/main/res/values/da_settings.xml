@@ -80,7 +80,7 @@
     <string name="reconnect_now">Reconnect</string>
     <string name="reconnect_later">Later</string>
     <string name="dset_variant">MG4 version</string>
-    <string name="dset_variant_summary">Peak fast-charging power sent to Google Maps</string>
+    <string name="dset_variant_summary">Capacity, charging power and consumption model for Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Preheat the battery before a charger</string>
     <string name="dset_preheat_summary">When the next stop on the Maps route is a charger, battery heating comes on in time and goes off if the route changes.</string>

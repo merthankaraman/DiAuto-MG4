@@ -80,7 +80,7 @@
     <string name="reconnect_now">重新連線</string>
     <string name="reconnect_later">稍後</string>
     <string name="dset_variant">MG4 版本</string>
-    <string name="dset_variant_summary">傳送給 Google 地圖的最大快充功率</string>
+    <string name="dset_variant_summary">用於 Google 地圖的容量、充電功率和能耗模型</string>
     <string name="dset_variant_auto">自動（%s）</string>
     <string name="dset_preheat">抵達充電站前預熱電池</string>
     <string name="dset_preheat_summary">當地圖路線的下一站是充電站時，電池加熱會及時開啟，路線改變時關閉。</string>

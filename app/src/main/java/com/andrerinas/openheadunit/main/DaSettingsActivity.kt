@@ -246,7 +246,7 @@ class DaSettingsActivity : BaseActivity() {
     private fun carTab() {
         // Each choice is saved at once; the reset button puts everything back on automatic.
         val battery = com.andrerinas.openheadunit.vehicle.BatteryCapacityResolver.current(this)
-        // One choice for both: the version gives Maps its usable capacity and its charging curve.
+        // One choice for all: the version gives Maps its capacity, charging curve and consumption model.
         rowText(getString(R.string.dset_variant), getString(R.string.dset_variant_summary),
             value(variantLabel(battery)) { pickVariant() })
         rowText(getString(R.string.battery_net_capacity_kwh), getString(R.string.battery_net_capacity_enter),

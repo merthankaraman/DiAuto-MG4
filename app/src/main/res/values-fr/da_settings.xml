@@ -80,7 +80,7 @@
     <string name="reconnect_now">Reconnecter</string>
     <string name="reconnect_later">Plus tard</string>
     <string name="dset_variant">Version de la MG4</string>
-    <string name="dset_variant_summary">Puissance de recharge rapide max envoyée à Google Maps</string>
+    <string name="dset_variant_summary">Capacité, puissance de recharge et modèle de consommation pour Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Préchauffer la batterie avant une borne</string>
     <string name="dset_preheat_summary">Quand la prochaine étape de l\'itinéraire Maps est une borne, le chauffage batterie s\'allume à temps et s\'éteint si le trajet change.</string>

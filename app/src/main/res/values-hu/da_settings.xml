@@ -80,7 +80,7 @@
     <string name="reconnect_now">Újracsatlakozás</string>
     <string name="reconnect_later">Később</string>
     <string name="dset_variant">MG4 változat</string>
-    <string name="dset_variant_summary">Legnagyobb gyorstöltési teljesítmény a Google Térképnek</string>
+    <string name="dset_variant_summary">Kapacitás, töltési teljesítmény és fogyasztási modell a Google Térképhez</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Akkumulátor előfűtése töltő előtt</string>
     <string name="dset_preheat_summary">Ha a Térkép útvonalának következő megállója töltő, az akkufűtés időben bekapcsol, és kikapcsol, ha az útvonal változik.</string>

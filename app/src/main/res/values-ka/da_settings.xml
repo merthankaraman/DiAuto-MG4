@@ -80,7 +80,7 @@
     <string name="reconnect_now">ხელახლა დაკავშირება</string>
     <string name="reconnect_later">მოგვიანებით</string>
     <string name="dset_variant">MG4-ის ვერსია</string>
-    <string name="dset_variant_summary">სწრაფი დამუხტვის მაქსიმალური სიმძლავრე Google Maps-ისთვის</string>
+    <string name="dset_variant_summary">ტევადობა, დამუხტვის სიმძლავრე და მოხმარების მოდელი Google Maps-ისთვის</string>
     <string name="dset_variant_auto">ავტო (%s)</string>
     <string name="dset_preheat">ბატარეის წინასწარი გათბობა დამტენამდე</string>
     <string name="dset_preheat_summary">თუ Maps-ის მარშრუტის შემდეგი გაჩერება დამტენია, ბატარეის გათბობა დროულად ჩაირთვება და მარშრუტის შეცვლისას გამოირთვება.</string>

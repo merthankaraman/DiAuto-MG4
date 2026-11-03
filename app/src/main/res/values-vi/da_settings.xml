@@ -80,7 +80,7 @@
     <string name="reconnect_now">Kết nối lại</string>
     <string name="reconnect_later">Để sau</string>
     <string name="dset_variant">Phiên bản MG4</string>
-    <string name="dset_variant_summary">Công suất sạc nhanh tối đa gửi tới Google Maps</string>
+    <string name="dset_variant_summary">Dung lượng, công suất sạc và mô hình tiêu thụ cho Google Maps</string>
     <string name="dset_variant_auto">Tự động (%s)</string>
     <string name="dset_preheat">Làm ấm pin trước trạm sạc</string>
     <string name="dset_preheat_summary">Khi điểm dừng tiếp theo trên lộ trình Maps là trạm sạc, sưởi pin bật kịp lúc và tắt nếu lộ trình thay đổi.</string>

@@ -80,7 +80,7 @@
     <string name="reconnect_now">Riconnetti</string>
     <string name="reconnect_later">Più tardi</string>
     <string name="dset_variant">Versione MG4</string>
-    <string name="dset_variant_summary">Potenza massima di ricarica rapida inviata a Google Maps</string>
+    <string name="dset_variant_summary">Capacità, potenza di ricarica e modello di consumo per Google Maps</string>
     <string name="dset_variant_auto">Auto (%s)</string>
     <string name="dset_preheat">Preriscaldare la batteria prima di una colonnina</string>
     <string name="dset_preheat_summary">Se la prossima tappa del percorso Maps è una colonnina, il riscaldamento della batteria si accende in tempo e si spegne se il percorso cambia.</string>

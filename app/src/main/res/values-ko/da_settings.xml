@@ -80,7 +80,7 @@
     <string name="reconnect_now">다시 연결</string>
     <string name="reconnect_later">나중에</string>
     <string name="dset_variant">MG4 버전</string>
-    <string name="dset_variant_summary">Google 지도로 보내는 최대 급속 충전 출력</string>
+    <string name="dset_variant_summary">Google 지도용 용량, 충전 출력, 소비 모델</string>
     <string name="dset_variant_auto">자동 (%s)</string>
     <string name="dset_preheat">충전소 전에 배터리 예열</string>
     <string name="dset_preheat_summary">지도 경로의 다음 경유지가 충전소이면 배터리 히터를 미리 켜고 경로가 바뀌면 끕니다.</string>

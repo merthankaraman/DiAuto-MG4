@@ -80,7 +80,7 @@
     <string name="reconnect_now">Yeniden bağlan</string>
     <string name="reconnect_later">Daha sonra</string>
     <string name="dset_variant">MG4 sürümü</string>
-    <string name="dset_variant_summary">Google Haritalar\'a gönderilen en yüksek hızlı şarj gücü</string>
+    <string name="dset_variant_summary">Google Haritalar için kapasite, şarj gücü ve tüketim modeli</string>
     <string name="dset_variant_auto">Otomatik (%s)</string>
     <string name="dset_preheat">Şarj istasyonundan önce bataryayı ısıt</string>
     <string name="dset_preheat_summary">Haritalar rotasındaki sonraki durak bir şarj istasyonuysa batarya ısıtması zamanında açılır, rota değişirse kapanır.</string>

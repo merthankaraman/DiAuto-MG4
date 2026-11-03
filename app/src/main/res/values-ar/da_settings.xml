@@ -80,7 +80,7 @@
     <string name="reconnect_now">إعادة الاتصال</string>
     <string name="reconnect_later">لاحقًا</string>
     <string name="dset_variant">إصدار MG4</string>
-    <string name="dset_variant_summary">أقصى قدرة شحن سريع مُرسلة إلى خرائط Google</string>
+    <string name="dset_variant_summary">السعة وقدرة الشحن ونموذج الاستهلاك لخرائط Google</string>
     <string name="dset_variant_auto">تلقائي (%s)</string>
     <string name="dset_preheat">تسخين البطارية قبل الشاحن</string>
     <string name="dset_preheat_summary">عندما تكون المحطة التالية في مسار الخرائط شاحنًا، يعمل تسخين البطارية في الوقت المناسب ويتوقف إذا تغير المسار.</string>

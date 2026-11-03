@@ -80,7 +80,7 @@
     <string name="reconnect_now">Переподключить</string>
     <string name="reconnect_later">Позже</string>
     <string name="dset_variant">Версия MG4</string>
-    <string name="dset_variant_summary">Максимальная мощность быстрой зарядки для Google Карт</string>
+    <string name="dset_variant_summary">Ёмкость, мощность зарядки и модель расхода для Google Карт</string>
     <string name="dset_variant_auto">Авто (%s)</string>
     <string name="dset_preheat">Прогрев батареи перед зарядкой</string>
     <string name="dset_preheat_summary">Если следующая точка маршрута в Картах — зарядная станция, подогрев батареи включится заранее и выключится при смене маршрута.</string>

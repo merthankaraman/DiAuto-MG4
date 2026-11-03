@@ -80,7 +80,7 @@
     <string name="reconnect_now">再接続</string>
     <string name="reconnect_later">後で</string>
     <string name="dset_variant">MG4 のバージョン</string>
-    <string name="dset_variant_summary">Google マップに送る急速充電の最大出力</string>
+    <string name="dset_variant_summary">Google マップ用の容量、充電出力、電費モデル</string>
     <string name="dset_variant_auto">自動 (%s)</string>
     <string name="dset_preheat">充電スポット前にバッテリーを予熱</string>
     <string name="dset_preheat_summary">Google マップのルートの次の経由地が充電スポットのとき、バッテリーヒーターを間に合うようにオンにし、ルートが変わればオフにします。</string>
