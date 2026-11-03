@@ -249,6 +249,8 @@ class DaSettingsActivity : BaseActivity() {
         // One choice for both: the version gives Maps its usable capacity and its charging curve.
         rowText(getString(R.string.dset_variant), batteryCapacityText(this, battery),
             value(variantLabel(battery)) { pickVariant() })
+        rowText(getString(R.string.battery_net_capacity_kwh), getString(R.string.battery_net_capacity_enter),
+            value(batteryCapacityText(this, battery)) { editCapacity(battery.netKwh) })
         rowText(getString(R.string.battery_soh_percent), getString(R.string.dset_soh_summary),
             value(batterySohText(this, battery)) { editSoh(battery.sohPercent) })
         com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider.snapshot()?.takeIf { !it.demo }?.let { snap ->
@@ -387,6 +389,39 @@ class DaSettingsActivity : BaseActivity() {
             .setItems(EV_LAYOUT_LABELS.map { getString(it) }.toTypedArray()) { _, i ->
                 settings.evModelLayout = layouts[i].key
                 appliesOnReconnect()
+                showTab(selectedTab)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun editCapacity(current: Float) {
+        val input = android.widget.EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText(String.format(java.util.Locale.getDefault(), "%.1f", current))
+            textSize = 30f
+            setSelectAllOnFocus(true)
+            minWidth = dp(320)
+        }
+        val box = FrameLayout(this).apply {
+            setPadding(dp(32), dp(16), dp(32), dp(8))
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
+            .setTitle(R.string.battery_net_capacity_kwh)
+            .setView(box)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                input.text.toString().replace(',', '.').toFloatOrNull()?.let {
+                    settings.batteryNetCapacityKwh = it.coerceIn(20f, 120f)
+                    settings.batteryCapacityManual = true
+                    com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider.refresh()
+                }
+                showTab(selectedTab)
+            }
+            .setNeutralButton(R.string.battery_auto) { _, _ ->
+                settings.batteryCapacityManual = false
+                settings.mg4Variant = com.andrerinas.openheadunit.vehicle.Mg4Variant.AUTO
+                com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider.refresh()
                 showTab(selectedTab)
             }
             .setNegativeButton(R.string.cancel, null)
