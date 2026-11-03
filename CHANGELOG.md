@@ -1,3 +1,9 @@
+# DiAuto MG4+ 2.2.2-beta5
+
+- Consumption model for Google Maps: now on by default, refreshed every 30 s. To go back to the car's average consumption, turn it off in *Settings → Car*.
+- Uncompressed music (PCM) moves from test mode to *Settings → Sound*, off by default.
+- Battery capacity: the defaults are now 49, 61 and 72.5 kWh, the energy estimated between 100 % and 0 % shown by the car. It can be set by hand in *Settings → Car*, with a button to go back to automatic.
+
 # DiAuto MG4+ 2.2.2-beta4
 
 - Steering wheel in climate mode: the right-hand buttons no longer change the Android Auto track. DiAuto leaves them to the car in every mode except media, as the stock launcher does.
