@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta3
+
+- Test mode: uncompressed music (PCM) instead of AAC, to compare (*Sound*, from the next connection). It uses more Wi-Fi and may stutter.
+
 # DiAuto MG4+ 2.2.2-beta2
 
 - Calls through the car right after connecting: DiAuto's wake-up no longer takes the phone's hands-free slot as it comes back on Bluetooth, which kept calls off the car for about two minutes.
