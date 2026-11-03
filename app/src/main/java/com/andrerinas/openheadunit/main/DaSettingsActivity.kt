@@ -265,7 +265,7 @@ class DaSettingsActivity : BaseActivity() {
         if (settings.testMode) {
             row(R.string.dset_ev_layout, R.string.dset_ev_layout_summary, value(evLayoutLabel(settings.evModelLayout)) { pickEvLayout() })
         }
-        // Experimental, off by default: switching it on first explains what it does.
+        // On by default; off goes back to the car's average. Switching it on first explains what it does.
         row(R.string.dset_maps_model, R.string.dset_maps_model_summary, yesNo(settings.mapsEnergyModel) { on ->
             if (!on) {
                 settings.mapsEnergyModel = false

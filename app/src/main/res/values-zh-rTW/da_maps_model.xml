@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dset_maps_model">地圖能耗模型（實驗性）</string>
+    <string name="dset_maps_model">地圖能耗模型</string>
     <string name="dset_maps_model_summary">Google 地圖以 MG4 模型（車速、低溫、空調）而非車輛平均能耗來估算抵達時的電量。</string>
-    <string name="dset_maps_model_explain">作用：Google 地圖根據車輛特性估算抵達目的地時的剩餘電量，而不再根據目前平均能耗。車速、低溫和暖氣都會被計入。\n\n方式：DiAuto 向地圖提供車輛的行駛阻力（滾動阻力，低溫時增加，以及風阻），以及不同外部溫度下空調與電子設備的功率。Google 伺服器結合預估車速、路況與高低差，計算路線每一段的能耗。\n\n使用的資料：車輛版本（電池設定）、電池電量與容量、外部溫度以及空調是否開啟。這些資料只會傳送到你的手機，和現在的電量一樣。\n\n實驗性：數值為估算，在校準之前預測可能有偏差。</string>
+    <string name="dset_maps_model_explain">作用：Google 地圖根據車輛特性估算抵達目的地時的剩餘電量，而不再根據目前平均能耗。車速、低溫和暖氣都會被計入。\n\n方式：DiAuto 向地圖提供車輛的行駛阻力（滾動阻力，低溫時增加，以及風阻），以及不同外部溫度下空調與電子設備的功率。Google 伺服器結合預估車速、路況與高低差，計算路線每一段的能耗。\n\n使用的資料：車輛版本（電池設定）、電池電量與容量、外部溫度以及空調是否開啟。這些資料只會傳送到你的手機，和現在的電量一樣。\n\n數值為估算，在校準之前預測可能有偏差。</string>
     <string name="dset_maps_model_enable">開啟</string>
 </resources>

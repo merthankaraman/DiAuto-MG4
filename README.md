@@ -66,11 +66,11 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   *Settings → Car* (64 kWh by default, and Comfort can only be chosen by hand). The state of health
   is measured while you drive, after about 15 % of charge used: until then the setting shows it as
   being measured, and Maps is told 95 %. Each can be changed, with a button to go back to automatic.
-- **Consumption model for Maps (experimental, off by default):** instead of the car's average
-  consumption, Maps gets a description of the car: rolling and air resistance, outside temperature
-  and climate power. Google's servers then work out each part of the route with the expected speed,
-  traffic and climb. A window explains it when you switch it on. The figures are estimates, still
-  being calibrated on real trips.
+- **Consumption model for Maps (on by default):** instead of the car's average consumption, Maps gets
+  a description of the car: rolling and air resistance, outside temperature and climate power, sent
+  again as soon as the climate is switched on or off. Google's servers then work out each part of
+  the route with the expected speed, traffic and climb. The figures are estimates. To go back to the
+  car's average consumption, turn it off in *Settings → Car*.
 - **Battery preheating before a charging stop** (off by default): when the next stop on the Maps
   route is a charger, DiAuto turns battery heating on a set time before you arrive (30 min by
   default, 5 to 60 min) and turns it off again if the route changes. It uses the battery

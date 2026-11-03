@@ -20,10 +20,12 @@ import java.util.concurrent.atomic.AtomicReference
 object Mg4EnergyReporter {
     private const val TAG = "DiAuto-MG4"
     private const val INTERVAL_MS = 30_000L
+    private const val CLIMATE_CHECK_MS = 3_000L
 
     /** Outside temperature last put in DiAuto's model (see [Mg4MapsEnergyModel.heldTemp]). */
     @Volatile private var heldTemp: Float? = null
     @Volatile private var lastModel: Mg4MapsEnergyModel.Model? = null
+    private var lastClimateCheck = 0L
 
     private val requestedTypes = ConcurrentHashMap.newKeySet<Int>()
     private val vemEverSent = AtomicBoolean(false)
@@ -73,6 +75,21 @@ object Mg4EnergyReporter {
         }
     }
 
+    /**
+     * The climate was switched on or off since the last model sent: its power is part of the model,
+     * so it goes out at once instead of at the next 30 s send. Read every few seconds only.
+     */
+    private fun climateChanged(): Boolean {
+        val model = lastModel ?: return false
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastClimateCheck < CLIMATE_CHECK_MS) return false
+        lastClimateCheck = now
+        val climate = runCatching { com.evsuite.hardware.saic.SaicClimate.powerOn() }.getOrNull() ?: return false
+        if (Mg4MapsEnergyModel.test.climateOn != null || climate == model.climateOn) return false
+        AppLog.i("$TAG climate switched ${if (climate) "on" else "off"}: model sent again")
+        return true
+    }
+
     /** For the debug overlay: the last model sent against the battery's real power. */
     private fun sampleDebugTrip() {
         val settings = App.instance?.let { App.provide(it).settings } ?: return
@@ -92,6 +109,10 @@ object Mg4EnergyReporter {
     private fun tick() {
         sampleDebugTrip()
         if (requestedTypes.isEmpty()) return
+        if (climateChanged()) {
+            sendNow(force = true)
+            return
+        }
         val due = SystemClock.elapsedRealtime() - lastSentElapsed >= INTERVAL_MS
         if (due || !vemEverSent.get()) sendNow(force = !vemEverSent.get())
     }

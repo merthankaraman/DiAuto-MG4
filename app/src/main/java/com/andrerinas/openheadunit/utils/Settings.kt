@@ -262,9 +262,9 @@ class Settings(private val context: Context) {
         get() = prefs.getInt("station-restore-delay-s", 10).coerceIn(10, 300)
         set(value) { prefs.edit().putInt("station-restore-delay-s", value.coerceIn(10, 300)).apply() }
 
-    /** Experimental: DiAuto's own energy model for Maps (vehicle/Mg4MapsEnergyModel) instead of the car's average. */
+    /** DiAuto's own energy model for Maps (vehicle/Mg4MapsEnergyModel); off = the car's average consumption. */
     var mapsEnergyModel: Boolean
-        get() = prefs.getBoolean("maps-energy-model", false)
+        get() = prefs.getBoolean("maps-energy-model", true)
         set(value) { prefs.edit().putBoolean("maps-energy-model", value).apply() }
 
     /** Test mode: live figures of the Maps energy model over the projection (vehicle/MapsModelTrip). */
