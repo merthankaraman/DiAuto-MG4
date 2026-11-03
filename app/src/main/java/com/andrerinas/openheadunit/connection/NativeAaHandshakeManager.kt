@@ -49,6 +49,8 @@ class NativeAaHandshakeManager(
     companion object {
         private val AA_UUID = UUID.fromString("4de17a00-52cb-11e6-bdf4-0800200c9a66")
         private val HFP_UUID = UUID.fromString("0000111e-0000-1000-8000-00805f9b34fb")
+        private const val OWN_HANDS_FREE_WAIT_MS = 10_000L
+        private const val OWN_HANDS_FREE_STEP_MS = 500L
         // The phone-wake targets, and the rules for when a poke may run at all, live in
         // BluetoothWakePolicy — one of those records is also the one a phone call rides on.
 
@@ -622,12 +624,34 @@ class NativeAaHandshakeManager(
     }
 
     /**
+     * The phone has just come back on Bluetooth and the car's own hands-free link is about to follow.
+     * A poke sent in that window wins the race for the phone's one hands-free slot, and calls then
+     * stay off the car for about two minutes (measured on an SWI69: 2 min 7 to 2 min 12 s, three times
+     * running). So give the link a moment first; once it is up, [BluetoothWakePolicy.shouldPoke] stands
+     * the poke down.
+     */
+    private suspend fun awaitOwnHandsFreeLink(device: BluetoothDevice) {
+        val linked = BluetoothHelper.connectedBondedDevices(context).any { it.address == device.address }
+        if (!linked) return
+        var waitedMs = 0L
+        while (waitedMs < OWN_HANDS_FREE_WAIT_MS && BluetoothHelper.handsFreeLinkState(context) == false) {
+            delay(OWN_HANDS_FREE_STEP_MS)
+            waitedMs += OWN_HANDS_FREE_STEP_MS
+        }
+        if (waitedMs > 0) {
+            AppLog.i("NativeAA: waited ${waitedMs}ms for the car's hands-free link before poking " +
+                    "(up=${BluetoothHelper.handsFreeLinkState(context)})")
+        }
+    }
+
+    /**
      * Tries each of [BluetoothWakePolicy.POKE_TARGETS] in turn, holding whichever connects for
      * [holdMs]. Returns true if any of them did, false without opening anything if either guard
      * below stands the poke down. Both poke entry points come through here, so one check covers
      * the retry loop and the manual poke alike.
      */
     private suspend fun pokeDevice(device: BluetoothDevice, holdMs: Long): Boolean {
+        awaitOwnHandsFreeLink(device)
         // A poke that connects takes the phone's single hands-free slot, and this unit's own client
         // is dropped to make room. See BluetoothWakePolicy for the measurement.
         val handsFreeLink = BluetoothWakePolicy.HandsFreeLink.of(BluetoothHelper.handsFreeLinkState(context))
