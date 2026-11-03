@@ -197,11 +197,12 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
         AppLog.i("CarKeyReceiver: SAIC hardkey code=$keyCode down=$isDown long=$isLong")
         com.andrerinas.openheadunit.utils.SteeringKeyLog.record(keyCode, isDown, isLong)
 
-        // The right-hand wheel keys (297-301) also drive the instrument cluster's menus: a key on
-        // the wheel switches them over, and the car reports it (ID_SWC_FUNCTION_CHANGE_SWA = 1).
-        // The stock launcher then leaves them alone, and so does DiAuto (issue #10).
-        if (keyCode in 297..301 && com.evsuite.hardware.EVHardware.wheelKeysOnCluster() == true) {
-            AppLog.i("CarKeyReceiver: wheel keys are driving the cluster menus - key $keyCode left to the car")
+        // The right-hand wheel keys (297-301) also drive the instrument cluster's menus and the
+        // climate: a key on the wheel switches them over, and the car reports it
+        // (ID_SWC_FUNCTION_CHANGE_SWA not 0). The stock launcher then leaves them alone, and so does
+        // DiAuto (issue #10).
+        if (keyCode in 297..301 && com.evsuite.hardware.EVHardware.wheelKeysOffMedia() == true) {
+            AppLog.i("CarKeyReceiver: wheel keys are not on media - key $keyCode left to the car")
             return
         }
 
