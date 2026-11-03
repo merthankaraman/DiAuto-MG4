@@ -43,6 +43,8 @@ can plan your charging stops.
 - Steering wheel keys work as with the original: previous / next, play / pause, voice assistant
   (Google Assistant / Gemini) and the phone key.
 
+<p align="center"><img src="docs/screenshots/settings_connection.png" width="800" alt="Settings, Connection tab"></p>
+
 ### Internet in the car from the phone (Android Auto over USB)
 Many MG4s have their own 4G connection, but not in every country, and it comes with a monthly data
 allowance after which it stops. The phone can take over: with wireless Android Auto the car's Wi-Fi
@@ -99,6 +101,8 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   shows how much data will be downloaded, and advises using a Wi-Fi network or USB if you can.
 - **Test mode** (*Settings → About*, off by default) shows the features still being tested, such as
   live figures for the consumption model.
+
+<p align="center"><img src="docs/screenshots/settings_display.png" width="800" alt="Settings, Display tab"></p>
 
 ### Privacy
 DiAuto sends no data anywhere: its only Internet access is checking this repository for updates.
