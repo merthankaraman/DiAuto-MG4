@@ -784,7 +784,12 @@ class AapService : Service(), UsbReceiver.Listener {
         initWifiMode()
         startPhoneReconnectWatchdog()
         checkAlreadyConnectedUsb()
-        if (SystemClock.elapsedRealtime() < PRESENT_USB_BOOT_WINDOW_MS) takeOverPresentUsbPhone("boot")
+        if (SystemClock.elapsedRealtime() < PRESENT_USB_BOOT_WINDOW_MS) {
+            takeOverPresentUsbPhone("boot")
+            // No phone by then: the car's Wi-Fi client is on, whoever left it off. A USB session has
+            // switched it on itself (UsbWifiClient).
+            scheduleStationRestore(evenIfNotPaused = true)
+        }
     }
 
     /** Enables Android Automotive UI mode so the system uses car-optimised layouts. */
@@ -1401,11 +1406,13 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     /** The car's Wi-Fi client comes back unless a session or a linked phone still needs the radio. */
-    private fun scheduleStationRestore() {
+    private fun scheduleStationRestore(evenIfNotPaused: Boolean = false) {
         stationRestoreJob?.cancel()
         stationRestoreJob = serviceScope.launch(Dispatchers.IO) {
             delay(settings.stationRestoreDelaySeconds * 1000L)
-            if (!commManager.isBusy && !rememberedPhoneLinked()) HotspotManager.restorePausedStation(this@AapService)
+            if (!commManager.isBusy && !rememberedPhoneLinked()) {
+                HotspotManager.restorePausedStation(this@AapService, evenIfNotPaused)
+            }
         }
     }
 

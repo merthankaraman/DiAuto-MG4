@@ -259,7 +259,7 @@ class Settings(private val context: Context) {
      * for the session, comes back: long enough to ride out a quick reconnection.
      */
     var stationRestoreDelaySeconds: Int
-        get() = prefs.getInt("station-restore-delay-s", 60).coerceIn(10, 300)
+        get() = prefs.getInt("station-restore-delay-s", 10).coerceIn(10, 300)
         set(value) { prefs.edit().putInt("station-restore-delay-s", value.coerceIn(10, 300)).apply() }
 
     /** Experimental: DiAuto's own energy model for Maps (vehicle/Mg4MapsEnergyModel) instead of the car's average. */

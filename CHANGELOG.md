@@ -1,3 +1,8 @@
+# DiAuto MG4+ 2.2.2-beta2
+
+- Calls through the car right after connecting: DiAuto's wake-up no longer takes the phone's hands-free slot as it comes back on Bluetooth, which kept calls off the car for about two minutes.
+- Car Wi-Fi client: back after 10 s by default instead of 1 min (*Settings → Connection*). At a car start with no phone linked, it is switched on even if something else left it off.
+
 # DiAuto MG4+ 2.2.2-beta1
 
 - Phone already plugged in when the car starts: DiAuto finds it and connects over USB, ahead of wireless. If USB doesn't come up, wireless takes over again.

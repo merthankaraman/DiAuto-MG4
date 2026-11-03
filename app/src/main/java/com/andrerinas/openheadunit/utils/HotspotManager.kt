@@ -155,12 +155,16 @@ object HotspotManager {
         return ok
     }
 
-    /** Switches the car's Wi-Fi back on, but only if [pauseStation] switched it off. */
-    fun restorePausedStation(context: Context) {
+    /**
+     * Switches the car's Wi-Fi back on if [pauseStation] switched it off, or with [evenIfNotPaused]
+     * at a car start, whoever left it off: the car must be able to join its known networks.
+     */
+    fun restorePausedStation(context: Context, evenIfNotPaused: Boolean = false) {
         val prefs = stationPrefs(context)
-        if (!prefs.getBoolean(KEY_STATION_PAUSED, false)) return
+        if (!prefs.getBoolean(KEY_STATION_PAUSED, false) && !evenIfNotPaused) return
         prefs.edit().putBoolean(KEY_STATION_PAUSED, false).apply()
         val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        if (wifi.isWifiEnabled) return
         @Suppress("DEPRECATION")
         val ok = try { wifi.setWifiEnabled(true) } catch (e: Exception) { false }
         AppLog.i("HotspotManager: no phone for wireless Android Auto - switching the car Wi-Fi back on (ok=$ok)")
