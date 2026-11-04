@@ -23,7 +23,7 @@ object Mg4EnergyProvider {
     private const val TAG = "DiAuto-MG4"
     private const val POLL_MS = 5_000L
     private const val METER_MS = 1_000L
-    private const val COMPARE_MS = 60_000L
+    private const val DASH_CHECK_MS = 60_000L
     private const val STALE_MS = 3 * 60_000L
     /** Cover SAIC CarService / CPM bind ladder (retries out to 60s). */
     private const val INITIAL_READ_TIMEOUT_MS = 60_000L
@@ -45,8 +45,8 @@ object Mg4EnergyProvider {
     @Volatile private var initialized = false
     private var pollFuture: ScheduledFuture<*>? = null
     private var meterFuture: ScheduledFuture<*>? = null
-    private var comparedAt = 0L
-    private var lastComparison = ""
+    private var dashMeasures = false
+    private var dashCheckedAt = 0L
     private val executor = Executors.newSingleThreadScheduledExecutor { r ->
         Thread(r, "diauto-mg4-energy").apply { isDaemon = true }
     }
@@ -173,29 +173,20 @@ object Mg4EnergyProvider {
         }
     }
 
-    /** DiAuto's own capacity measurement, every second as MG4 Dash's; used when MG4 Dash has none. */
+    /** DiAuto's own capacity measurement, every second as MG4 Dash's, unless MG4 Dash has one to read. */
     private fun readMeter() {
         val ctx = app ?: return
         if (!initialized) return
         runCatching {
             val now = SystemClock.elapsedRealtime()
+            if (dashCheckedAt == 0L || now - dashCheckedAt >= DASH_CHECK_MS) {
+                dashCheckedAt = now
+                dashMeasures = Mg4DashBattery.read(ctx)?.measuredKwh != null
+            }
+            if (dashMeasures) return
             val r = EVHardware.getCapacityReading()
             BatteryCapacityMeter.reading(ctx, r.powerW, r.percent, r.precisePercent, r.plugged, now)
-            if (now - comparedAt >= COMPARE_MS) {
-                comparedAt = now
-                logComparison(ctx, r)
-            }
         }
-    }
-
-    /** The sources side by side in the log, to compare them; a line only when something changed. */
-    private fun logComparison(ctx: Context, r: EVHardware.CapacityReading) {
-        val line = "soc maps=${EVHardware.getBatterySocPercent()} ev=${r.percent} bms=${r.precisePercent} " +
-            "capacity diauto=${BatteryCapacityMeter.capacityKwh(ctx)} " +
-            "mg4dash=${Mg4DashBattery.read(ctx)?.measuredKwh}"
-        if (line == lastComparison) return
-        lastComparison = line
-        AppLog.i("$TAG compare $line")
     }
 
     private fun primeFirstReading() {
