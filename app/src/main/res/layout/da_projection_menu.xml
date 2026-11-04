@@ -70,6 +70,37 @@
                 android:textColor="@color/da_text"
                 android:textSize="32sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/menu_trip"
+            android:layout_width="520dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="48dp"
+            android:background="@drawable/da_tile"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_da_charging"
+                android:tint="@color/da_accent" />
+
+            <TextView
+                android:id="@+id/menu_trip_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/trip_start"
+                android:textColor="@color/da_text"
+                android:textSize="32sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

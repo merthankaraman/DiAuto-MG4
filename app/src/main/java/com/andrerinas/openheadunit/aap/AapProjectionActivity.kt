@@ -1415,6 +1415,17 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             close()
             startActivity(com.andrerinas.openheadunit.main.DaSettingsActivity.intent(this))
         }
+        if (settings.tripRecording) {
+            menu.findViewById<TextView>(R.id.menu_trip_label)
+                .setText(com.andrerinas.openheadunit.main.TripDialogs.buttonLabel(this))
+            menu.findViewById<View>(R.id.menu_trip).apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    close()
+                    com.andrerinas.openheadunit.main.TripDialogs.toggle(this@AapProjectionActivity)
+                }
+            }
+        }
         root.addView(menu)
         projectionMenu = menu
     }

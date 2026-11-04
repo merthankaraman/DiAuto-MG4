@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Nagrywaj trasy dla Map</string>
+    <string name="trip_option_summary">Dodaje przycisk do nagrania wybranej trasy, aby poprawić prognozy Map: zużycie, prędkość, klimatyzacja, temperatura. Bez pozycji i danych osobowych.</string>
+    <string name="trip_start">Nagraj tę trasę</string>
+    <string name="trip_stop">Zatrzymaj nagrywanie</string>
+    <string name="trip_button_summary">Nagrywa do zaparkowania lub zatrzymania, także z menu dwóch palców i ekranu głównego.</string>
+    <string name="trip_no_battery">Nie można odczytać poziomu baterii: spróbuj za chwilę.</string>
+    <string name="trip_bad_percent">Wpisz liczbę od 0 do 100.</string>
+    <string name="trip_started">Rozpoczęto nagrywanie trasy.</string>
+    <string name="trip_saved">Trasa zapisana.</string>
+    <string name="trip_too_short">Trasa zbyt krótka: nie zapisano.</string>
+    <string name="trip_files">Nagrane trasy</string>
+    <string name="trip_files_summary">Zapisane: %1$d. Kopiowane na pamięć USB, potem usuwane z samochodu.</string>
+    <string name="trip_copy">Kopiuj na USB</string>
+    <string name="trip_copied">Skopiowano trasy na pamięć USB: %1$d.</string>
+    <string name="trip_copy_failed">Nie znaleziono pamięci USB lub kopiowanie nie powiodło się: trasy pozostają w samochodzie.</string>
+    <string name="trip_picker_title">Bateria na miejscu według Map</string>
+    <string name="trip_picker_note">Teraz %1$d %%. Użyteczna trasa zużywa co najmniej %2$d %% baterii, bez postoju na ładowanie.</string>
+    <string name="trip_battery_low">Bateria zbyt słaba, aby nagrać użyteczną trasę.</string>
+</resources>

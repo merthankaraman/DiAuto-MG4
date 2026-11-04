@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Ghi chuyến đi cho Maps</string>
+    <string name="trip_option_summary">Thêm nút để ghi chuyến đi đã chọn, giúp cải thiện dự báo của Maps: mức tiêu thụ, tốc độ, điều hòa, nhiệt độ. Không có vị trí hay dữ liệu cá nhân.</string>
+    <string name="trip_start">Ghi chuyến đi này</string>
+    <string name="trip_stop">Dừng ghi</string>
+    <string name="trip_button_summary">Ghi đến khi bạn đỗ xe hoặc dừng ghi, cũng có trong menu hai ngón và màn hình chính.</string>
+    <string name="trip_no_battery">Không đọc được mức pin: hãy thử lại sau giây lát.</string>
+    <string name="trip_bad_percent">Nhập số từ 0 đến 100.</string>
+    <string name="trip_started">Đã bắt đầu ghi chuyến đi.</string>
+    <string name="trip_saved">Đã lưu chuyến đi.</string>
+    <string name="trip_too_short">Chuyến đi quá ngắn: không lưu.</string>
+    <string name="trip_files">Chuyến đi đã ghi</string>
+    <string name="trip_files_summary">Đã lưu %1$d. Sao chép sang USB rồi xóa khỏi xe.</string>
+    <string name="trip_copy">Sao chép sang USB</string>
+    <string name="trip_copied">Đã sao chép %1$d chuyến đi sang USB.</string>
+    <string name="trip_copy_failed">Không tìm thấy USB hoặc sao chép thất bại: chuyến đi vẫn ở trên xe.</string>
+    <string name="trip_picker_title">Pin khi đến nơi theo dự báo của Maps</string>
+    <string name="trip_picker_note">Hiện tại %1$d %%. Chuyến đi hợp lệ dùng ít nhất %2$d %% pin, không dừng sạc.</string>
+    <string name="trip_battery_low">Pin quá thấp để ghi chuyến đi hợp lệ.</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DaTripArrow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">130dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/da_accent</item>
+        <item name="android:textSize">100sp</item>
+    </style>
+    <style name="DaTripDigit">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">160dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/da_text</item>
+        <item name="android:textSize">130sp</item>
+    </style>
+</resources>

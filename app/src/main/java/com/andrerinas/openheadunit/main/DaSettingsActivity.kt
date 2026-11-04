@@ -271,6 +271,17 @@ class DaSettingsActivity : BaseActivity() {
             row(R.string.dset_ev_layout, R.string.dset_ev_layout_summary, value(evLayoutLabel(settings.evModelLayout)) { pickEvLayout() })
         }
         // On by default; off goes back to the car's average. Switching it on first explains what it does.
+        row(R.string.trip_option, R.string.trip_option_summary, yesNo(settings.tripRecording) {
+            settings.tripRecording = it
+            showTab(selectedTab)
+        })
+        if (settings.tripRecording) {
+            rowText(getString(R.string.trip_start), getString(R.string.trip_button_summary),
+                button(getString(TripDialogs.buttonLabel(this))) { TripDialogs.toggle(this) { showTab(selectedTab) } })
+            val saved = com.andrerinas.openheadunit.vehicle.TripRecorder.savedCount(this)
+            rowText(getString(R.string.trip_files), getString(R.string.trip_files_summary, saved),
+                button(getString(R.string.trip_copy)) { copyTripsToUsb() })
+        }
         row(R.string.dset_maps_model, R.string.dset_maps_model_summary, yesNo(settings.mapsEnergyModel) { on ->
             if (!on) {
                 settings.mapsEnergyModel = false
@@ -506,6 +517,18 @@ class DaSettingsActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun copyTripsToUsb() {
+        Thread {
+            val moved = com.andrerinas.openheadunit.vehicle.TripRecorder.moveToUsb(this)
+            runOnUiThread {
+                Toast.makeText(this,
+                    if (moved == null) getString(R.string.trip_copy_failed) else getString(R.string.trip_copied, moved),
+                    Toast.LENGTH_LONG).show()
+                showTab(selectedTab)
+            }
+        }.start()
     }
 
     /** The current log file, copied to Download/ where a USB stick or a file manager can reach it. */

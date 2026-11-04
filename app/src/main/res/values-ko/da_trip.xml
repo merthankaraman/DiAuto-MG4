@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">지도용 주행 기록</string>
+    <string name="trip_option_summary">선택한 주행을 기록하는 버튼을 추가하여 지도 예측 개선에 활용합니다: 소비량, 속도, 공조, 온도. 위치나 개인정보는 포함되지 않습니다.</string>
+    <string name="trip_start">이 주행 기록</string>
+    <string name="trip_stop">기록 중지</string>
+    <string name="trip_button_summary">주차하거나 중지할 때까지 기록합니다. 두 손가락 메뉴와 홈 화면에서도 사용할 수 있습니다.</string>
+    <string name="trip_no_battery">배터리 잔량을 읽을 수 없습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="trip_bad_percent">0에서 100 사이의 숫자를 입력하세요.</string>
+    <string name="trip_started">주행 기록을 시작했습니다.</string>
+    <string name="trip_saved">주행을 저장했습니다.</string>
+    <string name="trip_too_short">주행이 너무 짧아 저장하지 않았습니다.</string>
+    <string name="trip_files">기록된 주행</string>
+    <string name="trip_files_summary">저장됨: %1$d개. USB 메모리에 복사한 후 차량에서 삭제합니다.</string>
+    <string name="trip_copy">USB에 복사</string>
+    <string name="trip_copied">USB 메모리에 복사한 주행: %1$d개.</string>
+    <string name="trip_copy_failed">USB 메모리를 찾지 못했거나 복사에 실패했습니다. 주행은 차량에 남아 있습니다.</string>
+    <string name="trip_picker_title">지도가 예측한 도착 시 배터리</string>
+    <string name="trip_picker_note">현재 %1$d %%. 유효한 주행은 충전 없이 배터리를 %2$d %% 이상 사용합니다.</string>
+    <string name="trip_battery_low">배터리가 너무 낮아 유효한 주행을 기록할 수 없습니다.</string>
+</resources>

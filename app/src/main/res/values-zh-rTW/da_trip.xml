@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">為地圖記錄行程</string>
+    <string name="trip_option_summary">新增按鈕以記錄所選行程，協助改善地圖的預測：能耗、車速、空調、溫度。不含位置和個人資料。</string>
+    <string name="trip_start">記錄此行程</string>
+    <string name="trip_stop">停止記錄</string>
+    <string name="trip_button_summary">記錄至停車或手動停止，也可從雙指選單和主畫面操作。</string>
+    <string name="trip_no_battery">無法讀取電池電量：請稍後再試。</string>
+    <string name="trip_bad_percent">請輸入 0 到 100 之間的數字。</string>
+    <string name="trip_started">已開始記錄行程。</string>
+    <string name="trip_saved">行程已儲存。</string>
+    <string name="trip_too_short">行程太短，未儲存。</string>
+    <string name="trip_files">已記錄的行程</string>
+    <string name="trip_files_summary">已儲存 %1$d 筆。複製到 USB 隨身碟後從車上刪除。</string>
+    <string name="trip_copy">複製到 USB</string>
+    <string name="trip_copied">已將 %1$d 筆行程複製到 USB 隨身碟。</string>
+    <string name="trip_copy_failed">找不到 USB 隨身碟或複製失敗：行程保留在車上。</string>
+    <string name="trip_picker_title">地圖預測的抵達時電量</string>
+    <string name="trip_picker_note">目前 %1$d %%。有效行程至少消耗 %2$d %% 電量，且途中不充電。</string>
+    <string name="trip_battery_low">電量過低，無法記錄有效行程。</string>
+</resources>

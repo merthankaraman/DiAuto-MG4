@@ -65,6 +65,9 @@ class HomeFragment : Fragment() {
         view.findViewById<View>(R.id.home_settings).setOnClickListener {
             startActivity(DaSettingsActivity.intent(requireContext()))
         }
+        view.findViewById<View>(R.id.home_trip).setOnClickListener {
+            TripDialogs.toggle(requireActivity()) { showTripTile() }
+        }
         val updateHint = view.findViewById<TextView>(R.id.home_update_hint)
         ota = OtaController(requireActivity()).also { controller ->
             controller.setStateListener { status -> updateHint.text = updateText(requireContext(), status) }
@@ -91,6 +94,13 @@ class HomeFragment : Fragment() {
         if (app.settings.autoStartOnBoot || app.settings.autoStartOnScreenOn) {
             ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), AapService::class.java))
         }
+    }
+
+    private fun showTripTile() {
+        val view = view ?: return
+        val on = App.provide(requireContext()).settings.tripRecording
+        view.findViewById<View>(R.id.home_trip).visibility = if (on) View.VISIBLE else View.GONE
+        if (on) view.findViewById<TextView>(R.id.home_trip_label).setText(TripDialogs.buttonLabel(requireActivity()))
     }
 
     private fun openProjection() {
@@ -192,6 +202,7 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        showTripTile()
         // Also after Settings, where the beta option may have changed.
         ota?.checkOnStartup()
     }

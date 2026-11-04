@@ -183,9 +183,11 @@ object Mg4EnergyProvider {
                 dashCheckedAt = now
                 dashMeasures = Mg4DashBattery.read(ctx)?.measuredKwh != null
             }
-            if (dashMeasures) return
+            val recording = TripRecorder.isActive(ctx)
+            if (dashMeasures && !recording) return
             val r = EVHardware.getCapacityReading()
-            BatteryCapacityMeter.reading(ctx, r.powerW, r.percent, r.precisePercent, r.plugged, now)
+            if (!dashMeasures) BatteryCapacityMeter.reading(ctx, r.powerW, r.percent, r.precisePercent, r.plugged, now)
+            if (recording) TripRecorder.tick(ctx, r, now)
         }
     }
 

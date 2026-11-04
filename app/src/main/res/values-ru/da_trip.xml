@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Запись поездок для Карт</string>
+    <string name="trip_option_summary">Добавляет кнопку для записи выбранной поездки, чтобы уточнять прогнозы Карт: расход, скорость, климат, температура. Без местоположения и личных данных.</string>
+    <string name="trip_start">Записать эту поездку</string>
+    <string name="trip_stop">Остановить запись</string>
+    <string name="trip_button_summary">Запись идёт до парковки или остановки, также из меню двух пальцев и с главного экрана.</string>
+    <string name="trip_no_battery">Не удаётся прочитать уровень заряда: повторите чуть позже.</string>
+    <string name="trip_bad_percent">Введите число от 0 до 100.</string>
+    <string name="trip_started">Запись поездки начата.</string>
+    <string name="trip_saved">Поездка сохранена.</string>
+    <string name="trip_too_short">Поездка слишком короткая: не сохранена.</string>
+    <string name="trip_files">Записанные поездки</string>
+    <string name="trip_files_summary">Сохранено: %1$d. Копируются на USB-накопитель, затем удаляются из автомобиля.</string>
+    <string name="trip_copy">Копировать на USB</string>
+    <string name="trip_copied">Поездки скопированы на USB-накопитель: %1$d.</string>
+    <string name="trip_copy_failed">USB-накопитель не найден или копирование не удалось: поездки остаются в автомобиле.</string>
+    <string name="trip_picker_title">Заряд по прибытии по прогнозу Карт</string>
+    <string name="trip_picker_note">Сейчас %1$d %%. Пригодная поездка расходует не менее %2$d %% заряда, без остановки на зарядку.</string>
+    <string name="trip_battery_low">Заряд слишком низкий для записи пригодной поездки.</string>
+</resources>

@@ -171,6 +171,30 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/home_trip"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/da_tile"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/home_trip_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="@string/trip_start"
+                    android:textColor="@color/da_text"
+                    android:textSize="26sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/home_update"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

@@ -80,6 +80,10 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   refreshed every 30 s. Google's servers then work out each part of
   the route with the expected speed, traffic and climb. The figures are estimates. To go back to the
   car's average consumption, turn it off in *Settings → Car*.
+- **Help tune the forecasts (off by default):** *Settings → Car → Record trips for Maps* adds a button
+  to record a trip you choose, with the battery % Maps forecasts at arrival. It keeps consumption,
+  speed, climate and temperature, with no position or personal data, and can move the files to a USB
+  stick.
 - **Battery preheating before a charging stop** (off by default): when the next stop on the Maps
   route is a charger, DiAuto turns battery heating on a set time before you arrive (30 min by
   default, 5 to 60 min) and turns it off again if the route changes. It uses the battery

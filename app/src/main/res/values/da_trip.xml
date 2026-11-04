@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Record trips for Maps</string>
+    <string name="trip_option_summary">Adds a button to record a trip you choose, to help tune Maps\' forecasts: consumption, speed, climate, temperature. No position or personal data.</string>
+    <string name="trip_start">Record this trip</string>
+    <string name="trip_stop">Stop recording</string>
+    <string name="trip_button_summary">Records until you park or stop it, in the two-finger menu and on the home screen too.</string>
+    <string name="trip_no_battery">Can\'t read the battery level: try again in a moment.</string>
+    <string name="trip_bad_percent">Enter a number from 0 to 100.</string>
+    <string name="trip_started">Trip recording started.</string>
+    <string name="trip_saved">Trip saved.</string>
+    <string name="trip_too_short">Trip too short: not saved.</string>
+    <string name="trip_files">Recorded trips</string>
+    <string name="trip_files_summary">%1$d saved. Copied to a USB stick, then removed from the car.</string>
+    <string name="trip_copy">Copy to USB</string>
+    <string name="trip_copied">%1$d trips copied to the USB stick.</string>
+    <string name="trip_copy_failed">No USB stick found, or the copy failed: trips kept on the car.</string>
+    <string name="trip_picker_title">Battery at arrival forecast by Maps</string>
+    <string name="trip_picker_note">Now %1$d %%. A usable trip uses at least %2$d %% of battery, with no charging stop.</string>
+    <string name="trip_go">GO</string>
+    <string name="trip_battery_low">Battery too low to record a usable trip.</string>
+</resources>

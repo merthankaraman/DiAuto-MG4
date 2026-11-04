@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">تسجيل الرحلات لخرائط Google</string>
+    <string name="trip_option_summary">يضيف زرًا لتسجيل رحلة تختارها للمساعدة في تحسين توقعات الخرائط: الاستهلاك والسرعة والتكييف والحرارة. بدون موقع أو بيانات شخصية.</string>
+    <string name="trip_start">تسجيل هذه الرحلة</string>
+    <string name="trip_stop">إيقاف التسجيل</string>
+    <string name="trip_button_summary">يستمر التسجيل حتى تركن السيارة أو توقفه، ويتوفر أيضًا من قائمة الإصبعين والشاشة الرئيسية.</string>
+    <string name="trip_no_battery">تعذرت قراءة مستوى البطارية: حاول مرة أخرى بعد قليل.</string>
+    <string name="trip_bad_percent">أدخل رقمًا من 0 إلى 100.</string>
+    <string name="trip_started">بدأ تسجيل الرحلة.</string>
+    <string name="trip_saved">تم حفظ الرحلة.</string>
+    <string name="trip_too_short">الرحلة قصيرة جدًا: لم تُحفظ.</string>
+    <string name="trip_files">الرحلات المسجلة</string>
+    <string name="trip_files_summary">المحفوظ: %1$d. تُنسخ إلى ذاكرة USB ثم تُحذف من السيارة.</string>
+    <string name="trip_copy">نسخ إلى USB</string>
+    <string name="trip_copied">الرحلات المنسوخة إلى ذاكرة USB: %1$d.</string>
+    <string name="trip_copy_failed">لم يتم العثور على ذاكرة USB أو فشل النسخ: بقيت الرحلات في السيارة.</string>
+    <string name="trip_picker_title">البطارية عند الوصول حسب توقع الخرائط</string>
+    <string name="trip_picker_note">الآن %1$d %%. تستهلك الرحلة الصالحة %2$d %% على الأقل من البطارية، بدون توقف للشحن.</string>
+    <string name="trip_battery_low">البطارية منخفضة جدًا لتسجيل رحلة صالحة.</string>
+</resources>

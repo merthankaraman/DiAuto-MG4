@@ -267,6 +267,11 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("maps-energy-model", true)
         set(value) { prefs.edit().putBoolean("maps-energy-model", value).apply() }
 
+    /** Shows the button that records a chosen trip for tuning the Maps model (vehicle/TripRecorder). */
+    var tripRecording: Boolean
+        get() = prefs.getBoolean("trip-recording", false)
+        set(value) { prefs.edit().putBoolean("trip-recording", value).apply() }
+
     /** Test mode: live figures of the Maps energy model over the projection (vehicle/MapsModelTrip). */
     var mapsModelOverlay: Boolean
         get() = testMode && prefs.getBoolean("maps-model-overlay", false)

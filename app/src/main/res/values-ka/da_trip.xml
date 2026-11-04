@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">მოგზაურობების ჩაწერა Maps-ისთვის</string>
+    <string name="trip_option_summary">ამატებს ღილაკს არჩეული მოგზაურობის ჩასაწერად Maps-ის პროგნოზების გასაუმჯობესებლად: მოხმარება, სიჩქარე, კლიმატი, ტემპერატურა. მდებარეობისა და პირადი მონაცემების გარეშე.</string>
+    <string name="trip_start">ამ მოგზაურობის ჩაწერა</string>
+    <string name="trip_stop">ჩაწერის შეჩერება</string>
+    <string name="trip_button_summary">იწერს გაჩერებამდე ან შეჩერებამდე, ასევე ორთითიანი მენიუდან და მთავარი ეკრანიდან.</string>
+    <string name="trip_no_battery">ბატარეის დონე ვერ იკითხება: ცადეთ ცოტა ხანში.</string>
+    <string name="trip_bad_percent">შეიყვანეთ რიცხვი 0-დან 100-მდე.</string>
+    <string name="trip_started">მოგზაურობის ჩაწერა დაიწყო.</string>
+    <string name="trip_saved">მოგზაურობა შენახულია.</string>
+    <string name="trip_too_short">მოგზაურობა ძალიან მოკლეა: არ შეინახა.</string>
+    <string name="trip_files">ჩაწერილი მოგზაურობები</string>
+    <string name="trip_files_summary">შენახულია: %1$d. კოპირდება USB მეხსიერებაზე, შემდეგ იშლება მანქანიდან.</string>
+    <string name="trip_copy">USB-ზე კოპირება</string>
+    <string name="trip_copied">USB მეხსიერებაზე დაკოპირდა მოგზაურობები: %1$d.</string>
+    <string name="trip_copy_failed">USB მეხსიერება ვერ მოიძებნა ან კოპირება ვერ მოხერხდა: მოგზაურობები მანქანაში რჩება.</string>
+    <string name="trip_picker_title">ბატარეა ჩასვლისას Maps-ის პროგნოზით</string>
+    <string name="trip_picker_note">ახლა %1$d %%. გამოსადეგი მოგზაურობა მოიხმარს ბატარეის მინიმუმ %2$d %%-ს, დამუხტვის გაჩერების გარეშე.</string>
+    <string name="trip_battery_low">ბატარეა ძალიან დაბალია გამოსადეგი მოგზაურობის ჩასაწერად.</string>
+</resources>
