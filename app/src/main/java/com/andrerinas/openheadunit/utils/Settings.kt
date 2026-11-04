@@ -874,6 +874,11 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("auto-start-on-usb", false)
         set(value) { prefs.edit().putBoolean("auto-start-on-usb", value).apply() }
 
+    /** Android Auto takes the screen when the phone connects; otherwise the car's Android Auto button opens it. */
+    var openProjectionOnConnect: Boolean
+        get() = prefs.getBoolean("open-projection-on-connect", true)
+        set(value) { prefs.edit().putBoolean("open-projection-on-connect", value).apply() }
+
     var autoStartOnBoot: Boolean
         get() = prefs.getBoolean("auto-start-on-boot", true)
         set(value) { prefs.edit().putBoolean("auto-start-on-boot", value).apply() }

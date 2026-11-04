@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Az autó hotspotján keresztül. USB-kábellel is mindig működik.</string>
     <string name="dset_start_with_car">Indítás az autóval</string>
     <string name="dset_start_with_car_summary">Az Android Auto magától visszajön, amikor beszállsz.</string>
+    <string name="dset_open_on_connect">Android Auto megnyitása csatlakozáskor</string>
+    <string name="dset_open_on_connect_summary">Nem esetén a háttérben csatlakozik: nyissa meg az autó Android Auto gombjával.</string>
     <string name="dset_phone">Telefon</string>
     <string name="dset_phone_summary">Ez a telefon indítja az Android Auto alkalmazást, amikor az autó elindul.</string>
     <string name="dset_phone_none">Nincs</string>

@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">차량 핫스팟을 통해 연결합니다. USB 케이블도 언제든 사용할 수 있습니다.</string>
     <string name="dset_start_with_car">차량과 함께 시작</string>
     <string name="dset_start_with_car_summary">탑승하면 Android Auto가 자동으로 다시 실행됩니다.</string>
+    <string name="dset_open_on_connect">연결 시 Android Auto 열기</string>
+    <string name="dset_open_on_connect_summary">아니요로 설정하면 백그라운드에서 연결됩니다. 차량의 Android Auto 버튼으로 여세요.</string>
     <string name="dset_phone">휴대전화</string>
     <string name="dset_phone_summary">차량 시동 시 Android Auto를 시작하는 휴대전화입니다.</string>
     <string name="dset_phone_none">없음</string>

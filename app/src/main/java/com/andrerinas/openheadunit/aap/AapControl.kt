@@ -104,7 +104,14 @@ internal class AapControlMedia(
             // below only lands when its surface happens to appear after TransportStarted.
             aapTransport.send(VideoFocusEvent(gain = true, unsolicited = true))
             AppLog.i("Video focus granted after video sink setup")
-            aapTransport.gainVideoFocus()
+            // This asks for the projection on screen, which a background session does not want.
+            if (ProjectionOpenPolicy.shouldOpen(
+                    aapTransport.settings.openProjectionOnConnect,
+                    AapProjectionActivity.isForeground,
+                    com.andrerinas.openheadunit.main.MainActivity.inFront,
+                )) {
+                aapTransport.gainVideoFocus()
+            }
         }
 
         // Pushing AudioFocusNotification

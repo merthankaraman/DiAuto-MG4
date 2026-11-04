@@ -900,6 +900,7 @@ class MainActivity : BaseActivity() {
         ContextCompat.registerReceiver(this, orientationReceiver, android.content.IntentFilter(AapService.ACTION_ORIENTATION_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
         isOrientationReceiverRegistered = true
 
+        inFront = true
         // If an Android Auto session is active, bring the projection activity to front
         if (App.provide(this).commManager.isConnected && !App.isPiPActive && !AapProjectionActivity.isForeground) {
             AppLog.i("MainActivity: Active session detected, bringing projection to front")
@@ -925,6 +926,7 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        inFront = false
         if (isOrientationReceiverRegistered) {
             unregisterReceiver(orientationReceiver)
             isOrientationReceiverRegistered = false
@@ -977,6 +979,9 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
+        /** DiAuto's own home screen is in front. */
+        @Volatile var inFront = false
+
         private const val permissionRequestCode = 97
         const val EXTRA_LAUNCH_SOURCE = "launch_source"
 

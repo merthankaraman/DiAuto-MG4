@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Přes hotspot auta. USB kabel funguje vždy také.</string>
     <string name="dset_start_with_car">Spouštět s autem</string>
     <string name="dset_start_with_car_summary">Android Auto se samo vrátí, když nastoupíte.</string>
+    <string name="dset_open_on_connect">Otevřít Android Auto po připojení</string>
+    <string name="dset_open_on_connect_summary">Při Ne se připojí na pozadí: otevřete ho tlačítkem Android Auto ve voze.</string>
     <string name="dset_phone">Telefon</string>
     <string name="dset_phone_summary">Ten, který spustí Android Auto při nastartování auta.</string>
     <string name="dset_phone_none">Žádný</string>

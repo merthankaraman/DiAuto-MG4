@@ -134,6 +134,9 @@ class DaSettingsActivity : BaseActivity() {
         row(R.string.dset_start_with_car, R.string.dset_start_with_car_summary, yesNo(settings.autoStartOnBoot) {
             settings.autoStartOnBoot = it
         })
+        row(R.string.dset_open_on_connect, R.string.dset_open_on_connect_summary, yesNo(settings.openProjectionOnConnect) {
+            settings.openProjectionOnConnect = it
+        })
         val phone = settings.autoStartBluetoothDeviceName.ifBlank { getString(R.string.dset_phone_none) }
         row(R.string.dset_phone, R.string.dset_phone_summary, value(phone) { pickPhone() })
         row(R.string.dset_usb_wifi, R.string.dset_usb_wifi_summary, yesNo(settings.usbWifiClient) {

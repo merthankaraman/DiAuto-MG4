@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Über den Hotspot des Autos. Ein USB-Kabel funktioniert immer auch.</string>
     <string name="dset_start_with_car">Mit dem Auto starten</string>
     <string name="dset_start_with_car_summary">Android Auto kommt von selbst zurück, wenn Sie einsteigen.</string>
+    <string name="dset_open_on_connect">Android Auto beim Verbinden öffnen</string>
+    <string name="dset_open_on_connect_summary">Bei Nein verbindet es sich im Hintergrund: Öffnen Sie es mit der Android-Auto-Taste des Autos.</string>
     <string name="dset_phone">Telefon</string>
     <string name="dset_phone_summary">Das Telefon, das Android Auto beim Start des Autos startet.</string>
     <string name="dset_phone_none">Keines</string>

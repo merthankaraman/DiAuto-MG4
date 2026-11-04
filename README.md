@@ -28,7 +28,9 @@ can plan your charging stops.
 ### Android Auto, wireless and automatic
 - Once your phone is paired with the car over Bluetooth, it joins the car's own Wi-Fi hotspot and
   Android Auto starts by itself every trip. A USB cable works too: a phone already plugged in when
-  the car starts connects over USB, ahead of wireless.
+  the car starts connects over USB, ahead of wireless. *Open Android Auto when connected* in
+  *Settings → Connection* can keep it in the background until you open it with the car's Android
+  Auto button.
 - The car has a single Wi-Fi radio. When your phone connects over Bluetooth, DiAuto switches the
   car's own Wi-Fi client off and restarts the hotspot, so Android Auto gets the whole radio (smooth
   picture and sound). The client comes back once no phone is linked (after 10 s by default, 10 s to

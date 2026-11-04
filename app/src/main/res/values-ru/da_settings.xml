@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Через точку доступа автомобиля. USB-кабель тоже всегда работает.</string>
     <string name="dset_start_with_car">Запуск вместе с автомобилем</string>
     <string name="dset_start_with_car_summary">Android Auto сам возвращается, когда вы садитесь в машину.</string>
+    <string name="dset_open_on_connect">Открывать Android Auto при подключении</string>
+    <string name="dset_open_on_connect_summary">При «Нет» подключается в фоне: откройте его кнопкой Android Auto в автомобиле.</string>
     <string name="dset_phone">Телефон</string>
     <string name="dset_phone_summary">Тот, который запускает Android Auto при запуске автомобиля.</string>
     <string name="dset_phone_none">Не выбран</string>

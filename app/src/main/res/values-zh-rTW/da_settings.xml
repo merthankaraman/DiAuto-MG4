@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">透過車輛熱點連線。USB 傳輸線也隨時可用。</string>
     <string name="dset_start_with_car">隨車啟動</string>
     <string name="dset_start_with_car_summary">上車後 Android Auto 會自動恢復。</string>
+    <string name="dset_open_on_connect">連線時開啟 Android Auto</string>
+    <string name="dset_open_on_connect_summary">選擇「否」時在背景連線：請用車上的 Android Auto 按鈕開啟。</string>
     <string name="dset_phone">手機</string>
     <string name="dset_phone_summary">車輛啟動時用來啟動 Android Auto 的手機。</string>
     <string name="dset_phone_none">無</string>

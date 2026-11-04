@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">通过车辆热点连接。USB 数据线也始终可用。</string>
     <string name="dset_start_with_car">随车启动</string>
     <string name="dset_start_with_car_summary">上车后 Android Auto 会自动恢复。</string>
+    <string name="dset_open_on_connect">连接时打开 Android Auto</string>
+    <string name="dset_open_on_connect_summary">选择“否”时在后台连接：请用车上的 Android Auto 按钮打开。</string>
     <string name="dset_phone">手机</string>
     <string name="dset_phone_summary">车辆启动时用来启动 Android Auto 的手机。</string>
     <string name="dset_phone_none">无</string>

@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Prin hotspotul mașinii. Un cablu USB funcționează mereu.</string>
     <string name="dset_start_with_car">Pornește odată cu mașina</string>
     <string name="dset_start_with_car_summary">Android Auto revine singur când urci în mașină.</string>
+    <string name="dset_open_on_connect">Deschide Android Auto la conectare</string>
+    <string name="dset_open_on_connect_summary">La Nu, se conectează în fundal: deschide-l cu butonul Android Auto al mașinii.</string>
     <string name="dset_phone">Telefon</string>
     <string name="dset_phone_summary">Cel care pornește Android Auto când pornește mașina.</string>
     <string name="dset_phone_none">Niciunul</string>

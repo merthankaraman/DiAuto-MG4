@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Tramite l’hotspot dell’auto. Anche un cavo USB funziona sempre.</string>
     <string name="dset_start_with_car">Avvia con l’auto</string>
     <string name="dset_start_with_car_summary">Android Auto torna da solo quando sali in auto.</string>
+    <string name="dset_open_on_connect">Apri Android Auto alla connessione</string>
+    <string name="dset_open_on_connect_summary">Con No si connette in background: aprilo con il pulsante Android Auto dell\'auto.</string>
     <string name="dset_phone">Telefono</string>
     <string name="dset_phone_summary">Quello che avvia Android Auto all’accensione dell’auto.</string>
     <string name="dset_phone_none">Nessuno</string>

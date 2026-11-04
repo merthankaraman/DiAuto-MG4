@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Pelo ponto de acesso do carro. Um cabo USB também sempre funciona.</string>
     <string name="dset_start_with_car">Iniciar com o carro</string>
     <string name="dset_start_with_car_summary">O Android Auto volta sozinho quando você entra no carro.</string>
+    <string name="dset_open_on_connect">Abrir o Android Auto ao conectar</string>
+    <string name="dset_open_on_connect_summary">Em Não, ele se conecta em segundo plano: abra-o pelo botão Android Auto do carro.</string>
     <string name="dset_phone">Celular</string>
     <string name="dset_phone_summary">O que inicia o Android Auto quando o carro liga.</string>
     <string name="dset_phone_none">Nenhum</string>

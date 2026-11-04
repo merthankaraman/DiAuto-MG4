@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">車のホットスポット経由で接続します。USB ケーブルもいつでも使えます。</string>
     <string name="dset_start_with_car">車と一緒に起動</string>
     <string name="dset_start_with_car_summary">乗車すると Android Auto が自動で戻ります。</string>
+    <string name="dset_open_on_connect">接続時に Android Auto を開く</string>
+    <string name="dset_open_on_connect_summary">「いいえ」の場合はバックグラウンドで接続します。車の Android Auto ボタンで開いてください。</string>
     <string name="dset_phone">スマートフォン</string>
     <string name="dset_phone_summary">車の起動時に Android Auto を開始するスマートフォンです。</string>
     <string name="dset_phone_none">なし</string>

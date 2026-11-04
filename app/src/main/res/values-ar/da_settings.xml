@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">عبر نقطة اتصال السيارة. كابل USB يعمل دائمًا أيضًا.</string>
     <string name="dset_start_with_car">التشغيل مع السيارة</string>
     <string name="dset_start_with_car_summary">يعود Android Auto تلقائيًا عند ركوبك السيارة.</string>
+    <string name="dset_open_on_connect">فتح Android Auto عند الاتصال</string>
+    <string name="dset_open_on_connect_summary">عند اختيار لا، يتصل في الخلفية: افتحه بزر Android Auto في السيارة.</string>
     <string name="dset_phone">الهاتف</string>
     <string name="dset_phone_summary">الهاتف الذي يشغّل Android Auto عند تشغيل السيارة.</string>
     <string name="dset_phone_none">لا شيء</string>

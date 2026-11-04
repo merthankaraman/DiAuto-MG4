@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta7
+
+- New setting *Open Android Auto when connected* in *Settings → Connection*, Yes by default. On No, Android Auto connects in the background, over wireless or USB, and opens with the car's Android Auto button.
+
 # DiAuto MG4+ 2.2.2-beta6
 
 - Steering wheel: play/pause, next and previous stay with the source playing (radio, Bluetooth, USB), even with Android Auto connected alongside it.

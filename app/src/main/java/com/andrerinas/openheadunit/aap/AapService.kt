@@ -836,7 +836,19 @@ class AapService : Service(), UsbReceiver.Listener {
                     }
                     is CommManager.ConnectionState.HandshakeComplete -> {
                         automaticReconnectAttempts = 0
-                        launchAapProjectionActivity()
+                        val open = ProjectionOpenPolicy.shouldOpen(
+                            settings.openProjectionOnConnect,
+                            AapProjectionActivity.isForeground,
+                            com.andrerinas.openheadunit.main.MainActivity.inFront,
+                        )
+                        if (open) {
+                            launchAapProjectionActivity()
+                        } else {
+                            // The projection normally starts reading once its surface is ready. Without
+                            // it the phone gives up after a few seconds, so the session starts here.
+                            AppLog.i("AapService: connected in the background, the screen stays with the car")
+                            serviceScope.launch { commManager.startReading() }
+                        }
                     }
                     is CommManager.ConnectionState.TransportStarted -> {
                         hasEverConnected = true

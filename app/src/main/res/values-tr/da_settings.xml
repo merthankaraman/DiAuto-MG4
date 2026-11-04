@@ -13,6 +13,8 @@
     <string name="dset_wireless_summary">Aracın erişim noktası üzerinden. USB kablosu da her zaman çalışır.</string>
     <string name="dset_start_with_car">Araçla birlikte başlat</string>
     <string name="dset_start_with_car_summary">Araca bindiğinde Android Auto kendiliğinden geri gelir.</string>
+    <string name="dset_open_on_connect">Bağlanınca Android Auto\'yu aç</string>
+    <string name="dset_open_on_connect_summary">Hayır seçiliyse arka planda bağlanır: aracın Android Auto düğmesiyle açın.</string>
     <string name="dset_phone">Telefon</string>
     <string name="dset_phone_summary">Araç çalıştığında Android Auto’yu başlatan telefon.</string>
     <string name="dset_phone_none">Yok</string>
