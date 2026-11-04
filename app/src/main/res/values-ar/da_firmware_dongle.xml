@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_firmware_dongle_backup">حل آخر: يعمل دونجل USB لنظام Android Auto اللاسلكي مع DiAuto أيضًا، ويبدو الاتصال أكثر ثباتًا وموثوقية من تطبيق Android Auto الأصلي في السيارة (لم يتأكد بعد، لكن التقارير الأولى واختباراتنا تشير إلى ذلك).</string>
+    <string name="da_firmware_dongle_backup">حل آخر: يعمل دونجل USB لنظام Android Auto اللاسلكي مع DiAuto أيضًا. تُظهر التقارير الأولى واختباراتنا اتصالًا أكثر ثباتًا وموثوقية من تطبيق Android Auto الأصلي في السيارة.</string>
 </resources>

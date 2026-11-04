@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_firmware_dongle_backup">Інший варіант: USB-донгл для бездротового Android Auto також працює з DiAuto, і з\'єднання здається стабільнішим і надійнішим, ніж зі штатним застосунком Android Auto (ще треба підтвердити, але на це вказують перші відгуки та наші тести).</string>
+    <string name="da_firmware_dongle_backup">Інший варіант: USB-донгл для бездротового Android Auto також працює з DiAuto. Перші відгуки й наші тести показують стабільніше й надійніше з\'єднання, ніж зі штатним застосунком Android Auto.</string>
 </resources>

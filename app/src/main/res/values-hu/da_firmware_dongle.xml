@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_firmware_dongle_backup">Másik megoldás: egy USB-s vezeték nélküli Android Auto dongle a DiAutóval is működik, és a kapcsolat stabilabbnak és megbízhatóbbnak tűnik, mint az autó eredeti Android Auto alkalmazásával (még megerősítésre vár, de az első visszajelzések és saját tesztjeink erre utalnak).</string>
+    <string name="da_firmware_dongle_backup">Másik megoldás: egy USB-s vezeték nélküli Android Auto dongle a DiAutóval is működik. Az első visszajelzések és saját tesztjeink stabilabb és megbízhatóbb kapcsolatot mutatnak, mint az autó eredeti Android Auto alkalmazása.</string>
 </resources>

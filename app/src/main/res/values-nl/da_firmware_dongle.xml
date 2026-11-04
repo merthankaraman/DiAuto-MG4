@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_firmware_dongle_backup">Een andere oplossing: een USB-dongle voor draadloos Android Auto werkt ook met DiAuto, en de verbinding lijkt stabieler en betrouwbaarder dan met de originele Android Auto-app van de auto (nog te bevestigen, maar de eerste reacties en onze eigen tests wijzen daarop).</string>
+    <string name="da_firmware_dongle_backup">Een andere oplossing: een USB-dongle voor draadloos Android Auto werkt ook met DiAuto. De eerste reacties en onze eigen tests laten een stabielere en betrouwbaardere verbinding zien dan met de originele Android Auto-app van de auto.</string>
 </resources>
