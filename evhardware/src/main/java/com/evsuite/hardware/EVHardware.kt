@@ -15,6 +15,7 @@ import com.evsuite.hardware.AppLogger
 import com.evsuite.hardware.model.DriveMode
 import com.evsuite.hardware.model.RegenLevel
 import com.evsuite.hardware.FirmwareInfo
+import com.evsuite.hardware.saic.SaicAidl
 import com.evsuite.hardware.saic.SaicCharging
 import com.evsuite.hardware.saic.SaicHub
 import kotlinx.coroutines.CoroutineScope
@@ -494,18 +495,64 @@ object EVHardware {
     /** A 400 V pack under load; outside this the pair is not the pair we think it is. */
     private val PACK_VOLTAGE_RANGE = 200f..500f
 
-    /**
-     * Pack power in W from the BMS (voltage × current, positive when energy leaves the pack), as
-     * MG4Dash measures it on SWI68/SWI69. null when the car does not answer.
-     */
-    fun getPackPowerW(): Float? = supportedTelemetryRead {
-        // Published in the global area on SWI69; MG4Dash reads them with area 0.
-        val v = (getFloatPropertyCPM(PROP_BMS_PACK_VOLTAGE, AREA_GLOBAL) ?: getFloatPropertyCPM(PROP_BMS_PACK_VOLTAGE, 0))
-            ?.takeIf { it in 100f..900f }
-        val i = (getFloatPropertyCPM(PROP_BMS_PACK_CURRENT, AREA_GLOBAL) ?: getFloatPropertyCPM(PROP_BMS_PACK_CURRENT, 0))
-            ?.takeIf { it.isFinite() && kotlin.math.abs(it) < 1_000f }
-        if (v == null || i == null) null else v * i
+    /** One reading for the capacity measurement, from the same sources as MG4 Dash's. */
+    data class CapacityReading(
+        /** Pack power in W from the BMS, positive when energy leaves the pack. */
+        val powerW: Float?,
+        /** Whole %, as the charging service gives it. */
+        val percent: Int?,
+        /** % to the tenth from the BMS, on the cars that give it. */
+        val precisePercent: Float?,
+        /** Plugged in, charging or V2L. */
+        val plugged: Boolean,
+    )
+
+    fun getCapacityReading(): CapacityReading {
+        val volts = getFloatPropertyCPM(PROP_BMS_PACK_VOLTAGE, 0)?.takeIf { it in 100f..900f }
+        val amps = getFloatPropertyCPM(PROP_BMS_PACK_CURRENT, 0)
+        val fromBms = getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, 0)
+            ?: getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, AREA_GLOBAL)
+        val ev = evServiceBinder()
+        val percent = SaicAidl.callInt(ev, EV_DESCRIPTOR, EV_TX_PERCENT)?.takeIf { it in 0..100 }
+            ?: getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, AREA_GLOBAL)
+                ?.takeIf { it in 0f..100f && it != 82.3f }?.let { Math.round(it) }
+        val status = SaicAidl.callInt(ev, EV_DESCRIPTOR, EV_TX_CHARGE_STATUS)
+            ?: SaicCharging.chargingStatus()
+            ?: chargeStatusFromProperties()
+        return CapacityReading(
+            powerW = if (volts == null || amps == null) null else volts * amps,
+            percent = percent,
+            precisePercent = fromBms?.takeIf { it in 0.1f..100f },
+            plugged = status != 0,
+        )
     }
+
+    /** BMS charge state, on the same scale as the EV service; 7 with a cable and no charge running. */
+    private fun chargeStatusFromProperties(): Int {
+        val raw = getIntPropertyCPM(PROP_BMS_CHARGE_STATE, AREA_GLOBAL)
+        val plugged = listOf(PROP_DC_CHARGE_STATE, PROP_AC_CHARGE_STATE)
+            .any { getIntPropertyCPM(it, AREA_GLOBAL).let { v -> v > 0 && v != 1023 } }
+        return when {
+            raw in 1..15 -> raw
+            plugged -> 7
+            else -> 0
+        }
+    }
+
+    @Volatile private var evBinder: android.os.IBinder? = null
+
+    private fun evServiceBinder(): android.os.IBinder? {
+        evBinder?.takeIf { it.isBinderAlive }?.let { return it }
+        return a9ClientBinder(EV_SERVICE_CODE).also { evBinder = it }
+    }
+
+    private const val EV_SERVICE_CODE = 0x4
+    private const val EV_DESCRIPTOR = "com.saicmotor.carapi.ev.ICarEvService"
+    private const val EV_TX_PERCENT = 3
+    private const val EV_TX_CHARGE_STATUS = 4
+    private const val PROP_BMS_CHARGE_STATE = 0x2140f409
+    private const val PROP_DC_CHARGE_STATE = 0x2140f43f
+    private const val PROP_AC_CHARGE_STATE = 0x2140f43e
 
     private const val PROP_BMS_PACK_VOLTAGE = 560002054 // V
     private const val PROP_BMS_PACK_CURRENT = 560002055 // A, positive when discharging

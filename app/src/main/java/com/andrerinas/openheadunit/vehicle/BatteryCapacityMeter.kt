@@ -28,30 +28,36 @@ object BatteryCapacityMeter {
     private var accDrop = 0f
     private var loaded = false
     private var lastSoc: Float? = null
+    private var usesPrecise = false
     private var lastAt = 0L
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     /**
-     * One reading: pack power [powerW] (positive out), charge [socPercent], [nowMs] elapsed
-     * realtime, [charging] while plugged in. Call it every few seconds.
+     * One reading, every second, by the same rules as MG4 Dash: pack power [powerW] (positive out),
+     * charge [percent] and, when within 1.5 of it, [precisePercent], which stays the source for a
+     * whole observed sequence. [nowMs] elapsed realtime, [plugged] while charging or in V2L.
      */
     @Synchronized
-    fun reading(context: Context, powerW: Float?, socPercent: Float?, charging: Boolean, nowMs: Long) {
+    fun reading(context: Context, powerW: Float?, percent: Int?, precisePercent: Float?, plugged: Boolean, nowMs: Long) {
         load(context)
-        val prev = lastSoc
         val dt = nowMs - lastAt
-        if (charging || powerW == null || socPercent == null || prev == null || dt <= 0 || dt > MAX_STEP_MS ||
-            abs(prev - socPercent) > 2f
-        ) {
-            lastSoc = socPercent.takeUnless { charging }
-            lastAt = nowMs
+        lastAt = nowMs
+        if (powerW == null || dt <= 0 || dt > MAX_STEP_MS || plugged) {
+            lastSoc = null
+            return
+        }
+        val precise = precisePercent?.takeIf { percent != null && abs(it - percent) < 1.5f }
+        val socPercent = if (usesPrecise) precise else percent?.toFloat()
+        val prev = lastSoc
+        if (prev == null || socPercent == null || abs(prev - socPercent) > 2f) {
+            usesPrecise = precise != null
+            lastSoc = precise ?: percent?.toFloat()
             return
         }
         accKwh += powerW * dt / 3_600_000_000f
         accDrop += prev - socPercent
         lastSoc = socPercent
-        lastAt = nowMs
         if (accDrop < MIN_DROP) {
             if (nowMs / 30_000 != (nowMs - dt) / 30_000) save(context)
             return

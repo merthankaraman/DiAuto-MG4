@@ -184,12 +184,8 @@ object Mg4EnergyProvider {
                 dashMeasures = Mg4DashBattery.read(ctx)?.measuredKwh != null
             }
             if (dashMeasures) return
-            val percent = EVHardware.getBatterySocPercent() ?: return
-            BatteryCapacityMeter.reading(
-                ctx, EVHardware.getPackPowerW(), percent,
-                charging = EVHardware.isChargePortConnected() == true,
-                nowMs = now,
-            )
+            val r = EVHardware.getCapacityReading()
+            BatteryCapacityMeter.reading(ctx, r.powerW, r.percent, r.precisePercent, r.plugged, now)
         }
     }
 

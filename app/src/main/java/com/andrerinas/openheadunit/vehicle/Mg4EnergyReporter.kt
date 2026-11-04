@@ -81,7 +81,7 @@ object Mg4EnergyReporter {
         val snap = Mg4EnergyProvider.snapshot() ?: return
         runCatching {
             MapsModelTrip.sample(SystemClock.elapsedRealtime(), model,
-                com.evsuite.hardware.EVHardware.getVehicleSpeedKmh(), com.evsuite.hardware.EVHardware.getPackPowerW(),
+                com.evsuite.hardware.EVHardware.getVehicleSpeedKmh(), com.evsuite.hardware.EVHardware.getCapacityReading().powerW,
                 snap.batteryPercent, snap.currentWh, snap.capacityWh)
         }
     }
