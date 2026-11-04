@@ -45,6 +45,20 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             else SaicCarAudioSource.isAndroidAuto(context)
         }
 
+        /**
+         * A car source other than Android Auto (1 FM, 2 AM, 3 DAB, 5 Bluetooth, 6-7 USB, 50 CarPlay).
+         * Unknown or empty does not count: SWI68 reports no source at all, and with no other
+         * source playing, the media keys still belong to Android Auto.
+         */
+        internal fun isOtherSource(source: Int?): Boolean =
+            source != null && source > 0 && source != SaicCarAudioSource.SRC_ANDROID_AUTO
+
+        /** Another source is playing, with Android Auto connected alongside it for navigation for example. */
+        private fun otherSourceIsCurrent(context: Context): Boolean {
+            val am = SaicCarAudioSource.audioManager(context) ?: return false
+            return isOtherSource(SaicCarAudioSource.readCurrentSourceType(am) ?: SaicCarAudioSource.readLastSource(am))
+        }
+
         val ACTIONS = arrayOf(
             "android.intent.action.MEDIA_BUTTON",
             "hy.intent.action.MEDIA_BUTTON", // Huayu / Hyundai Protocol
@@ -111,8 +125,9 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             intent.extras?.let { putExtras(it) }
         })
 
-        // Try to abort broadcast to prevent other apps (like built-in radio) from reacting
-        if (isOrderedBroadcast) {
+        // Try to abort broadcast to prevent other apps (like built-in radio) from reacting, except
+        // for a wheel key while another source plays: that key is the radio's.
+        if (isOrderedBroadcast && !(action == ACTION_SAIC_HARDKEY && otherSourceIsCurrent(context))) {
             abortBroadcast()
         }
 
@@ -228,9 +243,11 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
 
         // Play/pause paddle is outside the R69 decoder table.
         // The stock launcher also sends it through rui as AllGo's play/pause (AllgoMediaKeys): wait
-        // a moment and play/pause only once.
+        // a moment and play/pause only once. Another source playing keeps its key.
         if (keyCode == SAIC_KEYCODE_PLAY_PAUSE) {
-            if (!isDown) {
+            if (otherSourceIsCurrent(context)) {
+                if (!isDown) AppLog.i("CarKeyReceiver: play/pause left to the car's current source")
+            } else if (!isDown) {
                 val app = context.applicationContext
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (AllgoMediaKeys.playPauseCameThroughRui()) {
@@ -275,6 +292,7 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             // Volume / source / phone stay with the car stack.
             else -> return
         }
+        if (otherSourceIsCurrent(context)) return
         when (event.press) {
             PhysicalButtonEventDecoder.Press.SHORT,
             PhysicalButtonEventDecoder.Press.DOUBLE -> handleClick(context, androidCode)
