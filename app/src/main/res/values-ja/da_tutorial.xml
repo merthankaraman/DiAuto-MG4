@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">画面の左端に 2 本の指を置いて右へスワイプします。2 つの大きなボタン（切断 と 設定）のメニューが開きます。\n\n他の場所をタップすると閉じます。</string>
     <string name="tuto_fullscreen_title">右端から 2 本指</string>
     <string name="tuto_fullscreen_text">右端に 2 本の指を置いて左へスワイプすると、車のバーの表示・非表示が切り替わり、画面全体を使えます。</string>
+    <string name="tuto_top_title">上端から 2 本指</string>
+    <string name="tuto_top_text">画面の上部に 2 本の指を置いて下へスライドすると、車のランチャーに戻ります。Android Auto は接続されたままです。</string>
     <string name="tuto_home_title">3 本指で下へ</string>
     <string name="tuto_home_text">3 本の指で下へスワイプすると、Android Auto を切断して DiAuto のホーム画面に戻ります。</string>
     <string name="tuto_tips_title">知っておくと便利</string>

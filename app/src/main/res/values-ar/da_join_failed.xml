@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">لا يستطيع الهاتف الاتصال بشبكة Wi-Fi في السيارة. إذا كانت نقطة الاتصال فيه مفعّلة، فأوقفها.</string>
+</resources>

@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">İki parmağınızı ekranın sol kenarına koyup sağa kaydırın. İki büyük düğmeli bir menü açılır: Bağlantıyı kes ve Ayarlar.\n\nKapatmak için başka bir yere dokunun.</string>
     <string name="tuto_fullscreen_title">Sağ kenardan iki parmak</string>
     <string name="tuto_fullscreen_text">İki parmağınızı sağ kenara koyup sola kaydırarak aracın çubuklarını gösterin veya gizleyin ve tüm ekranı kullanın.</string>
+    <string name="tuto_top_title">Üst kenardan iki parmak</string>
+    <string name="tuto_top_text">İki parmağınızı ekranın üstüne koyup aşağı kaydırarak aracın ana ekranına dönün. Android Auto bağlı kalır.</string>
     <string name="tuto_home_title">Üç parmakla aşağı</string>
     <string name="tuto_home_text">Android Auto bağlantısını kesip DiAuto ana ekranına dönmek için üç parmakla aşağı kaydırın.</string>
     <string name="tuto_tips_title">Bilmekte fayda var</string>

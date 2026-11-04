@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Legen Sie zwei Finger an den linken Bildschirmrand und wischen Sie nach rechts. Ein Menü mit zwei großen Tasten öffnet sich: Trennen und Einstellungen.\n\nTippen Sie woanders hin, um es zu schließen.</string>
     <string name="tuto_fullscreen_title">Zwei Finger vom rechten Rand</string>
     <string name="tuto_fullscreen_text">Legen Sie zwei Finger an den rechten Rand und wischen Sie nach links, um die Leisten des Autos ein- oder auszublenden und den ganzen Bildschirm zu nutzen.</string>
+    <string name="tuto_top_title">Zwei Finger vom oberen Rand</string>
+    <string name="tuto_top_text">Legen Sie zwei Finger oben auf den Bildschirm und wischen Sie nach unten, um zum Launcher des Autos zurückzukehren. Android Auto bleibt verbunden.</string>
     <string name="tuto_home_title">Drei Finger nach unten</string>
     <string name="tuto_home_text">Wischen Sie mit drei Fingern nach unten, um Android Auto zu trennen und zum Startbildschirm von DiAuto zurückzukehren.</string>
     <string name="tuto_tips_title">Gut zu wissen</string>

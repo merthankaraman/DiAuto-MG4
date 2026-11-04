@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Đặt hai ngón tay gần mép trái màn hình và vuốt sang phải. Một menu mở ra với hai nút lớn: Ngắt kết nối và Cài đặt.\n\nChạm vào chỗ khác để đóng.</string>
     <string name="tuto_fullscreen_title">Hai ngón từ mép phải</string>
     <string name="tuto_fullscreen_text">Đặt hai ngón tay gần mép phải và vuốt sang trái để hiện hoặc ẩn các thanh của xe và dùng toàn bộ màn hình.</string>
+    <string name="tuto_top_title">Hai ngón từ cạnh trên</string>
+    <string name="tuto_top_text">Đặt hai ngón tay ở phía trên màn hình rồi vuốt xuống để quay lại launcher của xe. Android Auto vẫn được kết nối.</string>
     <string name="tuto_home_title">Ba ngón vuốt xuống</string>
     <string name="tuto_home_text">Vuốt ba ngón xuống để ngắt kết nối Android Auto và quay về màn hình chính của DiAuto.</string>
     <string name="tuto_tips_title">Nên biết</string>

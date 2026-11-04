@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">El teléfono no puede conectarse al Wi-Fi del coche. Si su punto de acceso está activo, desactívalo.</string>
+</resources>

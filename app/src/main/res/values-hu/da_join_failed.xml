@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">A telefon nem tud csatlakozni az autó Wi-Fi-jéhez. Ha be van kapcsolva a hotspotja, kapcsolja ki.</string>
+</resources>

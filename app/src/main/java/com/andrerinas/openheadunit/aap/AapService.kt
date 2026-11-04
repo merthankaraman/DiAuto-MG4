@@ -289,6 +289,10 @@ class AapService : Service(), UsbReceiver.Listener {
     /** Sticky SAIC SRC_AA claim while Wi‑Fi AA music is the active session. */
     private var saicAaMediaClaimJob: Job? = null
     private var relayAnnounceJob: Job? = null
+    @Volatile private var joinFailures = 0
+
+    /** How long the handshake waits before waking the phone again. */
+    val joinRetryDelayMs: Long get() = JoinFailurePolicy.retryDelayMs(joinFailures)
 
     /**
      * Automatic reconnect / discovery restarts after unexpected disconnects.
@@ -1019,6 +1023,7 @@ class AapService : Service(), UsbReceiver.Listener {
      * that [VideoDecoder.setSurface] is always called before the first video frame arrives.
      */
     private fun onConnected() {
+        joinFailures = 0
         isSwitchingToAccessory.set(false)
         updateNotification()
         acquireWifiLock()
@@ -2749,6 +2754,13 @@ class AapService : Service(), UsbReceiver.Listener {
         // A delayed report from an old handshake must not alter a live session. This only
         // re-reads the car AP; it never restarts its radio.
         if (commManager.isBusy) return
+        val failures = ++joinFailures
+        if (JoinFailurePolicy.shouldWarn(failures)) {
+            AppLog.w("AapService: the phone failed to join the hotspot $failures times in a row")
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                ToastUtils.showToast(this, getString(R.string.da_join_failed), Toast.LENGTH_LONG)
+            }
+        }
         AppLog.i("AapService: Phone could not join the hotspot — discarding credentials and resolving the access point again.")
         softApCredentialsProvider?.refresh()
     }

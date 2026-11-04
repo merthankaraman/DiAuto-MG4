@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">De telefoon kan geen verbinding maken met de wifi van de auto. Staat de hotspot van de telefoon aan, zet die dan uit.</string>
+</resources>

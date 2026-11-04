@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">დადეთ ორი თითი ეკრანის მარცხენა კიდესთან და გადაასრიალეთ მარჯვნივ. გაიხსნება მენიუ ორი დიდი ღილაკით: გათიშვა და პარამეტრები.\n\nდასახურად შეეხეთ სხვა ადგილს.</string>
     <string name="tuto_fullscreen_title">ორი თითი მარჯვენა კიდიდან</string>
     <string name="tuto_fullscreen_text">დადეთ ორი თითი მარჯვენა კიდესთან და გადაასრიალეთ მარცხნივ, რომ მანქანის ზოლები აჩვენოთ ან დამალოთ და მთელი ეკრანი გამოიყენოთ.</string>
+    <string name="tuto_top_title">ორი თითი ზედა კიდიდან</string>
+    <string name="tuto_top_text">დადეთ ორი თითი ეკრანის ზედა ნაწილში და ჩამოასრიალეთ, რომ დაუბრუნდეთ მანქანის მთავარ ეკრანს. Android Auto დაკავშირებული რჩება.</string>
     <string name="tuto_home_title">სამი თითი ქვემოთ</string>
     <string name="tuto_home_text">გადაასრიალეთ სამი თითი ქვემოთ, რომ Android Auto გათიშოთ და DiAuto-ს მთავარ ეკრანზე დაბრუნდეთ.</string>
     <string name="tuto_tips_title">კარგია იცოდეთ</string>

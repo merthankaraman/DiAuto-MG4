@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Покладіть два пальці біля лівого краю екрана й проведіть праворуч. Відкриється меню з двома великими кнопками: Від’єднати і Налаштування.\n\nТоркніться деінде, щоб закрити його.</string>
     <string name="tuto_fullscreen_title">Два пальці від правого краю</string>
     <string name="tuto_fullscreen_text">Покладіть два пальці біля правого краю й проведіть ліворуч, щоб показати або сховати панелі автомобіля й використати весь екран.</string>
+    <string name="tuto_top_title">Два пальці від верхнього краю</string>
+    <string name="tuto_top_text">Покладіть два пальці вгорі екрана й проведіть униз, щоб повернутися до лаунчера автомобіля. Android Auto залишається підключеним.</string>
     <string name="tuto_home_title">Три пальці вниз</string>
     <string name="tuto_home_text">Проведіть трьома пальцями вниз, щоб від\'єднати Android Auto й повернутися на головний екран DiAuto.</string>
     <string name="tuto_tips_title">Варто знати</string>

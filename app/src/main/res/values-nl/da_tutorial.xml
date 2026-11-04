@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Zet twee vingers bij de linkerrand van het scherm en veeg naar rechts. Er opent een menu met twee grote knoppen: Verbinding verbreken en Instellingen.\n\nTik ergens anders om het te sluiten.</string>
     <string name="tuto_fullscreen_title">Twee vingers vanaf de rechterrand</string>
     <string name="tuto_fullscreen_text">Zet twee vingers bij de rechterrand en veeg naar links om de balken van de auto te tonen of te verbergen en het hele scherm te gebruiken.</string>
+    <string name="tuto_top_title">Twee vingers vanaf de bovenrand</string>
+    <string name="tuto_top_text">Zet twee vingers boven aan het scherm en veeg omlaag om terug te gaan naar de launcher van de auto. Android Auto blijft verbonden.</string>
     <string name="tuto_home_title">Drie vingers omlaag</string>
     <string name="tuto_home_text">Veeg met drie vingers omlaag om Android Auto te ontkoppelen en terug te gaan naar het startscherm van DiAuto.</string>
     <string name="tuto_tips_title">Goed om te weten</string>

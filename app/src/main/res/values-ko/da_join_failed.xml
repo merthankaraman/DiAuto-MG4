@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">휴대전화가 차량 Wi-Fi에 연결할 수 없습니다. 휴대전화의 핫스팟이 켜져 있으면 꺼 주세요.</string>
+</resources>

@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Položte dva prsty u levého okraje obrazovky a táhněte doprava. Otevře se nabídka se dvěma velkými tlačítky: Odpojit a Nastavení.\n\nKlepnutím jinam ji zavřete.</string>
     <string name="tuto_fullscreen_title">Dva prsty od pravého okraje</string>
     <string name="tuto_fullscreen_text">Položte dva prsty u pravého okraje a táhněte doleva, abyste zobrazili nebo skryli lišty auta a využili celou obrazovku.</string>
+    <string name="tuto_top_title">Dva prsty od horního okraje</string>
+    <string name="tuto_top_text">Položte dva prsty nahoře na obrazovku a přejeďte dolů, abyste se vrátili do launcheru vozu. Android Auto zůstane připojené.</string>
     <string name="tuto_home_title">Tři prsty dolů</string>
     <string name="tuto_home_text">Táhněte třemi prsty dolů, abyste odpojili Android Auto a vrátili se na úvodní obrazovku DiAuto.</string>
     <string name="tuto_tips_title">Dobré vědět</string>

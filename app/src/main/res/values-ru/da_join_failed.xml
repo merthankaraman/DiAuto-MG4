@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Телефон не может подключиться к Wi-Fi автомобиля. Если на нём включена точка доступа, выключите её.</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Le téléphone n\'arrive pas à rejoindre le Wi-Fi de la voiture. Si son partage de connexion est actif, coupez-le.</string>
+</resources>

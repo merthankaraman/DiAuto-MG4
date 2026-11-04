@@ -24,7 +24,7 @@ class TutorialShotTest {
         val controller = Robolectric.buildActivity(DaTutorialActivity::class.java).setup()
         val a = controller.get()
         val out = File("build/screenshots").apply { mkdirs() }
-        for (i in 0 until 5) {
+        for (i in 0 until 6) {
             shadowOf(Looper.getMainLooper()).idle()
             val demo = a.findViewById<GestureDemoView>(com.andrerinas.openheadunit.R.id.tuto_demo)
             demo.freeze(0.35f)
@@ -34,7 +34,7 @@ class TutorialShotTest {
             val bmp = Bitmap.createBitmap(1920, 720, Bitmap.Config.ARGB_8888)
             root.draw(Canvas(bmp))
             File(out, "tuto_${i + 1}.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-            if (i == 1 || i == 2) {
+            if (i in 1..3) {
                 demo.freeze(0.8f)
                 root.draw(Canvas(bmp))
                 File(out, "tuto_${i + 1}b.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }

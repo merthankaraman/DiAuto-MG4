@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">手機無法連線到車輛的 Wi-Fi。如果手機熱點已開啟，請將其關閉。</string>
+</resources>

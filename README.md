@@ -47,6 +47,8 @@ can plan your charging stops.
 
 <p align="center"><img src="docs/screenshots/settings_connection.png" width="800" alt="Settings, Connection tab"></p>
 
+If the phone's own Wi-Fi hotspot is on, it can't join the car's: wireless Android Auto can't start, and DiAuto says so. Turn the hotspot off, or use the USB setup below.
+
 ### Internet in the car from the phone (Android Auto over USB)
 Many MG4s have their own 4G connection, but not in every country, and it comes with a monthly data
 allowance after which it stops. The phone can take over: with wireless Android Auto the car's Wi-Fi
@@ -120,7 +122,7 @@ export them, and contain no destinations, road names, GPS position, or phone and
 | --- | --- |
 | Two fingers from the **left** edge, slide right | Menu with **Disconnect** and **Settings** |
 | Two fingers from the **right** edge, slide left | Full screen: hides the car's side bar and top strip (Android Auto reconnects for a few seconds to use the new height). Same gesture to bring them back. |
-| Two fingers from the **top** edge, slide down | Back to the car's launcher, Android Auto stays connected |
+| Two fingers from the **top** edge, slide down | Back to the car's launcher, Android Auto stays connected. In MG4 Dash, the same gesture opens Android Auto again. |
 | Three fingers **down** | Disconnects Android Auto and goes back to DiAuto's home screen |
 
 <p align="center">

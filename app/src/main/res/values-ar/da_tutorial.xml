@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">ضع إصبعين قرب الحافة اليسرى للشاشة واسحب نحو اليمين. تُفتح قائمة بزرين كبيرين: قطع الاتصال والإعدادات.\n\nالمس أي مكان آخر لإغلاقها.</string>
     <string name="tuto_fullscreen_title">إصبعان من الحافة اليمنى</string>
     <string name="tuto_fullscreen_text">ضع إصبعين قرب الحافة اليمنى واسحب نحو اليسار لإظهار أشرطة السيارة أو إخفائها واستخدام الشاشة كاملة.</string>
+    <string name="tuto_top_title">إصبعان من الحافة العلوية</string>
+    <string name="tuto_top_text">ضع إصبعين أعلى الشاشة واسحبهما إلى الأسفل للعودة إلى واجهة السيارة. يبقى Android Auto متصلًا.</string>
     <string name="tuto_home_title">ثلاثة أصابع للأسفل</string>
     <string name="tuto_home_text">اسحب بثلاثة أصابع للأسفل لقطع اتصال Android Auto والعودة إلى الشاشة الرئيسية لـ DiAuto.</string>
     <string name="tuto_tips_title">معلومات مفيدة</string>

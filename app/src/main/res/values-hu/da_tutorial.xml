@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Tegyen két ujjat a képernyő bal széléhez, és húzza jobbra. Megnyílik egy menü két nagy gombbal: Leválasztás és Beállítások.\n\nMáshova koppintva bezárul.</string>
     <string name="tuto_fullscreen_title">Két ujj a jobb szélről</string>
     <string name="tuto_fullscreen_text">Tegyen két ujjat a jobb széléhez, és húzza balra az autó sávjainak megjelenítéséhez vagy elrejtéséhez és a teljes képernyő használatához.</string>
+    <string name="tuto_top_title">Két ujj a felső széltől</string>
+    <string name="tuto_top_text">Tegyen két ujjat a képernyő tetejére, és húzza lefelé, hogy visszatérjen az autó kezdőképernyőjére. Az Android Auto csatlakozva marad.</string>
     <string name="tuto_home_title">Három ujj lefelé</string>
     <string name="tuto_home_text">Húzza lefelé három ujjal az Android Auto leválasztásához és a DiAuto kezdőképernyőjére való visszatéréshez.</string>
     <string name="tuto_tips_title">Jó tudni</string>

@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Put two fingers near the left edge of the screen and slide them to the right. A menu opens with two large buttons: Disconnect and Settings.\n\nTap anywhere else to close it.</string>
     <string name="tuto_fullscreen_title">Two fingers from the right edge</string>
     <string name="tuto_fullscreen_text">Put two fingers near the right edge and slide them to the left to show or hide the car\'s bars and use the whole screen.</string>
+    <string name="tuto_top_title">Two fingers from the top edge</string>
+    <string name="tuto_top_text">Put two fingers at the top of the screen and slide them down to go back to the car\'s launcher. Android Auto stays connected.</string>
     <string name="tuto_home_title">Three fingers down</string>
     <string name="tuto_home_text">Slide three fingers down the screen to disconnect Android Auto and come back to DiAuto\'s home screen.</string>
     <string name="tuto_tips_title">Good to know</string>

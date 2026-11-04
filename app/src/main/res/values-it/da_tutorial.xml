@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Appoggia due dita vicino al bordo sinistro dello schermo e scorri verso destra. Si apre un menu con due grandi pulsanti: Disconnetti e Impostazioni.\n\nTocca altrove per chiuderlo.</string>
     <string name="tuto_fullscreen_title">Due dita dal bordo destro</string>
     <string name="tuto_fullscreen_text">Appoggia due dita vicino al bordo destro e scorri verso sinistra per mostrare o nascondere le barre dell\'auto e usare tutto lo schermo.</string>
+    <string name="tuto_top_title">Due dita dal bordo superiore</string>
+    <string name="tuto_top_text">Appoggia due dita in alto sullo schermo e scorri verso il basso per tornare al launcher dell\'auto. Android Auto resta connesso.</string>
     <string name="tuto_home_title">Tre dita verso il basso</string>
     <string name="tuto_home_text">Scorri tre dita verso il basso per scollegare Android Auto e tornare alla schermata iniziale di DiAuto.</string>
     <string name="tuto_tips_title">Buono a sapersi</string>

@@ -838,7 +838,9 @@ class NativeAaHandshakeManager(
                     )
                 }
 
-                delay(15000) // retry cadence, matches both reference implementations' 15-20s interval
+                // Retry cadence, matches both reference implementations' 15-20s interval; longer
+                // while the phone keeps failing to join the hotspot.
+                delay((context as? AapService)?.joinRetryDelayMs ?: 15000L)
             }
         }
     }

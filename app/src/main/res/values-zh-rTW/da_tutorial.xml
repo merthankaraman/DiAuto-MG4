@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">將兩根手指放在螢幕左邊緣並向右滑動，會開啟一個有兩個大按鈕的選單：中斷連線 和 設定。\n\n輕觸其他位置即可關閉。</string>
     <string name="tuto_fullscreen_title">雙指從右邊緣滑動</string>
     <string name="tuto_fullscreen_text">將兩根手指放在右邊緣並向左滑動，可顯示或隱藏車輛的狀態列，使用整個螢幕。</string>
+    <string name="tuto_top_title">兩指從頂部邊緣下滑</string>
+    <string name="tuto_top_text">將兩根手指放在螢幕頂部並向下滑動，即可返回車輛主畫面。Android Auto 保持連線。</string>
     <string name="tuto_home_title">三指向下滑動</string>
     <string name="tuto_home_text">三指向下滑動可中斷 Android Auto 並返回 DiAuto 主畫面。</string>
     <string name="tuto_tips_title">實用提示</string>

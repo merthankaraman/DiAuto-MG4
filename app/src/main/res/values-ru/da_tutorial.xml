@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Положите два пальца у левого края экрана и проведите вправо. Откроется меню с двумя большими кнопками: Отключить и Настройки.\n\nКоснитесь в другом месте, чтобы закрыть его.</string>
     <string name="tuto_fullscreen_title">Два пальца от правого края</string>
     <string name="tuto_fullscreen_text">Положите два пальца у правого края и проведите влево, чтобы показать или скрыть панели автомобиля и использовать весь экран.</string>
+    <string name="tuto_top_title">Два пальца от верхнего края</string>
+    <string name="tuto_top_text">Положите два пальца вверху экрана и проведите вниз, чтобы вернуться к лаунчеру автомобиля. Android Auto остаётся подключённым.</string>
     <string name="tuto_home_title">Три пальца вниз</string>
     <string name="tuto_home_text">Проведите тремя пальцами вниз, чтобы отключить Android Auto и вернуться на главный экран DiAuto.</string>
     <string name="tuto_tips_title">Полезно знать</string>

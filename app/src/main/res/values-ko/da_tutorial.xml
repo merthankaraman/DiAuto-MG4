@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">화면 왼쪽 가장자리에 두 손가락을 대고 오른쪽으로 밉니다. 큰 버튼 두 개(연결 해제, 설정)가 있는 메뉴가 열립니다.\n\n다른 곳을 탭하면 닫힙니다.</string>
     <string name="tuto_fullscreen_title">오른쪽 가장자리에서 두 손가락</string>
     <string name="tuto_fullscreen_text">오른쪽 가장자리에 두 손가락을 대고 왼쪽으로 밀면 차량 바를 표시하거나 숨겨 화면 전체를 사용할 수 있습니다.</string>
+    <string name="tuto_top_title">위쪽 가장자리에서 두 손가락</string>
+    <string name="tuto_top_text">화면 위쪽에 두 손가락을 대고 아래로 밀면 차량 홈 화면으로 돌아갑니다. Android Auto는 연결된 상태로 유지됩니다.</string>
     <string name="tuto_home_title">세 손가락으로 아래로</string>
     <string name="tuto_home_text">세 손가락으로 아래로 밀면 Android Auto 연결이 끊기고 DiAuto 홈 화면으로 돌아갑니다.</string>
     <string name="tuto_tips_title">알아 두면 좋은 점</string>

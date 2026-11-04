@@ -13,7 +13,7 @@ import com.andrerinas.openheadunit.R
 import com.andrerinas.openheadunit.app.BaseActivity
 
 /**
- * Shown once at first start, and again from Settings → About: how to connect, the three gestures
+ * Shown once at first start, and again from Settings → About: how to connect, the gestures
  * over Android Auto and where the useful settings are. Can be skipped at any step.
  */
 class DaTutorialActivity : BaseActivity() {
@@ -29,6 +29,7 @@ class DaTutorialActivity : BaseActivity() {
         Step(R.string.tuto_welcome_title, R.string.tuto_welcome_text, icon = R.drawable.ic_android_auto),
         Step(R.string.tuto_menu_title, R.string.tuto_menu_text, GestureDemoView.Gesture.MENU),
         Step(R.string.tuto_fullscreen_title, R.string.tuto_fullscreen_text, GestureDemoView.Gesture.FULLSCREEN),
+        Step(R.string.tuto_top_title, R.string.tuto_top_text, GestureDemoView.Gesture.TOP),
         Step(R.string.tuto_home_title, R.string.tuto_home_text, GestureDemoView.Gesture.HOME),
         Step(R.string.tuto_tips_title, R.string.tuto_tips_text, icon = R.drawable.ic_da_charging),
     )

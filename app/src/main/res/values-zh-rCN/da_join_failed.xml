@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">手机无法连接车辆的 Wi-Fi。如果手机热点已开启，请将其关闭。</string>
+</resources>

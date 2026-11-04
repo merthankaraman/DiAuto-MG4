@@ -11,6 +11,8 @@
     <string name="tuto_menu_text">Coloque dois dedos perto da borda esquerda da tela e deslize para a direita. Abre-se um menu com dois botões grandes: Desconectar e Configurações.\n\nToque em outro lugar para fechá-lo.</string>
     <string name="tuto_fullscreen_title">Dois dedos a partir da borda direita</string>
     <string name="tuto_fullscreen_text">Coloque dois dedos perto da borda direita e deslize para a esquerda para mostrar ou ocultar as barras do carro e usar a tela inteira.</string>
+    <string name="tuto_top_title">Dois dedos a partir do topo</string>
+    <string name="tuto_top_text">Coloque dois dedos no topo da tela e deslize para baixo para voltar ao launcher do carro. O Android Auto continua conectado.</string>
     <string name="tuto_home_title">Três dedos para baixo</string>
     <string name="tuto_home_text">Deslize três dedos para baixo para desconectar o Android Auto e voltar à tela inicial do DiAuto.</string>
     <string name="tuto_tips_title">Bom saber</string>

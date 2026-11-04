@@ -19,7 +19,7 @@ class GestureDemoView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
-    enum class Gesture { MENU, FULLSCREEN, HOME }
+    enum class Gesture { MENU, FULLSCREEN, TOP, HOME }
 
     var gesture = Gesture.MENU
         set(value) {
@@ -97,6 +97,7 @@ class GestureDemoView @JvmOverloads constructor(
         if (shown) when (gesture) {
             Gesture.MENU -> drawMenu(canvas, screen)
             Gesture.HOME -> drawHome(canvas, screen)
+            Gesture.TOP -> drawLauncher(canvas, screen)
             Gesture.FULLSCREEN -> {}
         }
         drawFingers(canvas, screen)
@@ -192,6 +193,22 @@ class GestureDemoView @JvmOverloads constructor(
         canvas.drawRoundRect(rect, 12 * dp, 12 * dp, fill)
     }
 
+    /** The car's launcher: a row of four cards. */
+    private fun drawLauncher(canvas: Canvas, s: RectF) {
+        fill.color = background
+        canvas.drawRoundRect(s, 18 * dp, 18 * dp, fill)
+        stroke.color = border
+        canvas.drawRoundRect(s, 18 * dp, 18 * dp, stroke)
+        val pad = 14 * dp
+        val cardW = (s.width() - pad * 5) / 4
+        fill.color = surface
+        for (i in 0..3) {
+            val l = s.left + pad + i * (cardW + pad)
+            rect.set(l, s.top + pad * 2, l + cardW, s.bottom - pad * 2)
+            canvas.drawRoundRect(rect, 12 * dp, 12 * dp, fill)
+        }
+    }
+
     private fun drawFingers(canvas: Canvas, s: RectF) {
         // 0 – 0.1 press, 0.1 – 0.5 slide, 0.5 – 0.6 lift.
         if (t > 0.6f) return
@@ -207,6 +224,7 @@ class GestureDemoView @JvmOverloads constructor(
         val fingers: List<Pair<Float, Float>> = when (gesture) {
             Gesture.MENU -> List(2) { i -> s.left + 14 * dp + travel * ease to s.centerY() + (i - 0.5f) * 46 * dp }
             Gesture.FULLSCREEN -> List(2) { i -> s.right - 14 * dp - travel * ease to s.centerY() + (i - 0.5f) * 46 * dp }
+            Gesture.TOP -> List(2) { i -> s.centerX() + (i - 0.5f) * 46 * dp to s.top + 14 * dp + down * ease }
             Gesture.HOME -> List(3) { i -> s.centerX() + (i - 1) * 44 * dp to s.top + s.height() * 0.2f + down * ease }
         }
         val radius = 17 * dp
@@ -216,6 +234,7 @@ class GestureDemoView @JvmOverloads constructor(
             val (sx, sy) = when (gesture) {
                 Gesture.MENU -> s.left + 14 * dp to y
                 Gesture.FULLSCREEN -> s.right - 14 * dp to y
+                Gesture.TOP -> x to s.top + 14 * dp
                 Gesture.HOME -> x to s.top + s.height() * 0.2f
             }
             stroke.color = accent
