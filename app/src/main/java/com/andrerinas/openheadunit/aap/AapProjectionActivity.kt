@@ -87,6 +87,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     private var initialX = 0f
     private var initialY = 0f
     private var isPotentialGesture = false
+    private var isPotentialTopGesture = false
 
     // 3-finger swipe-down → return to DiAuto main screen
     private var threeFingerInitialX = 0f
@@ -1499,7 +1500,8 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     private val commManager get() = App.provide(this).commManager
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        // 1. 2-finger swipe detection from the left or right edge (to open exit menu or toggle fullscreen)
+        // 1. 2-finger swipe detection from the left or right edge (to open exit menu or toggle fullscreen),
+        // or from the top edge (back to the car's launcher, the session stays up)
         if (ev.pointerCount == 2) {
             isPotentialThreeFingerSwipe = false
             when (ev.actionMasked) {
@@ -1507,8 +1509,16 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
                     initialX = ev.getX(0)
                     initialY = ev.getY(0)
                     isPotentialGesture = initialX < 100 || initialX > HeadUnitScreenConfig.getUsableWidth() - 100
+                    isPotentialTopGesture = initialY < 100 && ev.getY(1) < 100
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    if (isPotentialTopGesture && ev.getY(0) - initialY > 200 && abs(ev.getX(0) - initialX) < 100) {
+                        isPotentialTopGesture = false
+                        isPotentialGesture = false
+                        AppLog.i("Two-finger swipe from the top: back to the launcher")
+                        moveToBackground()
+                        return true // Consume
+                    }
                     if (isPotentialGesture) {
                         val deltaX = ev.getX(0) - initialX
                         val deltaY = abs(ev.getY(0) - initialY)
@@ -1545,6 +1555,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         // 2. 3-finger swipe down → disconnect and return to DiAuto main screen
         if (ev.pointerCount >= 3) {
             isPotentialGesture = false
+            isPotentialTopGesture = false
             when (ev.actionMasked) {
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     if (ev.pointerCount == 3) {
