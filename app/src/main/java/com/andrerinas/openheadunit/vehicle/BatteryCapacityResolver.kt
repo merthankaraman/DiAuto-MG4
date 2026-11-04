@@ -13,8 +13,8 @@ import kotlin.math.abs
  *
  * Capacity: the one the car publishes or its battery type, else the battery chosen in MG4 Dash, else
  * the 64 kWh battery: a measurement cannot tell a worn large battery from a small one. State of
- * health: the measured capacity over that usable one, else [DEFAULT_SOH] until it is measured. The measurement is DiAuto's own
- * ([BatteryCapacityMeter]); until it has a sample, MG4 Dash's is read if it is there.
+ * health: the measured capacity over that usable one, else [DEFAULT_SOH] until it is measured. The measurement is MG4 Dash's
+ * when it has one, so both apps show the same figure, else DiAuto's own ([BatteryCapacityMeter]).
  */
 object BatteryCapacityResolver {
     private const val TAG = "DiAuto-MG4"
@@ -83,7 +83,7 @@ object BatteryCapacityResolver {
     ): Resolved {
         val car = carKwh?.let(::carUsableKwh)
         val valid = { kwh: Float? -> kwh?.takeIf { it.isFinite() && it in 30f..100f } }
-        val measured = valid(measuredKwh) ?: valid(mg4Dash?.measuredKwh)
+        val measured = valid(mg4Dash?.measuredKwh) ?: valid(measuredKwh)
         val typePacks = packsForTypeCode(carTypeCode)
         // The car's type settles the battery when it names one; between two, MG4 Dash's choice
         // or the measurement decides, else the larger share (64 kWh).

@@ -44,9 +44,10 @@ class BatteryCapacityResolverTest {
     }
 
     @Test
-    fun `DiAuto's own measurement wins over MG4 Dash's, and the car over both`() {
+    fun `MG4 Dash's measurement wins over DiAuto's own, which stands in without it`() {
         val dash = Mg4DashBattery.Reading(pack = 51, packChosen = false, measuredKwh = 44f)
-        assertEquals(46.7f / 61f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
+        assertEquals(44f / 61f * 100f, resolve(dash = dash, measured = 46.7f).sohPercent, 0.01f)
+        assertEquals(46.7f / 61f * 100f, resolve(measured = 46.7f).sohPercent, 0.01f)
         assertEquals(Source.CAR, resolve(car = 64f, measured = 46.7f).netSource)
     }
 

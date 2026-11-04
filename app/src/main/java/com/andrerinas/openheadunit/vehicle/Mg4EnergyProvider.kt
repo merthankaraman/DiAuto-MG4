@@ -22,6 +22,8 @@ import kotlin.math.roundToInt
 object Mg4EnergyProvider {
     private const val TAG = "DiAuto-MG4"
     private const val POLL_MS = 5_000L
+    private const val METER_MS = 1_000L
+    private const val DASH_CHECK_MS = 60_000L
     private const val STALE_MS = 3 * 60_000L
     /** Cover SAIC CarService / CPM bind ladder (retries out to 60s). */
     private const val INITIAL_READ_TIMEOUT_MS = 60_000L
@@ -42,6 +44,9 @@ object Mg4EnergyProvider {
     @Volatile private var started = false
     @Volatile private var initialized = false
     private var pollFuture: ScheduledFuture<*>? = null
+    private var meterFuture: ScheduledFuture<*>? = null
+    private var dashMeasures = false
+    private var dashCheckedAt = 0L
     private val executor = Executors.newSingleThreadScheduledExecutor { r ->
         Thread(r, "diauto-mg4-energy").apply { isDaemon = true }
     }
@@ -104,6 +109,11 @@ object Mg4EnergyProvider {
                     ::poll, POLL_MS, POLL_MS, TimeUnit.MILLISECONDS,
                 )
             }
+            if (meterFuture == null && !settings.batteryDemoMode) {
+                meterFuture = executor.scheduleWithFixedDelay(
+                    ::readMeter, METER_MS, METER_MS, TimeUnit.MILLISECONDS,
+                )
+            }
         }
     }
 
@@ -116,6 +126,8 @@ object Mg4EnergyProvider {
     fun stop() {
         pollFuture?.cancel(false)
         pollFuture = null
+        meterFuture?.cancel(false)
+        meterFuture = null
     }
 
     fun snapshot(): EnergySnapshot? =
@@ -161,6 +173,26 @@ object Mg4EnergyProvider {
         }
     }
 
+    /** DiAuto's own capacity measurement, every second as MG4 Dash's, unless MG4 Dash has one to read. */
+    private fun readMeter() {
+        val ctx = app ?: return
+        if (!initialized) return
+        runCatching {
+            val now = SystemClock.elapsedRealtime()
+            if (dashCheckedAt == 0L || now - dashCheckedAt >= DASH_CHECK_MS) {
+                dashCheckedAt = now
+                dashMeasures = Mg4DashBattery.read(ctx)?.measuredKwh != null
+            }
+            if (dashMeasures) return
+            val percent = EVHardware.getBatterySocPercent() ?: return
+            BatteryCapacityMeter.reading(
+                ctx, EVHardware.getPackPowerW(), percent,
+                charging = EVHardware.isChargePortConnected() == true,
+                nowMs = now,
+            )
+        }
+    }
+
     private fun primeFirstReading() {
         val deadline = SystemClock.elapsedRealtime() + INITIAL_READ_TIMEOUT_MS
         do {
@@ -197,14 +229,6 @@ object Mg4EnergyProvider {
         if (!initialized) return
 
         val percent = EVHardware.getBatterySocPercent()?.toDouble() ?: return
-        // DiAuto's own capacity measurement, for cars that publish no capacity (see the meter).
-        runCatching {
-            BatteryCapacityMeter.reading(
-                ctx, EVHardware.getPackPowerW(), percent.toFloat(),
-                charging = EVHardware.isChargePortConnected() == true,
-                nowMs = SystemClock.elapsedRealtime(),
-            )
-        }
         // Prefer live range; keep last good range so a late range does not block SoC.
         val rangeKm = EVHardware.getRemainingRangeKm()?.takeIf { it > 0 }
             ?: latest?.rangeKm?.takeIf { it > 0 }

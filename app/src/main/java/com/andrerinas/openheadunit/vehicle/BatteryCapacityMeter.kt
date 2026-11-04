@@ -20,7 +20,7 @@ object BatteryCapacityMeter {
     private const val MONTH_MS = 30L * 24 * 3600_000L
     private const val MAX_SAMPLES = 300
     /** Readings further apart than this are a gap, not a stretch of driving. */
-    private const val MAX_STEP_MS = 15_000L
+    private const val MAX_STEP_MS = 5_000L
 
     data class Sample(val at: Long, val kwh: Float, val drop: Float)
 
