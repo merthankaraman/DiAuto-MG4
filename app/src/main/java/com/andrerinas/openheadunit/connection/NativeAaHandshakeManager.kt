@@ -175,6 +175,10 @@ class NativeAaHandshakeManager(
     @Volatile
     private var credentials: WifiCredentials? = null
     private var pokeJob: Job? = null
+    private val manualPokeLock = Any()
+    private val manualPokeCoordinator = ManualPokeCoordinator()
+    private var activeManualPokeAddress: String? = null
+    private var activeManualPokeJob: Job? = null
     // Last (ssid, ip, bssid) triggerPoke() restarted for - dedupes redundant restarts when
     // WifiDirectManager redelivers the same credentials, which was starving the poke before it
     // could ever finish.
@@ -830,27 +834,55 @@ class NativeAaHandshakeManager(
         try {
             val device = adapter.getRemoteDevice(address)
             AppLog.i("NativeAA: Manual poke requested for ${device.name} ($address)")
-            // The user asking to try again is the way out of a handshake backoff — it is the only
-            // gesture the UI offers, and it means they want another attempt whatever we concluded.
-            resetHandshakeBackoff()
-            
-            pokeJob?.cancel()
-            pokeJob = scope.launch(Dispatchers.IO + CoroutineName("NativeAa-ManualWakeup")) {
-                // Pre-flight: Ensure WiFi credentials (SSID/IP) are ready before connecting RFCOMM to phone.
-                if (credentials == null) {
-                    AppLog.i("NativeAA: WiFi credentials not ready before manual poke. Requesting WiFi refresh...")
-                    (context as? AapService)?.triggerWifiDirectRefresh()
-                    var waitedMs = 0
-                    while (credentials == null && waitedMs < 4000 && isRunning && isActive) {
-                        delay(200)
-                        waitedMs += 200
-                    }
-                    AppLog.i("NativeAA: Pre-poke credential wait completed. SSID=${credentials?.ssid}, IP=${credentials?.ip} (waited ${waitedMs}ms)")
+            synchronized(manualPokeLock) {
+                if (ManualPokePolicy.isDuplicate(
+                        address,
+                        activeManualPokeAddress,
+                        activeManualPokeJob?.isActive == true,
+                    )
+                ) {
+                    AppLog.i("NativeAA: Manual poke already active for $address; not restarting the HFP connection.")
+                    return
                 }
 
-                AppLog.i("NativeAA: Attempting manual poke to ${device.name}...")
-                pokeDevice(device, holdMs = 20000)
-                AppLog.i("NativeAA: Manual poke to ${device.name} finished.")
+                // The user asking to try again is the way out of a handshake backoff.
+                resetHandshakeBackoff()
+                pokeJob?.cancel()
+                val manualJob = scope.launch(
+                    Dispatchers.IO + CoroutineName("NativeAa-ManualWakeup"),
+                    start = CoroutineStart.LAZY,
+                ) {
+                    manualPokeCoordinator.runSerialized {
+                        try {
+                            // Pre-flight: Ensure WiFi credentials (SSID/IP) are ready before connecting RFCOMM to phone.
+                            if (credentials == null) {
+                                AppLog.i("NativeAA: WiFi credentials not ready before manual poke. Requesting WiFi refresh...")
+                                (context as? AapService)?.triggerWifiDirectRefresh()
+                                var waitedMs = 0
+                                while (credentials == null && waitedMs < 4000 && isRunning && isActive) {
+                                    delay(200)
+                                    waitedMs += 200
+                                }
+                                AppLog.i("NativeAA: Pre-poke credential wait completed. SSID=${credentials?.ssid}, IP=${credentials?.ip} (waited ${waitedMs}ms)")
+                            }
+
+                            AppLog.i("NativeAA: Attempting manual poke to ${device.name}...")
+                            pokeDevice(device, holdMs = 20000)
+                            AppLog.i("NativeAA: Manual poke to ${device.name} finished.")
+                        } finally {
+                            synchronized(manualPokeLock) {
+                                if (activeManualPokeJob === coroutineContext[Job]) {
+                                    activeManualPokeAddress = null
+                                    activeManualPokeJob = null
+                                }
+                            }
+                        }
+                    }
+                }
+                activeManualPokeAddress = address
+                activeManualPokeJob = manualJob
+                pokeJob = manualJob
+                manualJob.start()
             }
         } catch (e: Exception) {
             AppLog.e("NativeAA: Manual poke error", e)
