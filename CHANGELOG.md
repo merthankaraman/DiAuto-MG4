@@ -1,3 +1,10 @@
+# DiAuto MG4+ 2.2.2-beta9
+
+- Fewer Bluetooth drops at connection: DiAuto waits longer for the car's hands-free link before waking the phone, holds it for less time, and asks for the link back once Android Auto is up.
+- Phone's own Wi-Fi hotspot on: DiAuto says so when the phone can't join the car's hotspot, and spaces out its tries.
+- Battery measurement: MG4 Dash's when it has one, otherwise DiAuto's own, every second from the same sources.
+- The tutorial shows the two-finger gesture from the top edge.
+
 # DiAuto MG4+ 2.2.2-beta8
 
 - New gesture: two fingers from the top edge, slide down, go back to the car's launcher. Android Auto stays connected.
