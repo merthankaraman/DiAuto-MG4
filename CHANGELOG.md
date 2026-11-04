@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta8
+
+- New gesture: two fingers from the top edge, slide down, go back to the car's launcher. Android Auto stays connected.
+
 # DiAuto MG4+ 2.2.2-beta7
 
 - New setting *Open Android Auto when connected* in *Settings → Connection*, Yes by default. On No, Android Auto connects in the background, over wireless or USB, and opens with the car's Android Auto button.
