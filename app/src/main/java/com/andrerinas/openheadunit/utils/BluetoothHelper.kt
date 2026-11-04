@@ -375,6 +375,13 @@ object BluetoothHelper {
      * Android Auto channel through) or per-server (freeing a port changes nothing). Best-effort.
      */
     @SuppressLint("MissingPermission")
+    fun requestCarHandsFreeLink(context: Context, address: String): Boolean {
+        val adapter = try { getBluetoothAdapter(context) } catch (e: Exception) { null } ?: return false
+        val device = try { adapter.getRemoteDevice(address) } catch (e: Exception) { return false }
+        return requestProfileConnect(adapter, context, device, PROFILE_HEADSET_CLIENT)
+    }
+
+    @SuppressLint("MissingPermission")
     fun releaseCarHandsFreeLink(context: Context, preferredAddress: String? = null): Boolean {
         val adapter = try { getBluetoothAdapter(context) } catch (e: Exception) { null } ?: return false
         val bonded = try { adapter.bondedDevices.orEmpty().toList() } catch (e: Exception) { emptyList() }

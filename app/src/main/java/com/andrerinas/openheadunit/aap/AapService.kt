@@ -289,6 +289,7 @@ class AapService : Service(), UsbReceiver.Listener {
     /** Sticky SAIC SRC_AA claim while Wi‑Fi AA music is the active session. */
     private var saicAaMediaClaimJob: Job? = null
     private var relayAnnounceJob: Job? = null
+    private var handsFreeRestoreJob: Job? = null
     @Volatile private var joinFailures = 0
 
     /** How long the handshake waits before waking the phone again. */
@@ -450,6 +451,24 @@ class AapService : Service(), UsbReceiver.Listener {
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
         } catch (_: OutOfMemoryError) {
             null
+        }
+    }
+
+    /**
+     * A poke takes the phone's hands-free slot, and the car then only gets it back about two minutes
+     * later: calls stay off the car meanwhile. Once the session is up, the slot is free, so ask for it.
+     */
+    private fun restoreCarHandsFreeSoon() {
+        handsFreeRestoreJob?.cancel()
+        if (!commManager.isWirelessSession) return
+        val mac = settings.autoStartBluetoothDeviceMacs.firstOrNull() ?: return
+        handsFreeRestoreJob = serviceScope.launch(Dispatchers.IO) {
+            repeat(HANDS_FREE_RESTORE_TRIES) { attempt ->
+                delay(HANDS_FREE_RESTORE_DELAY_MS)
+                if (BluetoothHelper.handsFreeLinkState(this@AapService) != false) return@launch
+                val asked = BluetoothHelper.requestCarHandsFreeLink(this@AapService, mac)
+                AppLog.i("AapService: car's hands-free link still down, asked for it again (${attempt + 1}, asked=$asked)")
+            }
         }
     }
 
@@ -859,6 +878,7 @@ class AapService : Service(), UsbReceiver.Listener {
                         notifyAllgoRelay()
                         // The launcher can lose the session, and with the radio playing no track
                         // change would tell it again: its media card would stay on "Unknown".
+                        restoreCarHandsFreeSoon()
                         relayAnnounceJob?.cancel()
                         relayAnnounceJob = serviceScope.launch(Dispatchers.IO) {
                             while (true) {
@@ -1453,6 +1473,8 @@ class AapService : Service(), UsbReceiver.Listener {
     private fun onDisconnected(state: CommManager.ConnectionState.Disconnected) {
         relayAnnounceJob?.cancel()
         relayAnnounceJob = null
+        handsFreeRestoreJob?.cancel()
+        handsFreeRestoreJob = null
         AllgoRelayNotifier.sessionEnded(this)
         com.andrerinas.openheadunit.hud.SaicNavigationOutputs.stop()
         // Fresh scan results for the next automatic channel choice; never during a session, where a
@@ -3348,6 +3370,8 @@ class AapService : Service(), UsbReceiver.Listener {
         private const val TRACK_SKIP_FLUSH_DELAY_MS = 250L
         private val CLAIM_CHECK_DELAYS_MS = longArrayOf(3_000L, 5_000L)
         private const val RELAY_ANNOUNCE_MS = 30_000L
+        private const val HANDS_FREE_RESTORE_DELAY_MS = 5_000L
+        private const val HANDS_FREE_RESTORE_TRIES = 3
 
         /** Delay before AapService tries to handle a normal-mode USB attach as a fallback
          *  when UsbAttachedActivity doesn't fire (common on Chinese MediaTek headunits). */

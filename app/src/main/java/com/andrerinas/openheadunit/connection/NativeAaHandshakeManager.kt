@@ -49,7 +49,13 @@ class NativeAaHandshakeManager(
     companion object {
         private val AA_UUID = UUID.fromString("4de17a00-52cb-11e6-bdf4-0800200c9a66")
         private val HFP_UUID = UUID.fromString("0000111e-0000-1000-8000-00805f9b34fb")
-        private const val OWN_HANDS_FREE_WAIT_MS = 10_000L
+        private const val OWN_HANDS_FREE_WAIT_MS = 30_000L
+        /**
+         * How long a poke holds the phone's hands-free slot. A phone that answers opens Android
+         * Auto within a second or two, which ends the hold at once; one that doesn't is only kept
+         * off the car's own hands-free link by a longer one.
+         */
+        private const val POKE_HOLD_MS = 8_000L
         private const val OWN_HANDS_FREE_STEP_MS = 500L
         // The phone-wake targets, and the rules for when a poke may run at all, live in
         // BluetoothWakePolicy — one of those records is also the one a phone call rides on.
@@ -812,7 +818,7 @@ class NativeAaHandshakeManager(
                     }
 
                     AppLog.i("NativeAA: Attempting active poke to device: ${device.name} (${device.address})...")
-                    pokeDevice(device, holdMs = 15000)
+                    pokeDevice(device, holdMs = POKE_HOLD_MS)
                 }
 
                 // [BUG_FIX] Say out loud that the phone answers but never calls back. Untold, that
@@ -879,7 +885,7 @@ class NativeAaHandshakeManager(
                 }
 
                 AppLog.i("NativeAA: Attempting manual poke to ${device.name}...")
-                pokeDevice(device, holdMs = 20000)
+                pokeDevice(device, holdMs = POKE_HOLD_MS)
                 AppLog.i("NativeAA: Manual poke to ${device.name} finished.")
             }
         } catch (e: Exception) {
