@@ -288,6 +288,7 @@ class AapService : Service(), UsbReceiver.Listener {
 
     /** Sticky SAIC SRC_AA claim while Wi‑Fi AA music is the active session. */
     private var saicAaMediaClaimJob: Job? = null
+    private var relayAnnounceJob: Job? = null
 
     /**
      * Automatic reconnect / discovery restarts after unexpected disconnects.
@@ -840,6 +841,15 @@ class AapService : Service(), UsbReceiver.Listener {
                     is CommManager.ConnectionState.TransportStarted -> {
                         hasEverConnected = true
                         notifyAllgoRelay()
+                        // The launcher can lose the session, and with the radio playing no track
+                        // change would tell it again: its media card would stay on "Unknown".
+                        relayAnnounceJob?.cancel()
+                        relayAnnounceJob = serviceScope.launch(Dispatchers.IO) {
+                            while (true) {
+                                delay(RELAY_ANNOUNCE_MS)
+                                notifyAllgoRelay()
+                            }
+                        }
                         com.andrerinas.openheadunit.connection.UsbWifiClient.onSessionStarted(
                             this@AapService, commManager.isWirelessSession)
                         accessoryHandshakeFailures = 0
@@ -1424,6 +1434,8 @@ class AapService : Service(), UsbReceiver.Listener {
      * 4. Scheduling a reconnect attempt if applicable (see [scheduleReconnectIfNeeded])
      */
     private fun onDisconnected(state: CommManager.ConnectionState.Disconnected) {
+        relayAnnounceJob?.cancel()
+        relayAnnounceJob = null
         AllgoRelayNotifier.sessionEnded(this)
         com.andrerinas.openheadunit.hud.SaicNavigationOutputs.stop()
         // Fresh scan results for the next automatic channel choice; never during a session, where a
@@ -3311,6 +3323,7 @@ class AapService : Service(), UsbReceiver.Listener {
         private const val RECENT_BT_CONNECT_MS = 180_000L
         private const val TRACK_SKIP_FLUSH_DELAY_MS = 250L
         private val CLAIM_CHECK_DELAYS_MS = longArrayOf(3_000L, 5_000L)
+        private const val RELAY_ANNOUNCE_MS = 30_000L
 
         /** Delay before AapService tries to handle a normal-mode USB attach as a fallback
          *  when UsbAttachedActivity doesn't fire (common on Chinese MediaTek headunits). */
