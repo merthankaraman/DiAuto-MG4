@@ -1,3 +1,8 @@
+# DiAuto MG4+ 2.2.2-beta6
+
+- Steering wheel: play/pause, next and previous stay with the source playing (radio, Bluetooth, USB), even with Android Auto connected alongside it.
+- Stock launcher: DiAuto tells it about the Android Auto session every 30 s while connected, so its media card no longer stays on "Unknown".
+
 # DiAuto MG4+ 2.2.2-beta5
 
 - Consumption model for Google Maps: now on by default, refreshed every 30 s. To go back to the car's average consumption, turn it off in *Settings → Car*.
