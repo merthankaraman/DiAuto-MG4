@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2
+
+- Official release of the 2.2.2 betas: consumption model for Maps on by default, new battery capacities, connection without taking the screen, two-finger gesture back to the launcher, wheel keys on the source playing, fewer Bluetooth drops at connection, hotspot warning, uncompressed music option, optional trip recording.
+
 # DiAuto MG4+ 2.2.2-beta11
 
 - Recorded trips: speed and distance were 3.6 times too high, trips from beta10 are not usable. Trips under 10 km or 8 % of battery drop are no longer kept. Each trip also holds the distance from the car's odometer.
