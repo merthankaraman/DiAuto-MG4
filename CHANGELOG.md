@@ -1,3 +1,7 @@
+# DiAuto MG4+ 2.2.2-beta10
+
+- Optional trip recording to help tune Maps' battery forecasts: *Settings → Car → Record trips for Maps*, off by default. Consumption, speed, climate and temperature, with no position or personal data. Files can be moved to a USB stick.
+
 # DiAuto MG4+ 2.2.2-beta9
 
 - Fewer Bluetooth drops at connection: DiAuto waits longer for the car's hands-free link before waking the phone, holds it for less time, and asks for the link back once Android Auto is up.
