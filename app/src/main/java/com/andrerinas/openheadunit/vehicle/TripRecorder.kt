@@ -30,6 +30,7 @@ object TripRecorder {
     private const val MAX_STEP_S = 5f
     private const val CLIMATE_MS = 5_000L
     private const val USB_FOLDER = "DiAuto-MG4-trips"
+    private const val ODOMETER_START = "odometerStartKm"
 
     @Volatile private var log: TripLog? = null
     private var loaded = false
@@ -78,6 +79,7 @@ object TripRecorder {
             put("startedWhileMoving", (EVHardware.getVehicleSpeedKmh() ?: 0f) >= TripLog.MOVING_KMH)
             put("diauto", BuildConfig.VERSION_NAME)
             put("firmware", FirmwareInfo.getDetectedString())
+            EVHardware.getOdometerKm()?.let { put(ODOMETER_START, it.toDouble()) }
             put("version", variant.label)
             put("netKwh", battery.netKwh.toDouble())
             put("sohPercent", battery.sohPercent.toDouble())
@@ -148,7 +150,13 @@ object TripRecorder {
         var target = File(dir(context), "trip_$stamp.json")
         var n = 2
         while (target.exists()) target = File(dir(context), "trip_${stamp}_${n++}.json")
-        target.writeText(trip.toJson(reason).toString(2))
+        // The distance by the car's own odometer checks the one integrated from the speed; the
+        // mileage itself doesn't leave the car.
+        val json = trip.toJson(reason)
+        val start = json.remove(ODOMETER_START) as? Number
+        val end = runCatching { EVHardware.getOdometerKm() }.getOrNull()
+        if (start != null && end != null) json.put("odometerKm", end - start.toDouble())
+        target.writeText(json.toString(2))
         active.delete()
         AppLog.i("$TAG trip saved ($reason): %.1f km, %.1f to %.1f %%, Maps forecast %d %%".format(
             Locale.US, trip.totalKm, trip.startPercent, trip.arrivalPercent, trip.mapsArrivalPercent))

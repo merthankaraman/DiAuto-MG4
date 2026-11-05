@@ -388,16 +388,16 @@ object EVHardware {
      * Vehicle speed in km/h, or null if it cannot be read (CPM not ready,
      * property non supportsde, exception). [VehicleWriteGate] traite null comme un refus.
      *
-     * The property's unit varies by generation — see [VehicleSpeedScale].
+     * See [VehicleSpeedScale] for the property's unit.
      */
     fun getVehicleSpeedKmh(): Float? {
         val raw = getFloatPropertyCPM(PROP_VEHICLE_SPEED, AREA_GLOBAL)
             ?: getFloatPropertyCPM(PROP_VEHICLE_SPEED, 0)
             ?: return null
-        // The unit is firmware-dependent, not what AAOS specifies: SWI68 already reports
-        // km/h. [VehicleSpeedScale] carries the evidence and takes the magnitude, since the
-        // property is signed in reverse and every consumer asks whether the car is moving.
-        return VehicleSpeedScale.toKmh(raw, FirmwareInfo.getGeneration())
+        // Already km/h, not what AAOS specifies. [VehicleSpeedScale] carries the evidence and takes
+        // the magnitude, since the property is signed in reverse and every consumer asks whether
+        // the car is moving.
+        return VehicleSpeedScale.toKmh(raw)
     }
 
     /**
