@@ -29,6 +29,7 @@ object TripRecorder {
     private const val MIN_KM = 1f
     private const val MAX_STEP_S = 5f
     private const val CLIMATE_MS = 5_000L
+    private const val USB_FOLDER = "DiAuto-MG4-trips"
 
     @Volatile private var log: TripLog? = null
     private var loaded = false
@@ -166,27 +167,53 @@ object TripRecorder {
 
     fun savedCount(context: Context): Int = savedTrips(context).size
 
+    class UsbMove(val count: Int, val folder: String)
+
     /** Trips copied to a USB stick, checked, then removed from the car; null with no stick or on failure. */
-    fun moveToUsb(context: Context): Int? {
-        val usb = usbDirectory(context) ?: return null
-        val target = File(usb, "DiAuto-MG4-trips")
-        if (!target.isDirectory && !target.mkdirs()) return null
+    fun moveToUsb(context: Context): UsbMove? {
+        val target = usbFolder(context) ?: return null
         var moved = 0
         for (file in savedTrips(context)) {
             val copy = File(target, file.name)
             val ok = runCatching { file.copyTo(copy, overwrite = true).readBytes().contentEquals(file.readBytes()) }
+                .onFailure { AppLog.w("$TAG trip copy failed: ${it.message}") }
                 .getOrDefault(false)
             if (!ok) return null
             file.delete()
             moved++
         }
-        return moved
+        AppLog.i("$TAG $moved trips moved to ${target.path}")
+        return UsbMove(moved, target.path)
     }
 
-    private fun usbDirectory(context: Context): File? = runCatching {
-        val manager = context.getSystemService(StorageManager::class.java)
-        manager.storageVolumes.firstOrNull { it.isRemovable && it.state == android.os.Environment.MEDIA_MOUNTED }
-            ?.let { it.javaClass.getMethod("getPath").invoke(it) as? String }
-            ?.let(::File)
-    }.getOrNull()
+    /**
+     * Where the car lets DiAuto write on the stick: its root as the system apps see it, or else the
+     * folder Android gives every app there, which is always writable.
+     */
+    private fun usbFolder(context: Context): File? {
+        val volume = runCatching {
+            context.getSystemService(StorageManager::class.java).storageVolumes
+                .firstOrNull { it.isRemovable && it.state == android.os.Environment.MEDIA_MOUNTED }
+        }.getOrNull()
+        if (volume == null) {
+            AppLog.w("$TAG no USB stick mounted")
+            return null
+        }
+        val path = runCatching { volume.javaClass.getMethod("getPath").invoke(volume) as? String }.getOrNull()
+        val candidates = listOfNotNull(
+            volume.uuid?.let { File("/mnt/media_rw/$it") },
+            path?.let(::File),
+            context.getExternalFilesDirs(null).filterNotNull().firstOrNull { d -> path != null && d.path.startsWith(path) },
+        )
+        for (root in candidates) {
+            val folder = File(root, USB_FOLDER)
+            val usable = runCatching {
+                (folder.isDirectory || folder.mkdirs()) &&
+                    File(folder, ".write").let { probe -> probe.writeText("ok"); probe.delete() }
+            }.getOrDefault(false)
+            if (usable) return folder
+            AppLog.w("$TAG can't write trips to $folder")
+        }
+        return null
+    }
 }

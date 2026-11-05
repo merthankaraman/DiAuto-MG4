@@ -524,7 +524,8 @@ class DaSettingsActivity : BaseActivity() {
             val moved = com.andrerinas.openheadunit.vehicle.TripRecorder.moveToUsb(this)
             runOnUiThread {
                 Toast.makeText(this,
-                    if (moved == null) getString(R.string.trip_copy_failed) else getString(R.string.trip_copied, moved),
+                    if (moved == null) getString(R.string.trip_copy_failed)
+                    else getString(R.string.trip_copied, moved.count) + "\n" + moved.folder,
                     Toast.LENGTH_LONG).show()
                 showTab(selectedTab)
             }
