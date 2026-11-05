@@ -1,3 +1,8 @@
+# DiAuto MG4+ 2.2.2-beta11
+
+- Recorded trips: speed and distance were 3.6 times too high, trips from beta10 are not usable. Trips under 10 km or 8 % of battery drop are no longer kept. Each trip also holds the distance from the car's odometer.
+- Copy to USB now works: it failed on beta10 because the stick's root wasn't reachable the way it tried.
+
 # DiAuto MG4+ 2.2.2-beta10
 
 - Optional trip recording to help tune Maps' battery forecasts: *Settings → Car → Record trips for Maps*, off by default. Consumption, speed, climate and temperature, with no position or personal data. Files can be moved to a USB stick.
