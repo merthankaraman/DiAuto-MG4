@@ -48,6 +48,16 @@ class TripLogTest {
     }
 
     @Test
+    fun `only a long enough trip with a real drop is representative`() {
+        val good = trip().apply { tick(3600f, 20f, 1000f, 72f, 10f, false, null) }
+        assertEquals(true, good.isRepresentative)
+        val short = trip().apply { tick(1000f, 20f, 1000f, 60f, 10f, false, null) }
+        assertEquals(false, short.isRepresentative)
+        val smallDrop = trip().apply { tick(3600f, 50f, 1000f, 73f, 10f, false, null) }
+        assertEquals(false, smallDrop.isRepresentative)
+    }
+
+    @Test
     fun `speeds fall into their buckets`() {
         assertEquals(0, TripLog.bucketOf(10f))
         assertEquals(1, TripLog.bucketOf(30f))

@@ -26,7 +26,8 @@ object TripRecorder {
     private const val SAVE_MS = 30_000L
     private const val PARKED_S = 300f
     private const val OFF_GAP_MS = 300_000L
-    private const val MIN_KM = 1f
+    /** Below this, the trip hasn't really begun: waiting parked before leaving doesn't end it. */
+    private const val STARTED_KM = 1f
     private const val MAX_STEP_S = 5f
     private const val CLIMATE_MS = 5_000L
     private const val USB_FOLDER = "DiAuto-MG4-trips"
@@ -120,7 +121,7 @@ object TripRecorder {
         trip.tick(dt, speed, reading.powerW, reading.precisePercent ?: reading.percent?.toFloat(), tempC, climateOn, model(trip))
         when {
             reading.plugged -> finish(context, "charging")
-            trip.stoppedFor >= PARKED_S && trip.totalKm >= MIN_KM -> finish(context, "parked")
+            trip.stoppedFor >= PARKED_S && trip.totalKm >= STARTED_KM -> finish(context, "parked")
             nowMs - lastSaveMs >= SAVE_MS -> {
                 lastSaveMs = nowMs
                 save(context)
@@ -135,15 +136,16 @@ object TripRecorder {
         return TripLog.Model(model.a, model.c, MapsModelTrip.auxWatts(model)) { MapsModelTrip.modelWatts(model, it) }
     }
 
-    /** Ends the trip; false when it was too short to be kept. */
+    /** Ends the trip; false when it was too short to say anything and is not kept. */
     @Synchronized
     fun finish(context: Context, reason: String): Boolean {
         val trip = log ?: return false
         log = null
         val active = File(dir(context), ACTIVE)
-        if (trip.totalKm < MIN_KM) {
+        if (!trip.isRepresentative) {
             active.delete()
-            AppLog.i("$TAG trip recording dropped: too short ($reason)")
+            AppLog.i("$TAG trip recording dropped ($reason): %.1f km, %.1f to %.1f %%".format(
+                Locale.US, trip.totalKm, trip.startPercent, trip.arrivalPercent))
             return false
         }
         val stamp = SimpleDateFormat("yyyy-MM-dd_HH", Locale.US).format(Date())

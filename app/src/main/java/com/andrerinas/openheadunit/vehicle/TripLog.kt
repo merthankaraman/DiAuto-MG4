@@ -41,6 +41,10 @@ class TripLog(val header: JSONObject, val mapsArrivalPercent: Int, val startPerc
 
     val totalKm: Float get() = segments.sumOf { it.km.toDouble() }.toFloat()
 
+    /** Long enough to say something about the forecast: shorter trips are mostly rounding. */
+    val isRepresentative: Boolean
+        get() = totalKm >= MIN_KM && startPercent - arrivalPercent >= MIN_DROP_PERCENT
+
     fun tick(dtS: Float, speedKmh: Float, powerW: Float?, percent: Float?, tempC: Float?, climateOn: Boolean?, model: Model?) {
         val current = segmentFor(climateOn, tempC, percent, model)
         val moving = speedKmh >= MOVING_KMH
@@ -121,6 +125,8 @@ class TripLog(val header: JSONObject, val mapsArrivalPercent: Int, val startPerc
     companion object {
         /** Below this, the car counts as stopped. */
         const val MOVING_KMH = 1f
+        const val MIN_KM = 10f
+        const val MIN_DROP_PERCENT = 8f
         private const val TEMP_STEP_C = 1f
         val SPEED_EDGES = intArrayOf(0, 30, 50, 70, 90, 110, 130)
         private val SPEED_BUCKETS = SPEED_EDGES.size
