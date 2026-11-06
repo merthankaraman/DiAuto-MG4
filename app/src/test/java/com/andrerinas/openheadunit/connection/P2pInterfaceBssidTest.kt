@@ -8,7 +8,7 @@ import org.junit.Test
 
 class P2pInterfaceBssidTest {
     @Test fun decodesBydBuiltInHotspotAddress() {
-        assertEquals("4E:B1:C7:94:48:3F", P2pInterfaceBssid.decode(bytes("fe80::4cb1:c7ff:fe94:483f")))
+        assertEquals("4E:12:34:56:78:9A", P2pInterfaceBssid.decode(bytes("fe80::4c12:34ff:fe56:789a")))
     }
 
     private fun bytes(ip: String) = InetAddress.getByName(ip).address
@@ -49,9 +49,9 @@ class P2pInterfaceBssidTest {
     }
 
     // Captured from a HiBy R4 (Android 12, P2P MAC randomization) hosting the group: p2p0
-    // reported link/ether 4a:4d:90:cb:ad:5c, and a phone's scan listed the group at that BSSID.
+    // reported link/ether 4a:ab:cd:ef:01:23, and a phone's scan listed the group at that BSSID.
     @Test fun decodesAddressCapturedFromARandomizedP2pGroup() {
-        assertEquals("4A:4D:90:CB:AD:5C", P2pInterfaceBssid.decode(bytes("fe80::484d:90ff:fecb:ad5c")))
+        assertEquals("4A:AB:CD:EF:01:23", P2pInterfaceBssid.decode(bytes("fe80::48ab:cdff:feef:0123")))
     }
 
     @Test fun describesWhyNothingWasRecovered() {

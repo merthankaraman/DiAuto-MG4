@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Process
+import com.andrerinas.openheadunit.aap.protocol.Channel
 import com.andrerinas.openheadunit.utils.AppLog
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
@@ -32,6 +33,13 @@ class AudioTrackWrapper(
     private val attachHwDspEqualizer: Boolean = false,
     /** >0 enables Wi‑Fi media jitter: larger track + delay play() until this many ms are queued. */
     private val mediaBufferMillis: Int = 0,
+    /**
+     * Called once for every chunk handed to [write], when it leaves this wrapper: played, decoded,
+     * flushed or refused. The phone's media ack is sent from here, so its unacked window really
+     * bounds how far ahead of the speakers it can be, instead of every burst being acked on arrival
+     * and then dropped here when the queue overflowed (heard as sped-up, choppy music).
+     */
+    private val onChunkDone: (() -> Unit)? = null,
 ) : Thread() {
 
     private data class AudioChunk(
@@ -40,8 +48,14 @@ class AudioTrackWrapper(
     )
 
     companion object {
+        /** Where the voice limiter starts rounding peaks off (about -6 dBFS). */
+        private const val LIMIT_KNEE = 16_384
+        private const val RECEIVING_WINDOW_MS = 300L
+        private const val PLAYING_WINDOW_MS = 3_000L
         private const val AUDIO_BUFFER_POOL_LIMIT = 16
         private const val MIN_POOLED_AUDIO_BUFFER_SIZE = 4096
+        private const val INPUT_BUFFER_POLL_MS = 100L
+        private const val INPUT_BUFFER_WAIT_MAX_MS = 1_500L
     }
 
     private val audioTrack: AudioTrack?
@@ -85,13 +99,25 @@ class AudioTrackWrapper(
         }
     }
 
+    /**
+     * Soft limiter for boosted voice: above the knee, peaks are rounded off instead of cut flat.
+     * Prompts arrive close to full scale, so a +100 to +200 % boost clipped hard on every syllable.
+     */
+    private fun limit(sample: Int): Int {
+        val magnitude = kotlin.math.abs(sample)
+        if (magnitude <= LIMIT_KNEE) return sample
+        val room = (32767 - LIMIT_KNEE).toDouble()
+        val shaped = LIMIT_KNEE + room * kotlin.math.tanh((magnitude - LIMIT_KNEE) / room)
+        return if (sample < 0) -shaped.toInt() else shaped.toInt()
+    }
+
     private fun applyGain(buffer: ByteArray, size: Int) {
         if (currentGain <= 1.0f) return
         for (i in 0 until size - 1 step 2) {
             val low = buffer[i].toInt() and 0xFF
             val high = buffer[i + 1].toInt() // High byte handles sign
             val sample = (high shl 8) or low
-            val modifiedSample = (sample * currentGain).toInt().coerceIn(-32768, 32767)
+            val modifiedSample = limit((sample * currentGain).toInt())
             buffer[i] = (modifiedSample and 0xFF).toByte()
             buffer[i + 1] = (modifiedSample shr 8).toByte()
         }
@@ -103,6 +129,44 @@ class AudioTrackWrapper(
     private val mediaJitterStartBytes: Int
     private var bytesWrittenBeforePlay: Int = 0
     @Volatile private var mediaPlaybackStarted: Boolean = true
+    @Volatile private var lastWriteMs = 0L
+
+    /** 16 kHz mono voice played straight to a track is upsampled here rather than by the car. */
+    private val voiceSettings = if (mixer == null && !isAac && sampleRateInHz == 16_000 && channelCount == 1 && bitDepth == 16)
+        com.andrerinas.openheadunit.App.instance?.let { app -> com.andrerinas.openheadunit.App.provide(app).settings } else null
+    private val upsampler: VoiceUpsampler? =
+        if (mixer == null && !isAac && sampleRateInHz == 16_000 && channelCount == 1 && bitDepth == 16)
+            VoiceUpsampler.create(voiceSettings?.voiceEnhancement ?: 0) else null
+    /** Optional clarity filter and headroom for that voice, read when the prompt starts. */
+    private val voiceClarity: VoiceClarity? = voiceSettings?.let {
+        VoiceClarity(16_000, it.voiceClarity, it.voiceHeadroomDb)
+    }?.takeIf { upsampler != null && it.active }
+    private var upsampleIn = ShortArray(0)
+    private var upsampleOut = ShortArray(0)
+    private var upsampleBytes = ByteArray(0)
+
+    /** The chunk at 48 kHz, in a reused buffer; returns its size in bytes. */
+    private fun upsample(buffer: ByteArray, size: Int, upsampler: VoiceUpsampler): Int {
+        val samples = size / 2
+        if (upsampleIn.size < samples) upsampleIn = ShortArray(samples)
+        val room = samples * 3 + VoiceUpsampler.MAX_EXTRA
+        if (upsampleOut.size < room) upsampleOut = ShortArray(room)
+        if (upsampleBytes.size < room * 2) upsampleBytes = ByteArray(room * 2)
+        java.nio.ByteBuffer.wrap(buffer, 0, samples * 2).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer().get(upsampleIn, 0, samples)
+        val produced = upsampler.process(upsampleIn, samples, upsampleOut)
+        java.nio.ByteBuffer.wrap(upsampleBytes, 0, produced * 2).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer().put(upsampleOut, 0, produced)
+        return produced * 2
+    }
+
+    /** The voice as the phone sent it, kept to compare with what the speakers play. */
+    private val voiceCapture: VoiceCapture? =
+        // Kept only in test mode, to compare the voice settings being tested.
+        if (voiceSettings?.testMode == true && !isAac && sampleRateInHz == 16_000 && (channelId == com.andrerinas.openheadunit.aap.protocol.Channel.ID_AU1 ||
+                channelId == com.andrerinas.openheadunit.aap.protocol.Channel.ID_AU2))
+            VoiceCapture.open(com.andrerinas.openheadunit.aap.protocol.Channel.name(channelId), sampleRateInHz, channelCount)
+        else null
 
     init {
         this.name = "AudioPlaybackThread"
@@ -126,7 +190,7 @@ class AudioTrackWrapper(
         audioTrack = if (mixer == null) {
             createAudioTrack(
                 stream,
-                sampleRateInHz,
+                if (upsampler != null) 48_000 else sampleRateInHz,
                 bitDepth,
                 channelCount,
                 audioLatencyMultiplier,
@@ -276,8 +340,21 @@ class AudioTrackWrapper(
         } else {
             applyGain(buffer, size)
             val track = audioTrack ?: return
-            val result = track.write(buffer, 0, size)
+            if (android.os.SystemClock.elapsedRealtime() < silencedUntilMs) {
+                // Paused by the driver: what the phone still sends is not played.
+                lastWriteMs = android.os.SystemClock.elapsedRealtime()
+                return
+            }
+            val up = upsampler
+            voiceClarity?.process(buffer, size)
+            val result = if (up != null) {
+                val bytes = upsample(buffer, size, up)
+                track.write(upsampleBytes, 0, bytes)
+            } else {
+                track.write(buffer, 0, size)
+            }
             if (result > 0) {
+                lastWriteMs = android.os.SystemClock.elapsedRealtime()
                 framesWritten += result / bytesPerFrame
                 if (!mediaPlaybackStarted) {
                     bytesWrittenBeforePlay += result
@@ -315,6 +392,7 @@ class AudioTrackWrapper(
                         }
                     } finally {
                         recycleAudioBuffer(chunk.data)
+                        onChunkDone?.invoke()
                     }
                 }
             } catch (e: InterruptedException) {
@@ -362,7 +440,15 @@ class AudioTrackWrapper(
         try {
             // Wait for input buffer (with timeout to avoid deadlock if codec dies)
             // Restore to 200ms to prevent dropping frames under load
-            val inputIndex = freeInputBuffers.poll(200, TimeUnit.MILLISECONDS)
+            // The phone sends music in bursts at stream start; while the AudioTrack is full the
+            // codec holds its buffers back. Waiting it out (the queue in front absorbs the burst)
+            // is better than dropping frames, which was the stutter heard at every start.
+            var inputIndex: Int? = null
+            var waitedMs = 0L
+            while (inputIndex == null && isRunning && waitedMs < INPUT_BUFFER_WAIT_MAX_MS) {
+                inputIndex = freeInputBuffers.poll(INPUT_BUFFER_POLL_MS, TimeUnit.MILLISECONDS)
+                waitedMs += INPUT_BUFFER_POLL_MS
+            }
 
             if (inputIndex != null && inputIndex >= 0) {
                 val inputBuffer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -376,7 +462,7 @@ class AudioTrackWrapper(
                 inputBuffer?.put(inputData, 0, size)
                 decoder?.queueInputBuffer(inputIndex, 0, size, 0, 0)
             } else {
-                AppLog.w("AAC Input Buffer timeout (200ms) - dropping frame")
+                AppLog.w("AAC Input Buffer timeout (${INPUT_BUFFER_WAIT_MAX_MS}ms) - dropping frame")
             }
         } catch (e: InterruptedException) {
             throw e
@@ -437,6 +523,40 @@ class AudioTrackWrapper(
         val bufferSize = if (mediaTrackBytes > 0) maxOf(multiplied, mediaTrackBytes) else multiplied
 
         AppLog.i("Audio stream: $stream buffer size: $bufferSize (min: $minBufferSize) sampleRateInHz: $sampleRateInHz channelCount: $channelCount")
+
+        // With the navigation channel chosen (SpeechRoute), prompts and the assistant (AUDIO1/AUDIO2)
+        // play as navigation guidance, untagged: the MG4
+        // sends that usage to its NAVI bus, mixed over any source. As media tagged Android Auto
+        // they went to the media bus, which is silent while the radio is the car's source.
+        val speech = channelId == Channel.ID_AU1 || channelId == Channel.ID_AU2
+        if (speech && SpeechRoute.navigationChannel && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return AudioTrack.Builder()
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .setAudioFormat(
+                    AudioFormat.Builder()
+                        .setSampleRate(sampleRateInHz)
+                        .setChannelMask(channelConfig)
+                        .setEncoding(dataFormat)
+                        .build()
+                )
+                // As the car's own Android Auto plays prompts: 48 kHz (converted by this wrapper)
+                // on a normal mixer track with a ~210 ms buffer. A small buffer became a fast
+                // track, which the car resampled from 16 kHz with its basic converter (measured
+                // 2026-10-30: AllGo 48 kHz, flags 0, 10240 frames; DiAuto 16 kHz, fast, 3104).
+                .setBufferSizeInBytes(maxOf(bufferSize, sampleRateInHz * channelCount * 2 * 210 / 1000))
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        setPerformanceMode(AudioTrack.PERFORMANCE_MODE_POWER_SAVING)
+                    }
+                }
+                .setTransferMode(AudioTrack.MODE_STREAM)
+                .build()
+        }
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val (usage, contentType) = when (stream) {
@@ -507,8 +627,12 @@ class AudioTrackWrapper(
     }
 
     fun write(buffer: ByteArray, offset: Int, size: Int) {
-        if (!isRunning) return
+        if (!isRunning) {
+            onChunkDone?.invoke()
+            return
+        }
 
+        voiceCapture?.add(buffer, offset, size)
         var data: ByteArray? = null
         try {
             data = obtainAudioBuffer(size)
@@ -516,10 +640,12 @@ class AudioTrackWrapper(
             val success = dataQueue.offer(AudioChunk(data, size), 5, TimeUnit.MILLISECONDS)
             if (!success) {
                 recycleAudioBuffer(data)
+                onChunkDone?.invoke()
                 AppLog.w("Audio queue is full, dropping audio frame to prevent stalling")
             }
         } catch (e: InterruptedException) {
             data?.let { recycleAudioBuffer(it) }
+            onChunkDone?.invoke()
             Thread.currentThread().interrupt()
             AppLog.w("Interrupted while putting audio data to queue")
         }
@@ -530,12 +656,63 @@ class AudioTrackWrapper(
         setVolume(gain)
     }
 
+    /**
+     * Drops the audio of the previous track still queued here and in the AudioTrack (about 1–2 s
+     * with the Wi-Fi jitter buffer), so a skipped-to track is heard as soon as the phone sends it.
+     */
+    fun flushForTrackChange() {
+        if (!isRunning || mixer != null) return
+        drainQueuedAudio()
+        val track = audioTrack ?: return
+        try {
+            if (mediaPlaybackStarted && track.playState == AudioTrack.PLAYSTATE_PLAYING) {
+                track.pause()
+                track.flush()
+                track.play()
+                AppLog.i("AudioTrackWrapper: flushed the previous track's buffered audio")
+            }
+        } catch (e: Exception) {
+            AppLog.w("AudioTrackWrapper: flush for track change failed: ${e.message}")
+        }
+    }
+
+    @Volatile private var silencedUntilMs = 0L
+
+    /**
+     * Pause heard at once: some phones and players keep sending the music for several seconds after
+     * a pause (a fade, or a slow stop), heard as a ~4 s delay. That audio is dropped until [ms] have
+     * passed, the stream stops, or [unsilence] is called for play.
+     */
+    fun silenceFor(ms: Long) {
+        silencedUntilMs = android.os.SystemClock.elapsedRealtime() + ms
+    }
+
+    fun unsilence() {
+        silencedUntilMs = 0L
+    }
+
+    fun isSilenced(): Boolean = android.os.SystemClock.elapsedRealtime() < silencedUntilMs
+
+    /** The phone is still sending this stream (audio written in the last few hundred ms). */
+    fun isReceivingAudio(): Boolean =
+        android.os.SystemClock.elapsedRealtime() - lastWriteMs < RECEIVING_WINDOW_MS
+
+    /**
+     * Music is playing on this stream, for the pause key: audio written in the last few seconds.
+     * Over Wi-Fi the phone can send the music in bursts, so the last write may be well over
+     * [RECEIVING_WINDOW_MS] old while the music plays on from the buffers; that read as "not
+     * playing" and the pause cut was skipped (issue #3, SWI173).
+     */
+    fun isPlayingMusic(): Boolean =
+        android.os.SystemClock.elapsedRealtime() - lastWriteMs < PLAYING_WINDOW_MS
+
     fun stopPlayback() {
         isRunning = false
         this.interrupt()
     }
 
     private fun cleanup() {
+        voiceCapture?.close()
         drainQueuedAudio()
         audioBufferPool.clear()
 
@@ -629,6 +806,7 @@ class AudioTrackWrapper(
         while (true) {
             val chunk = dataQueue.poll() ?: break
             recycleAudioBuffer(chunk.data)
+            onChunkDone?.invoke()
         }
     }
 }

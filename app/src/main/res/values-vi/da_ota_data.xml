@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Bản cập nhật này tải xuống %1$s dữ liệu, có thể dùng vào gói dữ liệu của xe. Nếu có thể, trước tiên hãy kết nối xe với mạng Wi-Fi ở chế độ máy khách hoặc cập nhật qua USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s sẽ được tải xuống và cài đặt. Sau đó DiAuto khởi động lại và Android Auto ngắt trong vài giây.</string>
+</resources>

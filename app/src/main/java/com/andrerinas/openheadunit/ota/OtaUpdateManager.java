@@ -1,14 +1,11 @@
 package com.andrerinas.openheadunit.ota;
 
-import android.app.DownloadManager;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,6 +13,7 @@ final class OtaUpdateManager {
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+    private static final long PROGRESS_INTERVAL_MS = 250L;
 
     private OtaUpdateManager() {
     }
@@ -24,8 +22,16 @@ final class OtaUpdateManager {
         void onResult(UpdateInfo info);
     }
 
-    interface VerifyCallback {
-        void onResult(boolean success, String computedSha256, String message);
+    interface DownloadCallback {
+        void onProgress(long done, long total);
+
+        /** {@code apk} is the verified file, or null with {@code error}. */
+        void onResult(File apk, String error);
+    }
+
+    interface InstallCallback {
+        /** {@code error} is null once the install is handed to Android. */
+        void onResult(String error);
     }
 
     static final class UpdateInfo {
@@ -40,6 +46,7 @@ final class OtaUpdateManager {
         final String expectedSha256;
         final String message;
         final boolean prerelease;
+        final long assetSize;
 
         UpdateInfo(
                 boolean success,
@@ -54,6 +61,24 @@ final class OtaUpdateManager {
                 String message,
                 boolean prerelease
         ) {
+            this(success, updateAvailable, currentVersion, latestVersion, releaseName, releaseNotes,
+                    downloadUrl, assetFileName, expectedSha256, message, prerelease, 0L);
+        }
+
+        UpdateInfo(
+                boolean success,
+                boolean updateAvailable,
+                String currentVersion,
+                String latestVersion,
+                String releaseName,
+                String releaseNotes,
+                String downloadUrl,
+                String assetFileName,
+                String expectedSha256,
+                String message,
+                boolean prerelease,
+                long assetSize
+        ) {
             this.success = success;
             this.updateAvailable = updateAvailable;
             this.currentVersion = currentVersion;
@@ -65,6 +90,7 @@ final class OtaUpdateManager {
             this.expectedSha256 = expectedSha256;
             this.message = message;
             this.prerelease = prerelease;
+            this.assetSize = assetSize;
         }
     }
 
@@ -76,62 +102,37 @@ final class OtaUpdateManager {
         });
     }
 
-    static long enqueueDownload(Context context, UpdateInfo info) {
-        if (info == null || info.downloadUrl == null || info.downloadUrl.isEmpty()) {
-            throw new IllegalArgumentException("No APK download URL available.");
-        }
-
-        DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        if (dm == null) {
-            throw new IllegalStateException("DownloadManager not available.");
-        }
-
-        String fileName = sanitizeFileName(
-                (info.assetFileName == null || info.assetFileName.trim().isEmpty())
-                        ? String.format(Locale.US, "DiAuto-MG4_%s.apk", info.latestVersion)
-                        : info.assetFileName
-        );
-        File targetFile = preparePublicDownloadFile(fileName);
-        // Yeni indirmeden önce önceki sürüm APK’larını temizle (hedef hariç)
-        OtaCleanup.deleteOldApks(targetFile);
-
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(info.downloadUrl))
-                .setTitle("DiAuto-MG4 Update")
-                .setDescription("Downloading version " + info.latestVersion)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true);
-
-        return dm.enqueue(request);
-    }
-
-    static void verifyDownloadedApk(Context context, long downloadId, Uri apkUri, UpdateInfo info,
-                                    VerifyCallback callback) {
+    static void download(Context context, UpdateInfo info, DownloadCallback callback) {
         final Context appContext = context.getApplicationContext();
         EXECUTOR.execute(() -> {
-            OtaApkVerifier.VerificationResult result =
-                    OtaApkVerifier.verifyDownloadedApk(appContext, downloadId, apkUri, info);
-            MAIN_HANDLER.post(() -> callback.onResult(result.success, result.computedSha256, result.message));
+            final long[] lastPost = {0L};
+            try {
+                File apk = OtaDownloader.download(appContext, info, (done, total) -> {
+                    long now = SystemClock.elapsedRealtime();
+                    if (now - lastPost[0] < PROGRESS_INTERVAL_MS) return;
+                    lastPost[0] = now;
+                    MAIN_HANDLER.post(() -> callback.onProgress(done, total));
+                });
+                MAIN_HANDLER.post(() -> callback.onResult(apk, null));
+            } catch (Exception e) {
+                String error = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                MAIN_HANDLER.post(() -> callback.onResult(null, error));
+            }
         });
     }
 
-    private static String sanitizeFileName(String fileName) {
-        return fileName.replaceAll("[^A-Za-z0-9._-]", "_");
-    }
-
-    private static File preparePublicDownloadFile(String fileName) {
-        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        if (downloadsDir == null) {
-            throw new IllegalStateException("Public Downloads directory unavailable");
-        }
-        if (!downloadsDir.exists() && !downloadsDir.mkdirs()) {
-            throw new IllegalStateException("Could not create public Downloads directory");
-        }
-        File targetFile = new File(downloadsDir, fileName);
-        if (targetFile.exists() && !targetFile.delete()) {
-            throw new IllegalStateException("Could not replace existing OTA package");
-        }
-        return targetFile;
+    /** Writing a 30 MB session takes a moment: kept off the main thread. */
+    static void install(Context context, File apk, InstallCallback callback) {
+        final Context appContext = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            String error = null;
+            try {
+                OtaInstaller.install(appContext, apk);
+            } catch (Exception e) {
+                error = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            }
+            final String result = error;
+            MAIN_HANDLER.post(() -> callback.onResult(result));
+        });
     }
 }

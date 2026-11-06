@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Это обновление загрузит %1$s данных, которые могут расходовать тариф автомобиля. По возможности сначала подключите автомобиль к сети Wi-Fi как клиент или обновите через USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s будет загружен и установлен. Затем DiAuto перезапустится, а Android Auto прервётся на несколько секунд.</string>
+</resources>

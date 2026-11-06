@@ -10,6 +10,6 @@ class DiagnosticReportRedactorTest {
         assertEquals("NativeAA: No usable BSSID; join failure status=-3", DiagnosticReportRedactor.redact(
             "NativeAA: No usable BSSID; join failure status=-3", "", ""))
         assertEquals("Network [saved value] at [address] [ip]", DiagnosticReportRedactor.redact(
-            "Network My Car at 4e:b1:c7:94:48:3f 192.168.46.1", "My Car", "secret"))
+            "Network My Car at 4e:12:34:56:78:9a 192.168.46.1", "My Car", "secret"))
     }
 }

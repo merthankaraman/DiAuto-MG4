@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Enregistrer mes trajets pour Maps</string>
+    <string name="trip_option_summary">Ajoute un bouton pour enregistrer un trajet choisi et aider à affiner les prévisions de Maps : consommation, vitesse, clim, température. Sans position ni donnée personnelle.</string>
+    <string name="trip_start">Enregistrer ce trajet</string>
+    <string name="trip_stop">Arrêter l\'enregistrement</string>
+    <string name="trip_button_summary">Enregistre jusqu\'à ce que vous vous gariez ou l\'arrêtiez, aussi depuis le menu à deux doigts et l\'accueil.</string>
+    <string name="trip_no_battery">Niveau de batterie illisible : réessayez dans un instant.</string>
+    <string name="trip_bad_percent">Saisissez un nombre de 0 à 100.</string>
+    <string name="trip_started">Enregistrement du trajet lancé.</string>
+    <string name="trip_saved">Trajet enregistré.</string>
+    <string name="trip_too_short">Trajet trop court : non enregistré.</string>
+    <string name="trip_files">Trajets enregistrés</string>
+    <string name="trip_files_summary">%1$d enregistrés. Copiés sur une clé USB, puis retirés de la voiture.</string>
+    <string name="trip_copy">Copier sur USB</string>
+    <string name="trip_copied">%1$d trajets copiés sur la clé USB.</string>
+    <string name="trip_copy_failed">Clé USB introuvable ou copie échouée : trajets conservés sur la voiture.</string>
+    <string name="trip_picker_title">Batterie à l\'arrivée prévue par Maps</string>
+    <string name="trip_picker_note">Actuellement %1$d %%. Un trajet utilisable consomme au moins %2$d %% de batterie, sans recharge.</string>
+    <string name="trip_battery_low">Batterie trop faible pour enregistrer un trajet utilisable.</string>
+</resources>

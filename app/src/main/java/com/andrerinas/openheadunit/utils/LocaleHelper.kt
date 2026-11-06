@@ -129,8 +129,10 @@ object LocaleHelper {
         prefs.edit().putBoolean(MIGRATED, true).remove(KEY).apply()
     }
 
-    fun applyLocale(context: Context, settings: Settings): Context {
-        val selected = settings.appLanguage
+    fun applyLocale(context: Context, @Suppress("UNUSED_PARAMETER") settings: Settings): Context {
+        // DiAuto for MG4 always speaks the car's language: a language once picked in the app (the
+        // picker is gone) no longer overrides it.
+        val selected = SYSTEM_DEFAULT
         if (Build.VERSION.SDK_INT >= 33) return context
         // Do not mutate Locale.getDefault(): returning to System default must restore the system locale.
         @Suppress("DEPRECATION")

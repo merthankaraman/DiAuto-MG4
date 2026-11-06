@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi-ul mașinii pe USB</string>
+    <string name="dset_usb_wifi_summary">Cu Android Auto pe cablu USB, Wi-Fi-ul mașinii se conectează la rețelele cunoscute, de exemplu hotspotul telefonului, pentru internet. Se oprește când scoți cablul.</string>
+</resources>

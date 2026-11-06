@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Âm cao của giọng</string>
+    <string name="dset_voice_enhance_summary">Tái tạo âm cao mà điện thoại cắt bỏ: exciter nhẹ hoặc mạnh, hoặc mạng nơ-ron (Opus). Từ chỉ dẫn tiếp theo.</string>
+    <string name="dset_voice_enhance_standard">Tắt</string>
+    <string name="dset_voice_enhance_light">Nhẹ</string>
+    <string name="dset_voice_enhance_strong">Mạnh</string>
+    <string name="dset_voice_enhance_neural">Nơ-ron</string>
+    <string name="dset_voice_experimental">Độ rõ và âm cao của giọng là thử nghiệm: hãy cho chúng tôi biết trên GitHub cài đặt nào nghe hay nhất với bạn.</string>
+    <string name="dset_wifi_channel">Kênh Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Kênh của điểm truy cập trên xe. Tự động chọn kênh ít đông nhất khi điểm truy cập khởi động, không bao giờ trong lúc kết nối.</string>
+    <string name="dset_wifi_channel_auto">Tự động</string>
+</resources>

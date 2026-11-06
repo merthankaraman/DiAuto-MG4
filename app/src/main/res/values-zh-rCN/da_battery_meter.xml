@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">行驶中测得的 %1$d kWh 电池</string>
+    <string name="battery_source_measuring">默认 %1$d kWh 电池，行驶中测量（%2$d / %3$d %%）</string>
+    <string name="battery_soh_source_measured">行驶中测得</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Das Telefon kann sich nicht mit dem WLAN des Autos verbinden. Falls sein WLAN-Hotspot aktiv ist, schalten Sie ihn aus.</string>
+</resources>

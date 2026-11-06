@@ -30,8 +30,8 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
 
     constructor(socket: Socket, context: Context) : this(socket.inetAddress.hostAddress ?: "", socket.port, context) {
         this.transport = socket
-        this.singleMessage = socket is NearbySocket
-        // Pre-connected sockets (like NearbySocket) need their streams initialized immediately
+        this.singleMessage = false
+        // Pre-connected sockets need their streams initialized immediately
         // because connect() might not be called or might be bypassed.
         if (socket.isConnected) {
             try {

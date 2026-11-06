@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Telefon nie może połączyć się z Wi-Fi samochodu. Jeśli jego hotspot jest włączony, wyłącz go.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">이 업데이트는 %1$s의 데이터를 내려받으며 차량 데이터 요금제를 사용할 수 있습니다. 가능하면 먼저 차량을 클라이언트로 Wi-Fi 네트워크에 연결하거나 USB로 업데이트하세요.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s을(를) 내려받아 설치합니다. 이후 DiAuto가 다시 시작되며 Android Auto가 몇 초간 끊깁니다.</string>
+</resources>

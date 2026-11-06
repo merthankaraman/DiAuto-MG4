@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">语音高音</string>
+    <string name="dset_voice_enhance_summary">恢复手机截掉的高音：轻度或强度激励器，或神经网络（Opus）。从下一条提示起生效。</string>
+    <string name="dset_voice_enhance_standard">关</string>
+    <string name="dset_voice_enhance_light">轻度</string>
+    <string name="dset_voice_enhance_strong">强度</string>
+    <string name="dset_voice_enhance_neural">神经网络</string>
+    <string name="dset_voice_experimental">语音清晰度和高音为实验性设置：欢迎在 GitHub 告诉我们哪种听起来最好。</string>
+    <string name="dset_wifi_channel">Wi-Fi 信道</string>
+    <string name="dset_wifi_channel_summary">车辆热点的信道。自动模式在热点启动时选择最不拥挤的信道，连接期间绝不更换。</string>
+    <string name="dset_wifi_channel_auto">自动</string>
+</resources>

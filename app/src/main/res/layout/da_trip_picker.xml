@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Over Android Auto, on the right, so Maps' forecast stays in sight: two digits with arrows and GO. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="620dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:layout_margin="16dp"
+    android:background="@drawable/da_tile"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="72dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/trip_picker_title"
+            android:textColor="@color/da_text"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/trip_close"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/cancel"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="@color/da_muted"
+            android:textSize="32sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/trip_tens_up"
+                style="@style/DaTripArrow"
+                android:text="▲" />
+
+            <TextView
+                android:id="@+id/trip_tens"
+                style="@style/DaTripDigit" />
+
+            <TextView
+                android:id="@+id/trip_tens_down"
+                style="@style/DaTripArrow"
+                android:text="▼" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/trip_units_up"
+                style="@style/DaTripArrow"
+                android:text="▲" />
+
+            <TextView
+                android:id="@+id/trip_units"
+                style="@style/DaTripDigit" />
+
+            <TextView
+                android:id="@+id/trip_units_down"
+                style="@style/DaTripArrow"
+                android:text="▼" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="%"
+            android:textColor="@color/da_muted"
+            android:textSize="56sp" />
+
+        <TextView
+            android:id="@+id/trip_go"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/da_primary"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/trip_go"
+            android:textColor="@color/da_background"
+            android:textSize="44sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/trip_picker_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/da_muted"
+        android:textSize="26sp" />
+</LinearLayout>

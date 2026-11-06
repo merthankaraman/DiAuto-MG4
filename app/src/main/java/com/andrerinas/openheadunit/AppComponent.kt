@@ -8,7 +8,6 @@ import com.andrerinas.openheadunit.connection.carkey.CarKeysManager
 import com.andrerinas.openheadunit.decoder.AudioDecoder
 import com.andrerinas.openheadunit.decoder.DeviceMemoryProfile
 import com.andrerinas.openheadunit.decoder.VideoDecoder
-import com.andrerinas.openheadunit.utils.SUExecutor
 import com.andrerinas.openheadunit.utils.Settings
 
 class AppComponent(private val app: App) {
@@ -36,7 +35,6 @@ class AppComponent(private val app: App) {
 
     val commManager = CommManager(app, settings, audioDecoder, videoDecoder)
 
-    val suExecutor = SUExecutor()
 
     val carKeysManager = CarKeysManager()
 }

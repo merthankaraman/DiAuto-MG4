@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_night_sun">Солнце</string>
+    <string name="dset_night_summary_modes">Тёмные цвета в Android Auto. Как автомобиль: тёмные при включённых фарах и от заката до рассвета. Солнце: тёмные от заката до рассвета в месте нахождения автомобиля.</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_soh_measuring">Mesure en cours (%1$d sur %2$d %%)</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Výšky hlasu</string>
+    <string name="dset_voice_enhance_summary">Obnoví výšky, které telefon ořízne: slabý nebo silný exciter, nebo neuronová síť (Opus). Od příštího pokynu.</string>
+    <string name="dset_voice_enhance_standard">Ne</string>
+    <string name="dset_voice_enhance_light">Slabé</string>
+    <string name="dset_voice_enhance_strong">Silné</string>
+    <string name="dset_voice_enhance_neural">Neuronové</string>
+    <string name="dset_voice_experimental">Srozumitelnost a výšky hlasu jsou experimentální: napište nám na GitHub, které nastavení vám zní nejlépe.</string>
+    <string name="dset_wifi_channel">Kanál Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Kanál přístupového bodu auta. Auto vybere nejméně vytížený při startu přístupového bodu, nikdy během připojení.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Paso %1$d de %2$d</string>
+    <string name="tuto_skip">Omitir</string>
+    <string name="tuto_back">Anterior</string>
+    <string name="tuto_next">Siguiente</string>
+    <string name="tuto_done">Empezar</string>
+    <string name="tuto_welcome_title">Bienvenido a DiAuto para MG4</string>
+    <string name="tuto_welcome_text">Android Auto inalámbrico en la pantalla de tu MG4. Cuando tu teléfono está emparejado con el coche por Bluetooth, se conecta al punto de acceso Wi-Fi del coche y Android Auto se inicia solo.\n\nLos siguientes pasos muestran los tres gestos que funcionan sobre Android Auto.</string>
+    <string name="tuto_menu_title">Dos dedos desde el borde izquierdo</string>
+    <string name="tuto_menu_text">Pon dos dedos cerca del borde izquierdo de la pantalla y deslízalos hacia la derecha. Se abre un menú con dos botones grandes: Desconectar y Ajustes.\n\nToca en otro sitio para cerrarlo.</string>
+    <string name="tuto_fullscreen_title">Dos dedos desde el borde derecho</string>
+    <string name="tuto_fullscreen_text">Pon dos dedos cerca del borde derecho y deslízalos hacia la izquierda para mostrar u ocultar las barras del coche y usar toda la pantalla.</string>
+    <string name="tuto_top_title">Dos dedos desde el borde superior</string>
+    <string name="tuto_top_text">Pon dos dedos en la parte superior de la pantalla y deslízalos hacia abajo para volver al launcher del coche. Android Auto sigue conectado.</string>
+    <string name="tuto_home_title">Tres dedos hacia abajo</string>
+    <string name="tuto_home_text">Desliza tres dedos hacia abajo para desconectar Android Auto y volver a la pantalla de inicio de DiAuto.</string>
+    <string name="tuto_tips_title">Conviene saber</string>
+    <string name="tuto_tips_text">• Google Maps se convierte en planificador de rutas: recibe la batería, el consumo y la potencia de carga de tu MG4 y elige las paradas de carga.\n• Ajustes → Coche: la versión de tu MG4, la capacidad y el estado de la batería, detectados automáticamente y ajustables.\n• Precalentamiento automático de la batería antes de una parada de carga planificada por Maps. Desactivado por defecto, actívalo en Ajustes → Coche.\n• DiAuto se instala como actualización del Android Auto original del coche (AllGo). Para volver a él: Ajustes → Acerca de → Volver y reinicia la pantalla manteniendo pulsado el botón Home 20 s.\n• Ajustes → Acerca de: ver este tutorial de nuevo.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">Los gestos sobre Android Auto y los ajustes útiles, en pocos pasos.</string>
+    <string name="tuto_settings_button">Ver</string>
+</resources>

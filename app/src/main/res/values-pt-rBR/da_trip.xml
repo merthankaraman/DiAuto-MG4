@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Gravar viagens para o Maps</string>
+    <string name="trip_option_summary">Adiciona um botão para gravar uma viagem escolhida e ajudar a ajustar as previsões do Maps: consumo, velocidade, climatização, temperatura. Sem localização nem dados pessoais.</string>
+    <string name="trip_start">Gravar esta viagem</string>
+    <string name="trip_stop">Parar a gravação</string>
+    <string name="trip_button_summary">Grava até você estacionar ou parar, também pelo menu de dois dedos e pela tela inicial.</string>
+    <string name="trip_no_battery">Não foi possível ler o nível da bateria: tente novamente em instantes.</string>
+    <string name="trip_bad_percent">Digite um número de 0 a 100.</string>
+    <string name="trip_started">Gravação da viagem iniciada.</string>
+    <string name="trip_saved">Viagem salva.</string>
+    <string name="trip_too_short">Viagem muito curta: não salva.</string>
+    <string name="trip_files">Viagens gravadas</string>
+    <string name="trip_files_summary">%1$d salvas. Copiadas para um pendrive e depois removidas do carro.</string>
+    <string name="trip_copy">Copiar para USB</string>
+    <string name="trip_copied">%1$d viagens copiadas para o pendrive.</string>
+    <string name="trip_copy_failed">Pendrive não encontrado ou falha na cópia: viagens mantidas no carro.</string>
+    <string name="trip_picker_title">Bateria na chegada prevista pelo Maps</string>
+    <string name="trip_picker_note">Agora %1$d %%. Uma viagem utilizável consome pelo menos %2$d %% de bateria, sem parada para recarga.</string>
+    <string name="trip_battery_low">Bateria muito baixa para gravar uma viagem utilizável.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Deze update downloadt %1$s aan data, die van de databundel van de auto kan gaan. Verbind de auto indien mogelijk eerst als client met een wifinetwerk, of werk bij via USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s wordt gedownload en geïnstalleerd. Daarna start DiAuto opnieuw en valt Android Auto enkele seconden weg.</string>
+</resources>

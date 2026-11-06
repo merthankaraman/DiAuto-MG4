@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi de la voiture en USB</string>
+    <string name="dset_usb_wifi_summary">Avec Android Auto par câble USB, le Wi-Fi de la voiture se connecte à ses réseaux connus, comme le partage de connexion du téléphone, pour avoir internet. Il se coupe au débranchement.</string>
+</resources>

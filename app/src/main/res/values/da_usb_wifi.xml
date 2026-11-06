@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Car Wi-Fi with USB</string>
+    <string name="dset_usb_wifi_summary">With Android Auto on the USB cable, the car\'s Wi-Fi joins its known networks, such as the phone\'s hotspot, for internet. It goes off again when the cable is unplugged.</string>
+</resources>

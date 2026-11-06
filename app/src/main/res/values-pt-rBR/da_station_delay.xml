@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi do carro volta após</string>
+    <string name="dset_station_delay_summary">O Wi-Fi do carro fica desligado durante o Android Auto sem fio. Ele volta quando a sessão termina há esse tempo.</string>
+</resources>

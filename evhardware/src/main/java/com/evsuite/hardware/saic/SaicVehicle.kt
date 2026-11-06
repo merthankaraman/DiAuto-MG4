@@ -180,7 +180,8 @@ object SaicClimate {
     fun rearDefrostOn(): Boolean? = if (a9) A9Climate.rearDefrostOn() else flag(TX_GET_BACK_DEFROST)
     /** The service answers [TEMP_ERROR] for a reading it holds no value for, not an error. */
     fun outsideTempCelsius(): Float? =
-        SaicAidl.callFloat(binder(), DESCRIPTOR, TX_GET_OUT_CAR_TEMP)?.takeIf { it != TEMP_ERROR }
+        if (a9) A9Climate.outsideTemp()
+        else SaicAidl.callFloat(binder(), DESCRIPTOR, TX_GET_OUT_CAR_TEMP)?.takeIf { it != TEMP_ERROR }
 
     private fun level(code: Int): Int? =
         SaicAidl.callInt(binder(), DESCRIPTOR, code)?.takeIf { it >= 0 }

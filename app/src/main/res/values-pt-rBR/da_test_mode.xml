@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_test_mode">Modo de teste</string>
+    <string name="dset_test_mode_summary">Mostra as funções em teste nos Ajustes: o modelo enviado ao Maps, os números do modelo de consumo na tela e os agudos, a clareza e a margem da voz. Desligado, usam os padrões.</string>
+</resources>

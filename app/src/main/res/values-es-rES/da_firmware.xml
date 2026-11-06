@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">El firmware de tu coche (%1$s) no puede usar Android Auto inalámbrico: su Bluetooth solo admite una conexión de app a la vez. DiAuto no puede evitarlo. Pide a tu concesionario la %2$s o posterior.</string>
+    <string name="da_firmware_incompatible" formatted="true">El firmware de tu coche (%1$s) no puede usar Android Auto inalámbrico: su Bluetooth solo admite una conexión de app a la vez. DiAuto no puede evitarlo. Pregunta a tu concesionario si hay un firmware más reciente.</string>
+</resources>

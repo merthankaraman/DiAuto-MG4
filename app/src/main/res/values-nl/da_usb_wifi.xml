@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wifi van de auto bij USB</string>
+    <string name="dset_usb_wifi_summary">Met Android Auto via de USB-kabel maakt de wifi van de auto verbinding met bekende netwerken, zoals de hotspot van de telefoon, voor internet. Hij gaat weer uit als de kabel eruit gaat.</string>
+</resources>

@@ -16,11 +16,14 @@ import kotlin.math.roundToInt
  * Read-only MG4 bridge for Android Auto VehicleEnergyModel.
  *
  * SoC/range come only from [EVHardware.getBatterySocPercent] /
- * [EVHardware.getRemainingRangeKm] (Saic + CPM in one place). Pack Wh from user net × SOH.
+ * [EVHardware.getRemainingRangeKm] (Saic + CPM in one place). Pack Wh from net × SOH
+ * ([BatteryCapacityResolver]).
  */
 object Mg4EnergyProvider {
     private const val TAG = "DiAuto-MG4"
     private const val POLL_MS = 5_000L
+    private const val METER_MS = 1_000L
+    private const val DASH_CHECK_MS = 60_000L
     private const val STALE_MS = 3 * 60_000L
     /** Cover SAIC CarService / CPM bind ladder (retries out to 60s). */
     private const val INITIAL_READ_TIMEOUT_MS = 60_000L
@@ -46,6 +49,9 @@ object Mg4EnergyProvider {
     @Volatile private var lastInitAttemptMs = 0L
     private val lastWarnMs = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private var pollFuture: ScheduledFuture<*>? = null
+    private var meterFuture: ScheduledFuture<*>? = null
+    private var dashMeasures = false
+    private var dashCheckedAt = 0L
     private val executor = Executors.newSingleThreadScheduledExecutor { r ->
         Thread(r, "diauto-mg4-energy").apply { isDaemon = true }
     }
@@ -87,6 +93,11 @@ object Mg4EnergyProvider {
             if (pollFuture == null) {
                 pollFuture = executor.scheduleWithFixedDelay(
                     ::poll, POLL_MS, POLL_MS, TimeUnit.MILLISECONDS,
+                )
+            }
+            if (meterFuture == null && !settings.batteryDemoMode) {
+                meterFuture = executor.scheduleWithFixedDelay(
+                    ::readMeter, METER_MS, METER_MS, TimeUnit.MILLISECONDS,
                 )
             }
         }
@@ -140,6 +151,8 @@ object Mg4EnergyProvider {
     fun stop() {
         pollFuture?.cancel(false)
         pollFuture = null
+        meterFuture?.cancel(false)
+        meterFuture = null
     }
 
     fun snapshot(): EnergySnapshot? {
@@ -191,6 +204,24 @@ object Mg4EnergyProvider {
             pollSafely()
         } catch (error: Throwable) {
             AppLog.e("$TAG telemetry read failed: ${error.message}")
+        }
+    }
+
+    /** DiAuto's own capacity measurement, every second as MG4 Dash's, unless MG4 Dash has one to read. */
+    private fun readMeter() {
+        val ctx = app ?: return
+        if (!initialized) return
+        runCatching {
+            val now = SystemClock.elapsedRealtime()
+            if (dashCheckedAt == 0L || now - dashCheckedAt >= DASH_CHECK_MS) {
+                dashCheckedAt = now
+                dashMeasures = Mg4DashBattery.read(ctx)?.measuredKwh != null
+            }
+            val recording = TripRecorder.isActive(ctx)
+            if (dashMeasures && !recording) return
+            val r = EVHardware.getCapacityReading()
+            if (!dashMeasures) BatteryCapacityMeter.reading(ctx, r.powerW, r.percent, r.precisePercent, r.plugged, now)
+            if (recording) TripRecorder.tick(ctx, r, now)
         }
     }
 
@@ -248,8 +279,8 @@ object Mg4EnergyProvider {
     }
 
     /**
-     * Capacity Wh always comes from user net × SOH (MG4 HAL capacity is usually empty).
-     * Live Wh from the car is ignored so Maps SoC stays consistent with the declared pack.
+     * Capacity Wh is net × SOH from [BatteryCapacityResolver] (car, MG4 Dash, default or the
+     * driver's values). Live Wh from the car is ignored so Maps SoC stays consistent with it.
      */
     private fun publishFromPercent(
         settings: Settings,
@@ -257,7 +288,8 @@ object Mg4EnergyProvider {
         rangeKm: Int,
         demo: Boolean,
     ) {
-        val capacityKwh = settings.batteryEffectiveNetCapacityKwh.toDouble().coerceIn(1.0, 200.0)
+        val capacityKwh = (app?.let { BatteryCapacityResolver.current(it).effectiveKwh }
+            ?: settings.batteryEffectiveNetCapacityKwh).toDouble().coerceIn(1.0, 200.0)
         val fraction = (percent / 100.0).coerceIn(0.01, 1.0)
         publish(
             capacityWh = (capacityKwh * 1000).roundToInt().coerceAtLeast(1),

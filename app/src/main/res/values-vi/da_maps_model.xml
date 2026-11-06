@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Mô hình tiêu thụ cho Maps</string>
+    <string name="dset_maps_model_summary">Google Maps ước tính pin khi đến bằng mô hình MG4 (tốc độ, trời lạnh, điều hòa) thay vì mức tiêu thụ trung bình của xe.</string>
+    <string name="dset_maps_model_explain">Tác dụng: Google Maps ước tính pin còn lại tại điểm đến từ mô tả của xe, không còn từ mức tiêu thụ trung bình hiện tại. Tốc độ, trời lạnh và sưởi được tính đến.\n\nCách hoạt động: DiAuto cho Maps biết lực cản chuyển động của xe (lăn, tăng khi lạnh, và không khí) và công suất của điều hòa và thiết bị điện theo nhiệt độ ngoài trời. Máy chủ Google tính năng lượng cho từng đoạn đường với tốc độ dự kiến, giao thông và độ dốc.\n\nDữ liệu dùng: phiên bản xe (cài đặt pin), mức pin và dung lượng, nhiệt độ ngoài trời và điều hòa có bật không. Chúng chỉ gửi đến điện thoại của bạn, như mức pin hiện nay.\n\nCác giá trị là ước tính, dự báo có thể lệch cho đến khi được hiệu chỉnh.</string>
+    <string name="dset_maps_model_enable">Bật</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Крок %1$d з %2$d</string>
+    <string name="tuto_skip">Пропустити</string>
+    <string name="tuto_back">Назад</string>
+    <string name="tuto_next">Далі</string>
+    <string name="tuto_done">Почати</string>
+    <string name="tuto_welcome_title">Ласкаво просимо до DiAuto для MG4</string>
+    <string name="tuto_welcome_text">Бездротовий Android Auto на екрані вашого MG4. Коли телефон спарено з автомобілем через Bluetooth, він підключається до точки доступу Wi-Fi автомобіля, і Android Auto запускається сам.\n\nДалі показано три жести, що працюють поверх Android Auto.</string>
+    <string name="tuto_menu_title">Два пальці від лівого краю</string>
+    <string name="tuto_menu_text">Покладіть два пальці біля лівого краю екрана й проведіть праворуч. Відкриється меню з двома великими кнопками: Від’єднати і Налаштування.\n\nТоркніться деінде, щоб закрити його.</string>
+    <string name="tuto_fullscreen_title">Два пальці від правого краю</string>
+    <string name="tuto_fullscreen_text">Покладіть два пальці біля правого краю й проведіть ліворуч, щоб показати або сховати панелі автомобіля й використати весь екран.</string>
+    <string name="tuto_top_title">Два пальці від верхнього краю</string>
+    <string name="tuto_top_text">Покладіть два пальці вгорі екрана й проведіть униз, щоб повернутися до лаунчера автомобіля. Android Auto залишається підключеним.</string>
+    <string name="tuto_home_title">Три пальці вниз</string>
+    <string name="tuto_home_text">Проведіть трьома пальцями вниз, щоб від\'єднати Android Auto й повернутися на головний екран DiAuto.</string>
+    <string name="tuto_tips_title">Варто знати</string>
+    <string name="tuto_tips_text">• Google Карти стають планувальником поїздок: вони отримують заряд батареї, витрату й потужність заряджання вашого MG4 і вибирають зупинки для заряджання.\n• Налаштування → Автомобіль: версія вашого MG4, ємність і стан батареї — визначаються автоматично й налаштовуються.\n• Автоматичний підігрів батареї перед зупинкою на заряджання, запланованою Картами. Типово вимкнено, увімкніть у Налаштування → Автомобіль.\n• DiAuto встановлюється як оновлення штатного Android Auto автомобіля (AllGo). Щоб повернутися до нього: Налаштування → Про застосунок → Повернути, потім перезапустіть екран, утримуючи кнопку Home 20 с.\n• Налаштування → Про застосунок: переглянути цей посібник знову.</string>
+    <string name="tuto_settings_title">Посібник</string>
+    <string name="tuto_settings_summary">Жести поверх Android Auto та корисні налаштування за кілька кроків.</string>
+    <string name="tuto_settings_button">Показати</string>
+    <string name="da_settings">Налаштування</string>
+</resources>

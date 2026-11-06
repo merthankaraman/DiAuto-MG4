@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto MG4+</string>
+    <string name="about_fork_notice">Fork communautaire de DiAuto-MG4, maintenu séparément pour la MG4.\ngithub.com/Skittle6938/DiAuto-MG4</string>
     <string name="menu">Menu</string>
     <string name="settings">Paramètres</string>
 
@@ -249,13 +250,24 @@
     <string name="battery_for_google_maps">Batterie pour Google Maps</string>
     <string name="battery_for_google_maps_description">Envoie le niveau de charge et l’autonomie MG4 à Android Auto pour que Google Maps affiche la batterie. Réglez la capacité nette et le SOH ci-dessous. Nécessite une installation signée plateforme sur la voiture.</string>
     <string name="battery_net_capacity_kwh">Capacité nette (kWh)</string>
-    <string name="battery_net_capacity_description">Sélectionnez la capacité utilisable de votre MG4 : 50,8, 61,7 ou 74,4 kWh. Maps utilise capacité × SOH.</string>
+    <string name="battery_net_capacity_description">Sélectionnez la capacité utilisable de votre MG4 : 49, 61 ou 72,5 kWh. Maps utilise capacité × SOH.</string>
     <string name="battery_net_capacity_enter">Saisissez la capacité nette (utilisable) à neuf, en kWh</string>
     <string name="battery_soh_percent">SOH batterie (%)</string>
     <string name="battery_soh_description">Saisissez l’état de santé de la batterie de 1 à 100. Les décimales comme 98,75 sont prises en charge. Capacité utilisable effective = capacité × SOH / 100.</string>
     <string name="battery_effective_capacity">Capacité utilisable effective</string>
     <string name="battery_value_kwh">%1$.1f kWh</string>
     <string name="battery_effective_capacity_value">%1$.1f kWh (= net × SOH)</string>
+    <string name="battery_value_percent">%1$s %%</string>
+    <string name="battery_auto">Automatique</string>
+    <string name="battery_auto_value">%1$s · automatique (%2$s)</string>
+    <string name="battery_manual_value">%1$s · réglée à la main</string>
+    <string name="battery_soh_manual_value">%1$s · réglé à la main</string>
+    <string name="battery_auto_option">Automatique (%1$s, %2$s)</string>
+    <string name="battery_pack_option">Batterie %1$d kWh (%2$.1f kWh utiles)</string>
+    <string name="battery_source_car">lue sur la voiture</string>
+    <string name="battery_source_default_pack">batterie %1$d kWh par défaut</string>
+    <string name="battery_soh_source_default">par défaut</string>
+    <string name="battery_soh_auto_description" formatted="false">Automatique : estimation de MG4 Dash s’il est installé et a déjà mesuré la batterie, sinon 100 %.</string>
     <string name="battery_value_km">%1$d km</string>
     <string name="battery_live_energy_value">%1$.1f / %2$.1f kWh</string>
     <string name="battery_demo_mode">Valeurs batterie démo</string>
@@ -498,8 +510,8 @@
     <string name="playback_focus_mode_always_hint">Always pauses other audio while Android Auto plays. If your music stops after a second or two whenever Bluetooth is on, switch back to Automatic.</string>
     <string name="playback_focus_mode_never_hint">Never touches system audio focus. Other audio on the headunit may keep playing over Android Auto.</string>
     <string name="playback_focus_mode_static_hint">With Static Audio Focus on, this applies from the moment the phone connects and lasts the whole session, rather than only while audio is playing.</string>
-    <string name="separate_audio_streams">Separate Audio Streams</string>
-    <string name="separate_audio_streams_description">Separate audio channels for music, calls, and notifications instead of a single multimedia stream (may not work correctly on some devices).</string>
+    <string name="separate_audio_streams">Séparer les flux audio</string>
+    <string name="separate_audio_streams_description">Désactivé : le guidage, l’assistant et les notifications passent dans le flux multimédia avec la musique. Activé : ils ont leur propre canal, que la voiture gère à part (le canal navigation, audible par-dessus la radio). Prend effet à la prochaine connexion.</string>
     <string name="use_aac_audio">Use AAC Audio</string>
     <string name="use_aac_audio_description">Use AAC codec for audio to save bandwidth (Experimental).</string>
     <string name="attach_hw_dsp_equalizer">Hardware DSP Equalizer Trigger</string>
@@ -540,7 +552,7 @@
     <string name="support_open_issues">Open the GitHub issues page</string>
     <string name="support_scan_qr">Or scan this QR code to open the issues list on another device.</string>
     <string name="support_github_account_warning">Note: you need a free GitHub account to create an issue.</string>
-    <string name="github_issues_url" translatable="false">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url" translatable="false">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
 
     <!-- Reporting rules modal (shown from a button under the QR on the Support screen) -->
     <string name="support_rules_button">Reporting rules</string>
@@ -610,6 +622,12 @@
     <string name="ota_install_failed_status">Échec de l’installation : %1$s</string>
     <string name="ota_toast_checking">Recherche de mises à jour…</string>
     <string name="ota_status_label">État de la mise à jour</string>
+    <string name="ota_status_no_stable">Pas de version officielle plus récente</string>
+    <string name="ota_dialog_no_stable_message">Pas encore de version officielle plus récente que la %1$s. Les bêtas sont proposées si « Vérifier aussi les versions bêta » est activé dans les Paramètres.</string>
+    <string name="ota_dialog_up_to_date_version">DiAuto %1$s est la dernière version.</string>
+    <string name="ota_dialog_install_message">DiAuto %1$s va être téléchargé (%2$s) puis installé. Sans Wi‑Fi, les données mobiles de la voiture sont utilisées. DiAuto redémarre ensuite et Android Auto se coupe quelques secondes.</string>
+    <string name="ota_progress_installing">Installation… DiAuto redémarre tout seul.</string>
+    <string name="ota_progress_busy">Une mise à jour est déjà en cours de téléchargement ou d’installation.</string>
     <string name="about_title">À propos d’Open Headunit</string>
     <string name="copyright">© 2025-%d André Rinas</string>
 
@@ -679,7 +697,7 @@
     <string name="logs_exported">Logs Exported</string>
     <string name="log_saved_to">Log saved to:\n%s</string>
     <string name="share">Share</string>
-    <string name="close">Close</string>
+    <string name="close">Fermer</string>
     <string name="failed_export_logs">Failed to export logs</string>
     <string name="failed_export_in_silent_logs">Unable to export logs: Silent logging level selected</string>
     <string name="switching_to_android_auto">Switching to Android Auto…</string>
@@ -699,9 +717,6 @@
     <string name="reset_usb_option">Reset USB Connection</string>
     <string name="reset_usb_timeout">USB device not found. Please check connection.</string>
     <string name="notification_service_running">Open Headunit is running</string>
-    <string name="boot_loop_paused_title">Wireless start-up paused</string>
-    <string name="boot_loop_paused_generic">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. USB still works. Open the app to turn it back on.</string>
-    <string name="boot_loop_paused_native_wifi_direct">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. On some head units the WiFi chipset takes the whole system down when a phone joins a WiFi Direct network. Try switching Android Auto mode to the head unit hotspot. USB still works.</string>
     <string name="notification_projection_active">Android Auto is projected</string>
     <string name="shortcut_connect_title">Connect</string>
     <string name="shortcut_connect_desc">Auto-connect to last phone</string>
@@ -1024,8 +1039,6 @@
     <string name="rename_notice_title">Our name is changing to Open Headunit</string>
     <string name="rename_notice_message">Headunit Revived is growing, thanks to you, and it is turning into something of its own: Open Headunit. We are rolling the new name out over the next updates, so you may still see the old name in some places for a while.\n\nSame app, same people behind it, and all your settings stay exactly as they are.</string>
     <string name="rename_notice_button">Got it</string>
-    <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
-    <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>

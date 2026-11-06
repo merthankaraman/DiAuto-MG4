@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">语音清晰度</string>
+    <string name="dset_voice_clarity_summary">用于导航提示和助手的滤波：去除沉闷低频，突出辅音。从下一条提示起生效。</string>
+    <string name="dset_voice_headroom">语音余量</string>
+    <string name="dset_voice_headroom_summary">略微降低提示音量，避免车辆处理饱和；请调高车辆导航音量来补偿。</string>
+</resources>

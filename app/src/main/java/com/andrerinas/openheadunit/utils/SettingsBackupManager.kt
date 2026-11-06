@@ -135,8 +135,8 @@ object SettingsBackupManager {
         "auto-start-bt-name" to ValueType.STRING,
         "app-language" to ValueType.STRING,
         "media-volume-offset" to ValueType.INT,
-        "assistant-volume-offset" to ValueType.INT,
-        "navigation-volume-offset" to ValueType.INT,
+        "assistant-volume-offset-v2" to ValueType.INT,
+        "navigation-volume-offset-v2" to ValueType.INT,
         "night-mode-manual-start" to ValueType.INT,
         "night-mode-manual-end" to ValueType.INT,
         "app-theme-threshold-lux" to ValueType.INT,
@@ -473,8 +473,6 @@ object SettingsBackupManager {
         Settings.syncAutoStartOnBootToDeviceStorage(context, settings.autoStartOnBoot)
         Settings.syncAutoStartOnScreenOnToDeviceStorage(context, settings.autoStartOnScreenOn)
         Settings.syncAutoStartOnUsbToDeviceStorage(context, settings.autoStartOnUsb)
-        Settings.syncAutoStartOnWifiToDeviceStorage(context, settings.autoStartOnWifi)
-        Settings.syncAutoStartWifiSsidToDeviceStorage(context, settings.autoStartWifiSsid)
         Settings.syncListenForUsbDevicesToDeviceStorage(context, settings.listenForUsbDevices)
         Settings.syncAutoStartBtMacsToDeviceStorage(context, settings.autoStartBluetoothDeviceMacs)
         Settings.setUsbAttachedActivityEnabled(context, settings.listenForUsbDevices)

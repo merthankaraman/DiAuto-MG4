@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">%1$d კვტ·სთ ბატარეა, გაზომილი სვლისას</string>
+    <string name="battery_source_measuring">%1$d კვტ·სთ ბატარეა ნაგულისხმევად, იზომება სვლისას (%2$d / %3$d %%)</string>
+    <string name="battery_soh_source_measured">გაზომილი სვლისას</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">وضوح الصوت</string>
+    <string name="dset_voice_clarity_summary">مرشّح للإرشادات والمساعد: يزيل الجهير المكتوم ويُبرز الحروف الساكنة. بدءًا من الإرشاد التالي.</string>
+    <string name="dset_voice_headroom">هامش الصوت</string>
+    <string name="dset_voice_headroom_summary">يخفض الإرشادات قليلًا حتى لا تتشبّع معالجة السيارة؛ ارفع صوت الملاحة في السيارة للتعويض.</string>
+</resources>

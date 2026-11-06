@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">შეუკუმშავი მუსიკა (PCM)</string>
+    <string name="dset_music_pcm_summary">ტელეფონი მუსიკას AAC შეკუმშვის გარეშე აგზავნის. Wi-Fi-ით დაახლოებით 1,5 მბ/წმ: შეიძლება შეფერხდეს. შემდეგი დაკავშირებიდან.</string>
+</resources>

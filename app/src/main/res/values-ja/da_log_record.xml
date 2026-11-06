@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">ログを記録</string>
+    <string name="dset_log_record_summary">既定でオン。問題があれば GitHub の issue に添付できます。サイズは小さく、目的地や名前は含みません。オフにすると何も書き込みません。</string>
+</resources>

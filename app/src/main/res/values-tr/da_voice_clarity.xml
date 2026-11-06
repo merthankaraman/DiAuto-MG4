@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Ses netliği</string>
+    <string name="dset_voice_clarity_summary">Yönlendirmeler ve asistan için filtre: boğuk basları alır, ünsüzleri öne çıkarır. Bir sonraki yönlendirmeden itibaren.</string>
+    <string name="dset_voice_headroom">Ses payı</string>
+    <string name="dset_voice_headroom_summary">Aracın işlemesi doymasın diye yönlendirmeleri biraz kısar; dengelemek için aracın navigasyon sesini artırın.</string>
+</resources>

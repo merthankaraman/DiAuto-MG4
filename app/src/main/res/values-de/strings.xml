@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto MG4+</string>
     <string name="menu">Menü</string>
     <string name="settings">Einstellungen</string>
 
@@ -815,7 +815,7 @@
     <string name="support_open_issues">GitHub Issues-Seite öffnen</string>
     <string name="support_scan_qr">Oder scanne diesen QR-Code, um die Issues-Liste auf einem anderen Gerät zu öffnen.</string>
     <string name="support_github_account_warning">Hinweis: Für das Erstellen eines Issues wird ein kostenloser GitHub-Account benötigt.</string>
-    <string name="github_issues_url">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
     <string name="support_rules_button">Regeln für Meldungen</string>
     <string name="support_rules_intro">Nur zwei Dinge sind erforderlich. Alles andere ist optional, hilft aber bei einer schnelleren Lösung.</string>
     <string name="support_rules_section_required">Erforderlich</string>
@@ -838,9 +838,6 @@
     <string name="support_rules_describe_desc">Was du getan hast, was du erwartet hast und was passiert ist. Ein Screenshot oder Video hilft enorm.</string>
     <string name="support_rules_oneissue_title">Ein Problem pro Issue</string>
     <string name="support_rules_oneissue_desc">Erstelle für jedes unzusammenhängende Problem ein separates Issue.</string>
-    <string name="boot_loop_paused_title">Wireless-Start pausiert</string>
-    <string name="boot_loop_paused_generic">Das Gerät hat dreimal in Folge kurz nach dem Wireless-Start neu gestartet. Wireless wurde daher vorübergehend deaktiviert. USB funktioniert weiterhin. Öffne die App, um es wieder zu aktivieren.</string>
-    <string name="boot_loop_paused_native_wifi_direct">Das Gerät hat mehrfach kurz nach dem Wireless-Start neu gestartet. Bei einigen Headunits überlastet der WiFi-Chip bei WiFi Direct Verbindungen. Versuche auf den Headunit-Hotspot-Modus zu wechseln. USB funktioniert weiterhin.</string>
     <string name="vehicle_make_hint">Eine echte Automarke zeigt deren Logo auf dem Beenden-Button von Android Auto. Android Auto blendet dann jedoch Apps aus, die nicht aus dem Play Store stammen. Setze es auf \"Google\" zurück, um diese wieder anzuzeigen.</string>
     <string name="external_bt_nativeaa">Natives Wireless auf dieser Headunit nicht möglich</string>
     <string name="external_bt_nativeaa_desc">Diese Headunit nutzt ein eigenes Bluetooth-Modul (%1$s), das Android nicht für Apps bereitstellt. Das Handy koppelt sich mit diesem Modul, wodurch Bluetooth-Handshake-Daten die App nicht erreichen. Bitte nutze USB, Wireless Helper oder den Headunit Server Modus.</string>
@@ -902,7 +899,7 @@
     <string name="battery_for_google_maps">Battery for Google Maps</string>
     <string name="battery_for_google_maps_description">Send MG4 charge and range to Android Auto so Google Maps can show battery level. Set net capacity and SOH below. Needs a platform-signed install on the car.</string>
     <string name="battery_net_capacity_kwh">Net capacity (kWh)</string>
-    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 50.8, 61.7 or 74.4 kWh. Maps uses capacity × SOH.</string>
+    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 49, 61 or 72.5 kWh. Maps uses capacity × SOH.</string>
     <string name="battery_net_capacity_enter">Enter net (usable) capacity when new, in kWh</string>
     <string name="battery_soh_percent">Battery SOH (%)</string>
     <string name="battery_soh_description">Enter battery state of health from 1 to 100. Decimal values such as 98.75 are supported. Effective usable capacity = capacity × SOH / 100.</string>
@@ -975,8 +972,6 @@
     <string name="native_local_hotspot_wifi_settings_unavailable">Open Wi-Fi from the car’s Settings app.</string>
     <string name="native_ap_transport_local_hotspot">Local hotspot</string>
     <string name="native_ap_transport_local_hotspot_hint">Experimental. DiAuto uses a separate local hotspot for Android Auto; no car internet plan is needed. Older Android versions must let the app verify a 5 GHz hotspot from the Wi-Fi driver. If maps or music stutter on DiLink 5.1, try turning off the car’s Wi-Fi switch in car settings. Keep Bluetooth and your phone’s Wi-Fi on. Compatibility depends on the car.</string>
-    <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
-    <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>

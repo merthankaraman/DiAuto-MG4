@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">batterie %1$d kWh mesurée en roulant</string>
+    <string name="battery_source_measuring">batterie %1$d kWh par défaut, mesure en roulant (%2$d sur %3$d %%)</string>
+    <string name="battery_soh_source_measured">mesuré en roulant</string>
+</resources>

@@ -56,8 +56,6 @@ import android.widget.ImageView
 import android.widget.VideoView
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.andrerinas.openheadunit.main.QuickSettingsFragment
-import com.andrerinas.openheadunit.main.RenameNotice
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import java.io.File
 import java.util.concurrent.Executors
@@ -89,6 +87,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     private var initialX = 0f
     private var initialY = 0f
     private var isPotentialGesture = false
+    private var isPotentialTopGesture = false
 
     // 3-finger swipe-down → return to DiAuto main screen
     private var threeFingerInitialX = 0f
@@ -426,10 +425,10 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
 
     private val settingsReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val needsViewRecreate = intent.getBooleanExtra(QuickSettingsFragment.EXTRA_NEEDS_VIEW_RECREATE, false)
-            val needsAudioRestart = intent.getBooleanExtra(QuickSettingsFragment.EXTRA_NEEDS_AUDIO_RESTART, false)
-            val sensorRefresh = intent.getBooleanExtra(QuickSettingsFragment.EXTRA_SENSOR_REFRESH, false)
-            val applyFullscreen = intent.getBooleanExtra(QuickSettingsFragment.EXTRA_APPLY_FULLSCREEN, false)
+            val needsViewRecreate = intent.getBooleanExtra(EXTRA_NEEDS_VIEW_RECREATE, false)
+            val needsAudioRestart = intent.getBooleanExtra(EXTRA_NEEDS_AUDIO_RESTART, false)
+            val sensorRefresh = intent.getBooleanExtra(EXTRA_SENSOR_REFRESH, false)
+            val applyFullscreen = intent.getBooleanExtra(EXTRA_APPLY_FULLSCREEN, false)
 
             if (needsViewRecreate) {
                 recreateProjectionView()
@@ -524,7 +523,10 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     // leaves a black screen while audio keeps working. A broken SurfaceView cannot be detected
     // automatically (it reports no drawn frames), so we ask the user directly.
     private var rendererBanner: View? = null
-    private var rendererConfirmResolved = false
+    // Never asked on the MG4: its SurfaceView renderer is known good, and a still Android Auto
+    // screen after a return from the launcher drew nothing new, which raised the banner for no
+    // reason (2026-10-29).
+    private var rendererConfirmResolved = true
     private var projectionStartMs = 0L
     private val rendererConfirmNoFrameMs = 6000L
     // "Phone still streaming" window for the offer. Kept comfortably above the 2s watchdog interval
@@ -940,7 +942,15 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
 
                 // Show one-time gesture hint
                 if (!settings.gestureHintShown) {
-                    Toast.makeText(this@AapProjectionActivity, R.string.gesture_hint, Toast.LENGTH_LONG).show()
+                    // A long toast lasts about 3.5 s, too short to read two gestures while driving:
+                    // show it three times in a row (about 10 s).
+                    repeat(GESTURE_HINT_REPEATS) { i ->
+                        window.decorView.postDelayed({
+                            if (!isFinishing) {
+                                Toast.makeText(this@AapProjectionActivity, R.string.gesture_hint, Toast.LENGTH_LONG).show()
+                            }
+                        }, i * GESTURE_HINT_TOAST_MS)
+                    }
                     settings.gestureHintShown = true
                 }
             }
@@ -952,10 +962,11 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     }
 
     override fun onPause() {
+        performanceHandler.removeCallbacks(mapsModelOverlayRunnable)
         isForeground = false
         AppLog.i("AapProjectionActivity: onPause")
+        com.allgo.app.androidauto.RelayState.screen(false)
         super.onPause()
-        RenameNotice.dismiss()
         // Clear any activity-local fullscreen override when leaving the Activity so
         // the stored settings remain authoritative on next resume.
         activityFullscreenOverride = null
@@ -985,11 +996,12 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     }
 
     override fun onResume() {
+        startMapsModelOverlay()
         super.onResume()
         isForeground = true
         AppLog.i("AapProjectionActivity: onResume")
+        com.allgo.app.androidauto.RelayState.screen(true)
         // Show the one-time rename notice even here, on top of an active projection.
-        RenameNotice.maybeShow(this, App.provide(this).settings)
         applyStickyOrientation()
         watchdogHandler.postDelayed(watchdogRunnable, 2000)
         watchdogHandler.postDelayed(videoWatchdogRunnable, 3000)
@@ -1010,7 +1022,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         isNightModeReceiverRegistered = true
 
         if (!isSettingsReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, IntentFilter(QuickSettingsFragment.ACTION_SETTINGS_CHANGED))
+            LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, IntentFilter(ACTION_SETTINGS_CHANGED))
             isSettingsReceiverRegistered = true
         }
 
@@ -1020,6 +1032,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         })
 
         setFullscreen()
+        maybeOfferReconnect()
     }
 
 
@@ -1346,71 +1359,77 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         }
     }
 
-    private data class ExitOption(val titleResId: Int, val iconResId: Int, val iconColor: Int)
 
+
+    /** After a setting the phone only reads when it connects: offer to reconnect, yes or no. */
+    private fun maybeOfferReconnect() {
+        if (!com.andrerinas.openheadunit.main.DaSettingsActivity.reconnectNeeded) return
+        com.andrerinas.openheadunit.main.DaSettingsActivity.reconnectNeeded = false
+        if (!commManager.isConnected) return
+        val root = window.decorView as android.view.ViewGroup
+        val prompt = layoutInflater.inflate(R.layout.da_reconnect_prompt, root, false)
+        fun close() = root.removeView(prompt)
+        prompt.findViewById<View>(R.id.reconnect_later).setOnClickListener { close() }
+        prompt.findViewById<View>(R.id.reconnect_now).setOnClickListener {
+            close()
+            reconnectToApply("the new settings")
+        }
+        root.addView(prompt)
+    }
+
+    /** The phone reads the screen size and settings when it connects: connect again. */
+    private fun reconnectToApply(what: String) {
+        AppLog.i("AapProjectionActivity: reconnecting to apply $what")
+        // Not a user exit: the service re-arms wireless at once and the phone comes back.
+        commManager.disconnect(sendByeBye = true, isUserExit = false)
+        // The phone does not come back by itself after a bye-bye: call it, as the home
+        // screen's connect button does, once the service has re-armed wireless.
+        val mac = settings.autoStartBluetoothDeviceMacs.firstOrNull() ?: return
+        val app = applicationContext
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            androidx.core.content.ContextCompat.startForegroundService(app,
+                Intent(app, AapService::class.java).apply {
+                    action = AapService.ACTION_NATIVE_AA_POKE
+                    putExtra(AapService.EXTRA_MAC, mac)
+                })
+        }, RECONNECT_POKE_DELAY_MS)
+    }
+    private var projectionMenu: View? = null
+
+    /** The two-finger menu: two big buttons over Android Auto; a tap elsewhere closes it. */
     private fun showExitDialog() {
-        val options = mutableListOf<ExitOption>()
-        options.add(ExitOption(R.string.exit_dialog_stop, R.drawable.ic_stop, Color.RED))
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            options.add(ExitOption(R.string.exit_dialog_pip, R.drawable.ic_pip, Color.LTGRAY))
+        if (projectionMenu != null) return
+        val root = window.decorView as android.view.ViewGroup
+        val menu = layoutInflater.inflate(R.layout.da_projection_menu, root, false)
+        fun close() {
+            root.removeView(menu)
+            projectionMenu = null
         }
-
-        options.add(ExitOption(R.string.exit_dialog_background, R.drawable.ic_home, Color.LTGRAY))
-        options.add(ExitOption(R.string.exit_dialog_settings, R.drawable.ic_settings_quick, Color.LTGRAY))
-
-        val adapter = object : android.widget.BaseAdapter() {
-            override fun getCount(): Int = options.size
-            override fun getItem(position: Int): Any = options[position]
-            override fun getItemId(position: Int): Long = position.toLong()
-            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
-                val view = convertView ?: layoutInflater.inflate(R.layout.dialog_exit_item, parent, false)
-                val option = options[position]
-                val iconView = view.findViewById<android.widget.ImageView>(R.id.icon)
-                val textView = view.findViewById<android.widget.TextView>(R.id.text)
-
-                textView.setText(option.titleResId)
-                iconView.setImageResource(option.iconResId)
-                iconView.setColorFilter(option.iconColor)
-
-                return view
-            }
+        menu.setOnClickListener { close() }
+        menu.findViewById<View>(R.id.menu_disconnect).setOnClickListener {
+            close()
+            commManager.disconnect(sendByeBye = true)
+            finish()
         }
-
-        val dialog = MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
-            .setTitle(R.string.exit_dialog_title)
-            .setAdapter(adapter) { _, which ->
-                val selected = options[which]
-                when (selected.titleResId) {
-                    R.string.exit_dialog_stop -> {
-                        commManager.disconnect(sendByeBye = true)
-                        finish()
-                    }
-                    R.string.exit_dialog_pip -> {
-                        enterPiP()
-                    }
-                    R.string.exit_dialog_background -> {
-                        moveToBackground()
-                    }
-                    R.string.exit_dialog_settings -> {
-                        showQuickSettings()
-                    }
+        menu.findViewById<View>(R.id.menu_settings).setOnClickListener {
+            close()
+            startActivity(com.andrerinas.openheadunit.main.DaSettingsActivity.intent(this))
+        }
+        if (settings.tripRecording) {
+            menu.findViewById<TextView>(R.id.menu_trip_label)
+                .setText(com.andrerinas.openheadunit.main.TripDialogs.buttonLabel(this))
+            menu.findViewById<View>(R.id.menu_trip).apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    close()
+                    com.andrerinas.openheadunit.main.TripDialogs.toggle(this@AapProjectionActivity)
                 }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-
-        if (settings.hudMirroring) {
-            val root = dialog.window?.findViewById<View>(android.R.id.content) ?: dialog.window?.decorView
-            root?.scaleX = -1.0f
         }
+        root.addView(menu)
+        projectionMenu = menu
     }
 
-    private fun showQuickSettings() {
-        if (supportFragmentManager.findFragmentByTag("quick_settings") != null) return
-        val quickSettings = com.andrerinas.openheadunit.main.QuickSettingsFragment()
-        quickSettings.show(supportFragmentManager, "quick_settings")
-    }
 
     private fun returnToMainScreen() {
         commManager.disconnect(sendByeBye = true)
@@ -1492,7 +1511,8 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     private val commManager get() = App.provide(this).commManager
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        // 1. 2-finger swipe detection from the left or right edge (to open exit menu or toggle fullscreen)
+        // 1. 2-finger swipe detection from the left or right edge (to open exit menu or toggle fullscreen),
+        // or from the top edge (back to the car's launcher, the session stays up)
         if (ev.pointerCount == 2) {
             isPotentialThreeFingerSwipe = false
             when (ev.actionMasked) {
@@ -1500,8 +1520,16 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
                     initialX = ev.getX(0)
                     initialY = ev.getY(0)
                     isPotentialGesture = initialX < 100 || initialX > HeadUnitScreenConfig.getUsableWidth() - 100
+                    isPotentialTopGesture = initialY < 100 && ev.getY(1) < 100
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    if (isPotentialTopGesture && ev.getY(0) - initialY > 200 && abs(ev.getX(0) - initialX) < 100) {
+                        isPotentialTopGesture = false
+                        isPotentialGesture = false
+                        AppLog.i("Two-finger swipe from the top: back to the launcher")
+                        moveToBackground()
+                        return true // Consume
+                    }
                     if (isPotentialGesture) {
                         val deltaX = ev.getX(0) - initialX
                         val deltaY = abs(ev.getY(0) - initialY)
@@ -1513,13 +1541,20 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
 
                         if (deltaX < -200 && deltaY < 100) {
                             isPotentialGesture = false
+                            // Full screen hides the car's top strip too, as MG4 Dash does; the
+                            // other way keeps it and hides only the left bar. Kept for next time.
                             val currentEffective = activityFullscreenOverride ?: settings.fullscreenMode
-                            if (currentEffective != Settings.FullscreenMode.NONE) {
-                                activityFullscreenOverride = Settings.FullscreenMode.NONE
-                                setFullscreen()
-                            } else {
-                                activityFullscreenOverride = null
-                                setFullscreen()
+                            activityFullscreenOverride = null
+                            settings.fullscreenMode =
+                                if (currentEffective == Settings.FullscreenMode.IMMERSIVE) Settings.FullscreenMode.NAV_ONLY
+                                else Settings.FullscreenMode.IMMERSIVE
+                            AppLog.i("Two-finger swipe: full screen ${settings.fullscreenMode}")
+                            setFullscreen()
+                            // The phone draws Android Auto for the height it was given when it
+                            // connected; only a new connection makes it use the new height.
+                            if (commManager.isConnected) {
+                                Toast.makeText(this, R.string.fullscreen_reconnecting, Toast.LENGTH_SHORT).show()
+                                reconnectToApply("the new screen height")
                             }
                             return true // Consume
                         }
@@ -1531,6 +1566,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         // 2. 3-finger swipe down → disconnect and return to DiAuto main screen
         if (ev.pointerCount >= 3) {
             isPotentialGesture = false
+            isPotentialTopGesture = false
             when (ev.actionMasked) {
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     if (ev.pointerCount == 3) {
@@ -1582,13 +1618,15 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         AppLog.i("[UI_DEBUG] [AapProjectionActivity] onSurfaceChanged. Actual surface dimensions: width=$width, height=$height")
         isSurfaceSet = true
 
-        videoDecoder.setSurface(surface)
+        val unparked = videoDecoder.setSurface(surface)
         // A surface arriving inside a cycle's own gap must not strand the pending gain.
         settleFocusCycle()
         lastSurfaceSetMs = SystemClock.elapsedRealtime()
         warmRelaunchCycleSpent = false
         watchdogHandler.removeCallbacks(warmRelaunchCheckRunnable)
-        watchdogHandler.postDelayed(
+        // An unparked decoder already shows the stream; a still screen sends no new frame, and the
+        // check would then cycle video focus and blank it.
+        if (!unparked) watchdogHandler.postDelayed(
             warmRelaunchCheckRunnable,
             WarmRelaunchKeyframePolicy.ESCALATE_AFTER_SURFACE_MS
         )
@@ -1637,7 +1675,9 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             }
             is CommManager.ConnectionState.TransportStarted -> {
                 // Surface recreated while transport was already running; request a keyframe.
-                commManager.send(VideoFocusEvent(gain = true, unsolicited = true))
+                // Not after an unpark: the stream never stopped, and a focus gain makes the phone
+                // restart it, which blanked the picture for a moment after it had come back.
+                if (!unparked) commManager.send(VideoFocusEvent(gain = true, unsolicited = true))
             }
             else -> {
                 commManager.send(VideoFocusEvent(gain = true, unsolicited = false))
@@ -1671,6 +1711,9 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
         }
         AppLog.i("SurfaceCallback: onSurfaceDestroyed. Surface: $surface")
         isSurfaceSet = false
+        // Leaving the screen: the stream keeps decoding off-screen for the whole session and the
+        // phone keeps sending video, so coming back shows the picture at once.
+        if (videoDecoder.parkFrom(surface)) return
         commManager.send(VideoFocusEvent(gain = false, unsolicited = false))
         videoDecoder.stopIfCurrentSurface(surface, DecoderStopPolicy.REASON_SURFACE_DESTROYED)
     }
@@ -1816,6 +1859,11 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             return super.dispatchKeyEvent(event)
         }
 
+        if (!ProjectionKeyPolicy.shouldForwardCarKey(cachedKeyCodes, event.keyCode)) {
+            if (action == KeyEvent.ACTION_DOWN) AppLog.i("Projection: not forwarding car navigation key ${event.keyCode} to Android Auto")
+            return true
+        }
+
         // 2. Funnel all other keys to CommManager
         commManager.sendKey(event.keyCode, event.action == KeyEvent.ACTION_DOWN, event.downTime, "projection")
         return true
@@ -1877,9 +1925,19 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
     }
 
     companion object {
+        /** After the bye-bye, so the service has stopped and re-armed wireless before the call. */
+        private const val RECONNECT_POKE_DELAY_MS = 2_500L
+        // Settings changes the open projection applies at once (sent by the settings screens).
+        const val ACTION_SETTINGS_CHANGED = "com.andrerinas.openheadunit.SETTINGS_CHANGED"
+        const val EXTRA_NEEDS_VIEW_RECREATE = "needs_view_recreate"
+        const val EXTRA_NEEDS_AUDIO_RESTART = "needs_audio_restart"
+        const val EXTRA_SENSOR_REFRESH = "sensor_refresh"
+        const val EXTRA_APPLY_FULLSCREEN = "apply_fullscreen"
         const val EXTRA_FOCUS = "focus"
         /** Align with AapService USER_EXIT_COOLDOWN_MS so reconnect spam stays quiet for one settle window. */
         private const val WIFI_DISCONNECT_TOAST_COOLDOWN_MS = 15_000L
+        private const val GESTURE_HINT_REPEATS = 3
+        private const val GESTURE_HINT_TOAST_MS = 3_500L
         @Volatile var isForeground = false
 
         /**
@@ -1997,6 +2055,40 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
 
         videoDecoder.onFpsChanged = fpsListener
         startPerformanceOverlayUpdates()
+    }
+
+    /** Debug figures of the Maps energy model, top right; touches go through to the projection. */
+    private var mapsModelOverlayView: android.widget.TextView? = null
+    private val mapsModelOverlayRunnable = object : Runnable {
+        override fun run() {
+            val text = com.andrerinas.openheadunit.vehicle.MapsModelTrip.overlayText()
+            mapsModelOverlayView?.let { it.text = text; it.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE }
+            performanceHandler.postDelayed(this, 1000L)
+        }
+    }
+
+    private fun startMapsModelOverlay() {
+        performanceHandler.removeCallbacks(mapsModelOverlayRunnable)
+        if (!App.provide(this).settings.mapsModelOverlay) {
+            mapsModelOverlayView?.visibility = View.GONE
+            return
+        }
+        if (mapsModelOverlayView == null) {
+            mapsModelOverlayView = android.widget.TextView(this).apply {
+                setTextColor(android.graphics.Color.WHITE)
+                setBackgroundColor(0xB0000000.toInt())
+                textSize = 15f
+                typeface = android.graphics.Typeface.MONOSPACE
+                setPadding(16, 10, 16, 10)
+                isClickable = false
+                isFocusable = false
+                visibility = View.GONE
+            }
+            addContentView(mapsModelOverlayView, android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                android.view.Gravity.TOP or android.view.Gravity.END))
+        }
+        mapsModelOverlayRunnable.run()
     }
 
     private fun startPerformanceOverlayUpdates() {

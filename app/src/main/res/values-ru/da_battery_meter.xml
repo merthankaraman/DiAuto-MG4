@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">батарея %1$d кВт·ч, измерено в поездках</string>
+    <string name="battery_source_measuring">батарея %1$d кВт·ч по умолчанию, идёт измерение в поездках (%2$d из %3$d %%)</string>
+    <string name="battery_soh_source_measured">измерено в поездках</string>
+</resources>

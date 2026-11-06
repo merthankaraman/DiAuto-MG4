@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Le firmware de votre voiture (%1$s) ne peut pas faire Android Auto sans fil : son Bluetooth n\'accepte qu\'une connexion d\'application à la fois. DiAuto ne peut pas le contourner. Demandez à votre concessionnaire la %2$s ou plus récente.</string>
+    <string name="da_firmware_incompatible" formatted="true">Le firmware de votre voiture (%1$s) ne peut pas faire Android Auto sans fil : son Bluetooth n\'accepte qu\'une connexion d\'application à la fois. DiAuto ne peut pas le contourner. Demandez à votre concessionnaire s\'il existe un firmware plus récent.</string>
+</resources>

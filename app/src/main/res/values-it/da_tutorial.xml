@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Passo %1$d di %2$d</string>
+    <string name="tuto_skip">Salta</string>
+    <string name="tuto_back">Indietro</string>
+    <string name="tuto_next">Avanti</string>
+    <string name="tuto_done">Iniziamo</string>
+    <string name="tuto_welcome_title">Benvenuto in DiAuto per MG4</string>
+    <string name="tuto_welcome_text">Android Auto wireless sullo schermo della tua MG4. Quando il telefono è associato all\'auto via Bluetooth, si collega all\'hotspot Wi-Fi dell\'auto e Android Auto si avvia da solo.\n\nI prossimi passi mostrano i tre gesti che funzionano su Android Auto.</string>
+    <string name="tuto_menu_title">Due dita dal bordo sinistro</string>
+    <string name="tuto_menu_text">Appoggia due dita vicino al bordo sinistro dello schermo e scorri verso destra. Si apre un menu con due grandi pulsanti: Disconnetti e Impostazioni.\n\nTocca altrove per chiuderlo.</string>
+    <string name="tuto_fullscreen_title">Due dita dal bordo destro</string>
+    <string name="tuto_fullscreen_text">Appoggia due dita vicino al bordo destro e scorri verso sinistra per mostrare o nascondere le barre dell\'auto e usare tutto lo schermo.</string>
+    <string name="tuto_top_title">Due dita dal bordo superiore</string>
+    <string name="tuto_top_text">Appoggia due dita in alto sullo schermo e scorri verso il basso per tornare al launcher dell\'auto. Android Auto resta connesso.</string>
+    <string name="tuto_home_title">Tre dita verso il basso</string>
+    <string name="tuto_home_text">Scorri tre dita verso il basso per scollegare Android Auto e tornare alla schermata iniziale di DiAuto.</string>
+    <string name="tuto_tips_title">Buono a sapersi</string>
+    <string name="tuto_tips_text">• Google Maps diventa un pianificatore di viaggio: riceve batteria, consumi e potenza di ricarica della tua MG4 e sceglie le soste di ricarica.\n• Impostazioni → Auto: la versione della tua MG4, la capacità e lo stato della batteria, rilevati automaticamente e regolabili.\n• Preriscaldamento automatico della batteria prima di una sosta di ricarica pianificata da Maps. Disattivato di default, attivalo in Impostazioni → Auto.\n• DiAuto si installa come aggiornamento dell\'Android Auto originale dell\'auto (AllGo). Per tornarci: Impostazioni → Info → Ripristina, poi riavvia lo schermo tenendo premuto il tasto Home per 20 s.\n• Impostazioni → Info: rivedi questo tutorial.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">I gesti su Android Auto e le impostazioni utili, in pochi passi.</string>
+    <string name="tuto_settings_button">Mostra</string>
+    <string name="da_settings">Impostazioni</string>
+</resources>

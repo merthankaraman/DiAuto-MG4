@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">USB 연결 시 차량 Wi-Fi</string>
+    <string name="dset_usb_wifi_summary">Android Auto를 USB 케이블로 사용할 때 차량 Wi-Fi가 휴대전화 핫스팟 같은 알려진 네트워크에 연결되어 인터넷을 사용합니다. 케이블을 뽑으면 꺼집니다.</string>
+</resources>

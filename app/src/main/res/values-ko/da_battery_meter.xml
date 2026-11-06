@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">주행 중 측정한 %1$d kWh 배터리</string>
+    <string name="battery_source_measuring">기본 %1$d kWh 배터리, 주행 중 측정 중 (%2$d / %3$d %%)</string>
+    <string name="battery_soh_source_measured">주행 중 측정</string>
+</resources>

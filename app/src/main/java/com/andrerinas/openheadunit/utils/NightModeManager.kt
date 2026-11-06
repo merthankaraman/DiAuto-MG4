@@ -36,6 +36,7 @@ class NightModeManager(
     private var isSensorRegistered = false
     private var isObserverRegistered = false
     private var isCarSignalObserverRegistered = false
+    private var isCarSkinObserverRegistered = false
     
     private val handler = Handler(Looper.getMainLooper())
 
@@ -63,6 +64,21 @@ class NightModeManager(
     private val carSignalObserver = object : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean) {
             update(debounce = false)
+        }
+    }
+
+    // The car's own day/night skin (headlights or its night-mode setting): follow it at once.
+    private val carSkinObserver = object : ContentObserver(handler) {
+        override fun onChange(selfChange: Boolean) {
+            update(debounce = false)
+        }
+    }
+
+    // The car's lights have no change callback here: read them every few seconds, as MG4Dash does.
+    private val lightsPoll = object : Runnable {
+        override fun run() {
+            update(debounce = false)
+            handler.postDelayed(this, LIGHTS_POLL_MS)
         }
     }
 
@@ -111,7 +127,12 @@ class NightModeManager(
             context.contentResolver.unregisterContentObserver(carSignalObserver)
             isCarSignalObserverRegistered = false
         }
+        if (isCarSkinObserverRegistered) {
+            context.contentResolver.unregisterContentObserver(carSkinObserver)
+            isCarSkinObserverRegistered = false
+        }
         handler.removeCallbacks(debounceRunnable)
+        handler.removeCallbacks(lightsPoll)
     }
 
     fun resendCurrentState() {
@@ -179,6 +200,59 @@ class NightModeManager(
                 isCarSignalObserverRegistered = false
             }
         }
+
+        // 4. The car's lights, for Auto (Like the car)
+        handler.removeCallbacks(lightsPoll)
+        if (settings.nightMode == Settings.NightMode.AUTO) handler.postDelayed(lightsPoll, LIGHTS_POLL_MS)
+
+        // 5. The car's day/night skin, for Auto on cars that have one
+        if (settings.nightMode == Settings.NightMode.AUTO && carSkinNight(context) != null) {
+            if (!isCarSkinObserverRegistered) {
+                context.contentResolver.registerContentObserver(
+                    SystemSettings.System.getUriFor(CAR_SKIN_KEY), false, carSkinObserver
+                )
+                isCarSkinObserverRegistered = true
+            }
+        } else if (isCarSkinObserverRegistered) {
+            context.contentResolver.unregisterContentObserver(carSkinObserver)
+            isCarSkinObserverRegistered = false
+        }
+    }
+
+    companion object {
+        /**
+         * The MG4's day/night skin, written by the car's CarAdapterService (AutoSkinObserver) from
+         * its night-mode setting and the headlights: 0 = dark, 1 = light. The launcher, top bar
+         * and the stock Android Auto follow it. Read at start too, so a car started with the
+         * lights already on comes up dark.
+         */
+        const val CAR_SKIN_KEY = "SKIN_THEME_CONFIG"
+        private const val LIGHTS_POLL_MS = 3_000L
+
+        /**
+         * Like the car: the lights first (the skin can be pinned to dark or light in the car's
+         * settings and then never follows them), then the car's skin, else null.
+         */
+        fun carNight(context: Context): Boolean? =
+            try { com.evsuite.hardware.EVHardware.getLightsOn() } catch (_: Throwable) { null }
+                ?: carSkinNight(context)
+
+        /**
+         * Like the car: dark when the car's lights are on, and also from sunset to sunrise (as
+         * MG4Dash does), so stopping with the lights off at night stays dark. The sun only counts
+         * with a real position; without the car's lights at all, the sun decides alone.
+         */
+        fun autoNight(context: Context, settings: Settings, sunNight: () -> Boolean): Boolean {
+            val car = carNight(context) ?: return sunNight()
+            return car || (settings.hasSunriseLocation && sunNight())
+        }
+
+        /** True at night, false by day, null on a head unit without the key. */
+        fun carSkinNight(context: Context): Boolean? = try {
+            SystemSettings.System.getInt(context.contentResolver, CAR_SKIN_KEY) == 0
+        } catch (_: Exception) {
+            null
+        }
     }
 
     // Made public so Service can force an update
@@ -238,7 +312,11 @@ class NightModeManager(
                     isNight = lastEmittedValue ?: false
                 }
             }
-            // Delegate to standard calculator for other modes (Auto, Day, Night, Manual)
+            // Auto follows the car's own day/night skin where there is one.
+            Settings.NightMode.AUTO -> {
+                isNight = autoNight(context, settings) { nightModeCalculator.isSunriseSunsetNight }
+            }
+            // Delegate to standard calculator for other modes (Day, Night, Manual)
             else -> {
                 // Ensure calculator has latest settings reference/values
                 isNight = nightModeCalculator.current

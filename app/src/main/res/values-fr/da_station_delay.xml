@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Retour du Wi-Fi de la voiture</string>
+    <string name="dset_station_delay_summary">Le Wi-Fi client de la voiture est coupé pendant Android Auto sans fil. Il revient quand la session est terminée depuis ce délai.</string>
+</resources>

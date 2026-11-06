@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Enregistrer les journaux</string>
+    <string name="dset_log_record_summary">Activé par défaut, pour les joindre à une issue GitHub en cas de problème. Peu volumineux, sans destinations ni noms. Désactivez-le pour ne rien écrire.</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Schritt %1$d von %2$d</string>
+    <string name="tuto_skip">Überspringen</string>
+    <string name="tuto_back">Zurück</string>
+    <string name="tuto_next">Weiter</string>
+    <string name="tuto_done">Los geht\'s</string>
+    <string name="tuto_welcome_title">Willkommen bei DiAuto für MG4</string>
+    <string name="tuto_welcome_text">Kabelloses Android Auto auf dem Bildschirm Ihres MG4. Sobald Ihr Handy per Bluetooth mit dem Auto gekoppelt ist, verbindet es sich mit dem WLAN-Hotspot des Autos und Android Auto startet von selbst.\n\nDie nächsten Schritte zeigen die drei Gesten, die über Android Auto funktionieren.</string>
+    <string name="tuto_menu_title">Zwei Finger vom linken Rand</string>
+    <string name="tuto_menu_text">Legen Sie zwei Finger an den linken Bildschirmrand und wischen Sie nach rechts. Ein Menü mit zwei großen Tasten öffnet sich: Trennen und Einstellungen.\n\nTippen Sie woanders hin, um es zu schließen.</string>
+    <string name="tuto_fullscreen_title">Zwei Finger vom rechten Rand</string>
+    <string name="tuto_fullscreen_text">Legen Sie zwei Finger an den rechten Rand und wischen Sie nach links, um die Leisten des Autos ein- oder auszublenden und den ganzen Bildschirm zu nutzen.</string>
+    <string name="tuto_top_title">Zwei Finger vom oberen Rand</string>
+    <string name="tuto_top_text">Legen Sie zwei Finger oben auf den Bildschirm und wischen Sie nach unten, um zum Launcher des Autos zurückzukehren. Android Auto bleibt verbunden.</string>
+    <string name="tuto_home_title">Drei Finger nach unten</string>
+    <string name="tuto_home_text">Wischen Sie mit drei Fingern nach unten, um Android Auto zu trennen und zum Startbildschirm von DiAuto zurückzukehren.</string>
+    <string name="tuto_tips_title">Gut zu wissen</string>
+    <string name="tuto_tips_text">• Google Maps wird zum Routenplaner: Es erhält Akku, Verbrauch und Ladeleistung Ihres MG4 und wählt die Ladestopps.\n• Einstellungen → Auto: Ihre MG4-Version, Akkukapazität und -zustand, automatisch erkannt und anpassbar.\n• Automatisches Vorheizen des Akkus vor einem von Maps geplanten Ladestopp. Standardmäßig aus, einschalten unter Einstellungen → Auto.\n• DiAuto wird als Update des Android Auto des Autos (AllGo) installiert. Zurück dazu: Einstellungen → Info → Wiederherstellen, dann den Bildschirm neu starten, indem Sie die Home-Taste 20 s gedrückt halten.\n• Einstellungen → Info: dieses Tutorial erneut anzeigen.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">Die Gesten über Android Auto und die nützlichen Einstellungen in wenigen Schritten.</string>
+    <string name="tuto_settings_button">Anzeigen</string>
+    <string name="da_settings">Einstellungen</string>
+</resources>

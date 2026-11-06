@@ -4,11 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
+import com.andrerinas.openheadunit.App
+import com.andrerinas.openheadunit.aap.AllgoMediaKeys
 import com.andrerinas.openheadunit.utils.AppLog
 import com.evsuite.hardware.PhysicalButtonEventDecoder
+import com.evsuite.hardware.saic.SaicCarAudioSource
 
 /**
  * A comprehensive receiver for steering wheel and hardware buttons,
@@ -24,6 +29,35 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
         private const val EXTRA_SAIC_LONGPRESS = "android.intent.extra.hardkey.longpress"
         /** Observed on MG4: pause/play paddle — not in [PhysicalButtonEventDecoder]. */
         private const val SAIC_KEYCODE_PLAY_PAUSE = 301
+        /** Steering-wheel voice key (stock AllGo KEYCODE_VOICE). */
+        private const val SAIC_KEYCODE_VOICE = 287
+        /** Steering-wheel phone key. (Hardkey 3 is the car's home key, handled by the car.) */
+        private const val SAIC_KEYCODE_PHONE = 291
+        private const val PLAY_PAUSE_RUI_WAIT_MS = 400L
+        /** Steering wheel left (previous) and right (next), AllGo's KEYCODE_SWC_LEFT/RIGHT. */
+        private const val SAIC_KEYCODE_LEFT = 299
+        private const val SAIC_KEYCODE_RIGHT = 300
+
+        private fun androidAutoIsSource(context: Context): Boolean {
+            val am = SaicCarAudioSource.audioManager(context) ?: return false
+            val current = SaicCarAudioSource.readCurrentSourceType(am)
+            return if (current != null) current == SaicCarAudioSource.SRC_ANDROID_AUTO
+            else SaicCarAudioSource.isAndroidAuto(context)
+        }
+
+        /**
+         * A car source other than Android Auto (1 FM, 2 AM, 3 DAB, 5 Bluetooth, 6-7 USB, 50 CarPlay).
+         * Unknown or empty does not count: SWI68 reports no source at all, and with no other
+         * source playing, the media keys still belong to Android Auto.
+         */
+        internal fun isOtherSource(source: Int?): Boolean =
+            source != null && source > 0 && source != SaicCarAudioSource.SRC_ANDROID_AUTO
+
+        /** Another source is playing, with Android Auto connected alongside it for navigation for example. */
+        private fun otherSourceIsCurrent(context: Context): Boolean {
+            val am = SaicCarAudioSource.audioManager(context) ?: return false
+            return isOtherSource(SaicCarAudioSource.readCurrentSourceType(am) ?: SaicCarAudioSource.readLastSource(am))
+        }
 
         val ACTIONS = arrayOf(
             "android.intent.action.MEDIA_BUTTON",
@@ -185,12 +219,76 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
 
         val isDown = intent.getBooleanExtra(EXTRA_SAIC_DOWN, false)
         val isLong = intent.getBooleanExtra(EXTRA_SAIC_LONGPRESS, false)
+        AppLog.i("CarKeyReceiver: SAIC hardkey code=$keyCode down=$isDown long=$isLong")
+        com.andrerinas.openheadunit.utils.SteeringKeyLog.record(keyCode, isDown, isLong)
+        // One read per key; while another source plays, its wheel keys stay with the car (not consumed).
+        val otherSource = otherSourceIsCurrent(context)
+
+        // The right-hand wheel keys (297-301) also drive the instrument cluster's menus and the
+        // climate: a key on the wheel switches them over, and the car reports it
+        // (ID_SWC_FUNCTION_CHANGE_SWA not 0). The stock launcher then leaves them alone, and so does
+        // DiAuto (issue #10).
+        if (keyCode in 297..301 && com.evsuite.hardware.EVHardware.wheelKeysOffMedia() == true) {
+            AppLog.i("CarKeyReceiver: wheel keys are not on media - key $keyCode left to the car")
+            return false
+        }
+
+        // Voice key: forward the real press to Android Auto as stock AllGo does on this car (search
+        // down on press, up on release); the phone decides between a tap and a hold.
+        // Phone key (hardkey 291) with Android Auto on screen: the car only forwards it from its own
+        // screens (rui launchApp 3), so DiAuto opens the phone's dialer itself here.
+        if (keyCode == SAIC_KEYCODE_PHONE) {
+            if (!isDown && !isLong && com.andrerinas.openheadunit.aap.AapProjectionActivity.isForeground) {
+                AllgoMediaKeys.click(context, KeyEvent.KEYCODE_CALL, "steering-phone")
+                AppLog.i("CarKeyReceiver: phone key on the Android Auto screen -> phone app")
+            }
+            return !otherSource
+        }
+
+        if (keyCode == SAIC_KEYCODE_VOICE) {
+            if (!isLong) {
+                App.provide(context).commManager.sendKey(KeyEvent.KEYCODE_SEARCH, isDown, null, "steering-voice")
+                AppLog.i("CarKeyReceiver: voice key ${if (isDown) "down" else "up"} -> Android Auto assistant key")
+            }
+            return !otherSource
+        }
 
         // Play/pause paddle is outside the R69 decoder table.
+        // The stock launcher also sends it through rui as AllGo's play/pause (AllgoMediaKeys): wait
+        // a moment and play/pause only once. Another source playing keeps its key.
         if (keyCode == SAIC_KEYCODE_PLAY_PAUSE) {
-            if (isDown) return false
-            handleClick(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+            if (otherSource) {
+                if (!isDown) AppLog.i("CarKeyReceiver: play/pause left to the car's current source")
+                return false
+            }
+            if (!isDown) {
+                val app = context.applicationContext
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (AllgoMediaKeys.playPauseCameThroughRui()) {
+                        AppLog.i("CarKeyReceiver: play/pause already sent through rui")
+                    } else {
+                        handleClick(app, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+                    }
+                }, PLAY_PAUSE_RUI_WAIT_MS)
+            }
             return true
+        }
+
+        // Wheel left/right: as AllGo, skip on release while Android Auto is the car's source (the
+        // stock launcher leaves them to AllGo).
+        if (keyCode == SAIC_KEYCODE_LEFT || keyCode == SAIC_KEYCODE_RIGHT) {
+            if (!isDown && androidAutoIsSource(context)) {
+                val key = if (keyCode == SAIC_KEYCODE_RIGHT) KeyEvent.KEYCODE_MEDIA_NEXT else KeyEvent.KEYCODE_MEDIA_PREVIOUS
+                val app = context.applicationContext
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (AllgoMediaKeys.skipCameThroughRui()) {
+                        AppLog.i("CarKeyReceiver: wheel skip already sent through rui")
+                    } else {
+                        handleClick(app, key)
+                    }
+                }, PLAY_PAUSE_RUI_WAIT_MS)
+            }
+            return !otherSource
         }
 
         val event = saicDecoder.accept(keyCode, isDown, isLong) ?: return false
@@ -209,6 +307,7 @@ class CarKeyBroadcastReceiver : BroadcastReceiver(), CarKeyReceiver {
             // Volume / source / phone stay with the car stack.
             else -> return false
         }
+        if (otherSource) return false
         when (event.press) {
             PhysicalButtonEventDecoder.Press.SHORT,
             PhysicalButtonEventDecoder.Press.DOUBLE -> handleClick(context, androidCode)

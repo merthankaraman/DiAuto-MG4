@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">音声の明瞭さ</string>
+    <string name="dset_voice_clarity_summary">案内とアシスタント用のフィルター：こもった低音を取り除き、子音を聞き取りやすくします。次の案内から。</string>
+    <string name="dset_voice_headroom">音声の余裕</string>
+    <string name="dset_voice_headroom_summary">車の音声処理が飽和しないよう案内を少し下げます。車のナビ音量を上げて補ってください。</string>
+</resources>

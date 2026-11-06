@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi dell\'auto torna dopo</string>
+    <string name="dset_station_delay_summary">Il Wi-Fi dell\'auto è spento durante Android Auto wireless. Torna quando la sessione è finita da questo tempo.</string>
+</resources>

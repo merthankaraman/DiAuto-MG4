@@ -162,8 +162,9 @@ object LogExporter {
         }
 
         if (AppLog.logSource == Settings.LogSource.APPLOG_FILE) {
-            return (AppLog.currentLogFile ?: AppLog.lastLogFile)
-                ?.takeIf { it.exists() && it.length() > 0 }
+            val own = (AppLog.currentLogFile ?: AppLog.lastLogFile)
+                ?.takeIf { it.exists() && it.length() > 0 } ?: return null
+            return withCarApps(own)
         }
 
         val settings = Settings(context)
@@ -191,6 +192,39 @@ object LogExporter {
             AppLog.e("Failed to save logs", e)
             null
         }
+    }
+
+    /**
+     * Car app lines that say how the car sees the Android Auto session (calls, Bluetooth, rui).
+     * SWI69: phone app A9_Btphone, Settings BootService. SWI68/SWI133: call service BtCall_*
+     * (CpaaManager hides the call screen only while rui reports an Android Auto session).
+     */
+    private val carAppLine = Regex("A9_Btphone|BootService|DiAutoRelay|CarplayAAPModel|BtCall")
+    private val carAppTopic = Regex("(?i)androidAuto|aaSwitch|AAScreen|CallingWindow|onCPAA|onAA|disconnectAABt|onSession|onScreen|onDevice|Device type|connecting|BtCallActivity|DiAutoRelay|HFP state|AUDIO_STATE")
+    private val callDetails = Regex("(?i)(number|name)=[^,]*")
+    private val digits = Regex("\\+?\\d[\\d ]{6,}\\d")
+
+    /**
+     * The app's own log plus the car apps' lines about the Android Auto session (the phone app's
+     * call window, Settings' Bluetooth handling, rui), which an AppLog file cannot show. Needs
+     * READ_LOGS (granted to the platform signature). Addresses, numbers and names are removed:
+     * these logs are posted publicly.
+     */
+    private fun withCarApps(own: File): File = try {
+        val process = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-v", "time", "-t", "20000"))
+        val lines = process.inputStream.bufferedReader().readLines()
+            .filter { carAppLine.containsMatchIn(it) && carAppTopic.containsMatchIn(it) }
+            .mapNotNull { DiagnosticReportRedactor.redact(it, "", "") }
+            .map { it.replace(callDetails, "$1=…").replace(digits, "…") }
+            .takeLast(400)
+        process.waitFor()
+        if (lines.isEmpty()) own
+        else File(own.parentFile, own.nameWithoutExtension + "_car.txt").apply {
+            writeText(own.readText() + "\n==== Car apps (Android Auto session, calls) ====\n" + lines.joinToString("\n") + "\n")
+        }
+    } catch (e: Exception) {
+        AppLog.w("LogExporter: car app lines not added: ${e.message}")
+        own
     }
 
     /** Uploads the log file with one tap (Telegram). No Android share sheet. */

@@ -71,17 +71,11 @@ class LocaleHelperTest {
 
     @Test
     @Config(sdk = [29], qualifiers = "en")
-    fun olderAndroidSwitchesResourcesAndRtlWithoutChangingTheProcessDefault() {
+    fun olderAndroidFollowsTheSystemLanguageWithoutChangingTheProcessDefault() {
         val processDefault = Locale.getDefault()
         val settings = Settings(context)
+        // A language stored by an older version no longer overrides the car's.
         settings.appLanguage = "ar"
-        val arabic = LocaleHelper.wrapContext(context)
-        assertEquals("ar", arabic.resources.configuration.locales[0].language)
-        assertEquals(View.LAYOUT_DIRECTION_RTL, arabic.resources.configuration.layoutDirection)
-        settings.appLanguage = "zh-CN"
-        val chinese = LocaleHelper.wrapContext(context)
-        assertEquals("zh-CN", chinese.resources.configuration.locales[0].toLanguageTag())
-        settings.appLanguage = ""
         val system = LocaleHelper.wrapContext(context)
         assertEquals("en", system.resources.configuration.locales[0].language)
         assertEquals(View.LAYOUT_DIRECTION_LTR, system.resources.configuration.layoutDirection)

@@ -20,9 +20,18 @@ class AudioDecoder {
         return mixer != null && mixer!!.isRunning()
     }
 
-    fun decode(channel: Int, buffer: ByteArray, offset: Int, size: Int) {
-        val audioTrack = audioTracks.get(channel)
-        audioTrack?.write(buffer, offset, size)
+    /**
+     * Sends the phone's media ack for a channel; set by the transport. When set, an audio chunk is
+     * acked as it leaves its track's queue (see AudioTrackWrapper.onChunkDone), not on arrival.
+     */
+    @Volatile
+    var mediaAck: ((Int) -> Unit)? = null
+
+    /** @return true when a track took the chunk and will ack it itself through [mediaAck]. */
+    fun decode(channel: Int, buffer: ByteArray, offset: Int, size: Int): Boolean {
+        val audioTrack = audioTracks.get(channel) ?: return false
+        audioTrack.write(buffer, offset, size)
+        return mediaAck != null
     }
 
     fun stop() {
@@ -81,6 +90,7 @@ class AudioDecoder {
             channelId = channel,
             attachHwDspEqualizer = attachHwDspEqualizer,
             mediaBufferMillis = mediaBufferMillis,
+            onChunkDone = { mediaAck?.invoke(channel) },
         )
         audioTracks.put(channel, thread)
     }

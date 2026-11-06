@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">語音清晰度</string>
+    <string name="dset_voice_clarity_summary">用於導航提示和助理的濾波：去除沉悶低頻，突顯子音。從下一則提示起生效。</string>
+    <string name="dset_voice_headroom">語音餘量</string>
+    <string name="dset_voice_headroom_summary">略微降低提示音量，避免車輛處理飽和；請調高車輛導航音量來補償。</string>
+</resources>

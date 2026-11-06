@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto MG4+</string>
     <string name="menu">Меню</string>
     <string name="settings">Настройки</string>
 
@@ -869,11 +869,8 @@
     <string name="playback_focus_mode_always_hint">Всегда приостанавливать другой звук во время Android Auto. Если при включённом Bluetooth музыка останавливается через секунду-две, вернитесь к автоматическому режиму.</string>
     <string name="playback_focus_mode_never_hint">Не изменять аудиофокус системы. Другой звук может продолжать играть поверх Android Auto.</string>
     <string name="playback_focus_mode_static_hint">При статическом аудиофокусе это действует с момента подключения телефона всю сессию, а не только во время воспроизведения.</string>
-    <string name="github_issues_url">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
     <string name="support_rules_english_title">All posts in English</string>
-    <string name="boot_loop_paused_title">Беспроводной запуск приостановлен</string>
-    <string name="boot_loop_paused_generic">Устройство три раза подряд перезагрузилось вскоре после запуска беспроводного подключения Open Headunit, поэтому в этот раз оно отключено. USB работает. Откройте приложение, чтобы включить подключение снова.</string>
-    <string name="boot_loop_paused_native_wifi_direct">Устройство трижды перезагрузилось после запуска беспроводного подключения Open Headunit, поэтому оно отключено. На некоторых головных устройствах чип Wi-Fi вызывает сбой всей системы при подключении телефона к Wi-Fi Direct. Попробуйте режим точки доступа головного устройства. USB работает.</string>
     <string name="vehicle_make_hint">Марка автомобиля показывает её логотип на кнопке выхода Android Auto, но скрывает приложения не из Play Store. Верните Google, чтобы они снова появились.</string>
     <string name="external_bt_nativeaa">Штатное беспроводное подключение недоступно на этой системе</string>
     <string name="external_bt_nativeaa_desc">Устройство использует собственный модуль Bluetooth (%1$s), недоступный приложениям Android. Телефон сопрягается с ним, поэтому Bluetooth-данные приложения не доходят: подключение начнётся и зависнет.\n\nЭто аппаратное ограничение. Используйте USB, Wireless Helper или Auto (Headunit Server), которым не нужно Bluetooth-согласование.</string>
@@ -947,8 +944,6 @@
     <string name="diagnostic_save_failure_hint">Проверьте свободное место или выберите другое место сохранения.</string>
     <string name="diagnostic_choose_location">Выбрать место</string>
     <string name="no_files_found">Файлы не найдены</string>
-    <string name="byd_navigation_title">HUD и приборная панель BYD</string>
-    <string name="byd_navigation_description">Показывать указания Android Auto на поддерживаемых дисплеях BYD. Экспериментально; совместимость зависит от автомобиля.</string>
     <string name="da_connection_setup">Настройка подключения</string>
     <string name="da_connection_setup_hint">Выберите подключение и настройте точку доступа автомобиля.</string>
     <string name="da_diagnostics">Диагностика</string>
@@ -975,7 +970,7 @@
     <string name="battery_for_google_maps">Battery for Google Maps</string>
     <string name="battery_for_google_maps_description">Send MG4 charge and range to Android Auto so Google Maps can show battery level. Set net capacity and SOH below. Needs a platform-signed install on the car.</string>
     <string name="battery_net_capacity_kwh">Net capacity (kWh)</string>
-    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 50.8, 61.7 or 74.4 kWh. Maps uses capacity × SOH.</string>
+    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 49, 61 or 72.5 kWh. Maps uses capacity × SOH.</string>
     <string name="battery_net_capacity_enter">Enter net (usable) capacity when new, in kWh</string>
     <string name="battery_soh_percent">Battery SOH (%)</string>
     <string name="battery_soh_description">Enter battery state of health from 1 to 100. Decimal values such as 98.75 are supported. Effective usable capacity = capacity × SOH / 100.</string>

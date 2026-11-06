@@ -1,5 +1,6 @@
 package com.andrerinas.openheadunit.main
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,6 +20,8 @@ import com.andrerinas.openheadunit.R
 import com.andrerinas.openheadunit.main.settings.SettingItem
 import com.andrerinas.openheadunit.main.settings.SettingsAdapter
 import com.andrerinas.openheadunit.utils.Settings
+import com.andrerinas.openheadunit.vehicle.BatteryCapacityResolver
+import com.andrerinas.openheadunit.vehicle.Mg4DashBattery
 import com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -39,6 +42,8 @@ class ChargingInfoFragment : Fragment() {
     private var pendingBatteryDemoRangeKm: Int? = null
     private var pendingBatteryNetCapacityKwh: Float? = null
     private var pendingBatteryStateOfHealthPercent: Float? = null
+    private var pendingCapacityManual: Boolean? = null
+    private var pendingSohManual: Boolean? = null
 
     private var hasChanges = false
     private val SAVE_ITEM_ID = 1001
@@ -68,6 +73,8 @@ class ChargingInfoFragment : Fragment() {
         pendingBatteryDemoRangeKm = settings.batteryDemoRangeKm
         pendingBatteryNetCapacityKwh = settings.batteryNetCapacityKwh
         pendingBatteryStateOfHealthPercent = settings.batteryStateOfHealthPercent
+        pendingCapacityManual = settings.batteryCapacityManual
+        pendingSohManual = settings.batterySohManual
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = handleBackPress()
@@ -133,6 +140,8 @@ class ChargingInfoFragment : Fragment() {
         pendingBatteryDemoRangeKm?.let { settings.batteryDemoRangeKm = it }
         pendingBatteryNetCapacityKwh?.let { settings.batteryNetCapacityKwh = it }
         pendingBatteryStateOfHealthPercent?.let { settings.batteryStateOfHealthPercent = it }
+        pendingCapacityManual?.let { settings.batteryCapacityManual = it }
+        pendingSohManual?.let { settings.batterySohManual = it }
         if (settings.batteryForGoogleMaps) {
             Mg4EnergyProvider.start(requireContext())
             Mg4EnergyProvider.refresh()
@@ -149,7 +158,9 @@ class ChargingInfoFragment : Fragment() {
             pendingBatteryDemoPercent != settings.batteryDemoPercent ||
             pendingBatteryDemoRangeKm != settings.batteryDemoRangeKm ||
             pendingBatteryNetCapacityKwh != settings.batteryNetCapacityKwh ||
-            pendingBatteryStateOfHealthPercent != settings.batteryStateOfHealthPercent
+            pendingBatteryStateOfHealthPercent != settings.batteryStateOfHealthPercent ||
+            pendingCapacityManual != settings.batteryCapacityManual ||
+            pendingSohManual != settings.batterySohManual
         updateSaveButtonState()
     }
 
@@ -170,29 +181,36 @@ class ChargingInfoFragment : Fragment() {
         ))
 
         if (pendingBatteryForGoogleMaps == true) {
-            val netCap = pendingBatteryNetCapacityKwh ?: 61.7f
-            val soh = pendingBatteryStateOfHealthPercent ?: 100f
-            val effective = (netCap * soh / 100f).coerceIn(1f, 200f)
+            val resolved = previewBattery()
+            val auto = previewBattery(manual = false)
 
             items.add(SettingItem.SettingEntry(
                 stableId = "batteryNetCapacityKwh",
                 nameResId = R.string.battery_net_capacity_kwh,
-                value = getString(R.string.battery_value_kwh, netCap),
+                value = capacityText(resolved),
                 onClick = {
-                    showBatteryCapacityDialog(netCap)
+                    showBatteryCapacityDialog(resolved, auto)
                 }
             ))
             items.add(SettingItem.SettingEntry(
                 stableId = "batteryStateOfHealthPercent",
                 nameResId = R.string.battery_soh_percent,
-                value = "${formatDecimal(soh)}%",
+                value = sohText(resolved),
                 onClick = {
                     showDecimalInputDialog(
                         title = getString(R.string.battery_soh_percent),
-                        message = getString(R.string.battery_soh_description),
-                        initialValue = soh,
+                        message = getString(R.string.battery_soh_description) + "\n\n" +
+                            getString(R.string.battery_soh_auto_description),
+                        initialValue = resolved.sohPercent,
+                        neutralText = getString(R.string.battery_auto),
+                        onNeutral = {
+                            pendingSohManual = false
+                            checkChanges()
+                            updateSettingsList()
+                        },
                     ) { value ->
                         pendingBatteryStateOfHealthPercent = value.coerceIn(1f, 100f)
+                        pendingSohManual = true
                         checkChanges()
                         updateSettingsList()
                     }
@@ -201,7 +219,7 @@ class ChargingInfoFragment : Fragment() {
             items.add(SettingItem.SettingEntry(
                 stableId = "batteryEffectiveCapacity",
                 nameResId = R.string.battery_effective_capacity,
-                value = getString(R.string.battery_effective_capacity_value, effective),
+                value = getString(R.string.battery_effective_capacity_value, resolved.effectiveKwh),
                 onClick = {
                     MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
                         .setTitle(R.string.battery_effective_capacity)
@@ -266,9 +284,8 @@ class ChargingInfoFragment : Fragment() {
     private fun addLiveCarRows(items: MutableList<SettingItem>) {
         items.add(SettingItem.CategoryHeader("batteryLiveFromCar", R.string.battery_live_from_car))
 
-        val netCap = pendingBatteryNetCapacityKwh ?: settings.batteryNetCapacityKwh
-        val soh = pendingBatteryStateOfHealthPercent ?: settings.batteryStateOfHealthPercent
-        val snap = Mg4EnergyProvider.readCarSnapshot(requireContext(), netCap, soh)
+        val resolved = previewBattery()
+        val snap = Mg4EnergyProvider.readCarSnapshot(requireContext(), resolved.netKwh, resolved.sohPercent)
             ?: Mg4EnergyProvider.snapshot()?.takeIf { !it.demo }
 
         if (snap != null) {
@@ -349,6 +366,8 @@ class ChargingInfoFragment : Fragment() {
         title: String,
         message: String?,
         initialValue: Float,
+        neutralText: String? = null,
+        onNeutral: (() -> Unit)? = null,
         onConfirm: (Float) -> Unit,
     ) {
         val context = requireContext()
@@ -375,17 +394,30 @@ class ChargingInfoFragment : Fragment() {
                 dialog.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)
+            .apply { if (neutralText != null) setNeutralButton(neutralText) { _, _ -> onNeutral?.invoke() } }
             .show()
     }
 
-    private fun showBatteryCapacityDialog(currentValue: Float) {
-        val values = BATTERY_CAPACITY_OPTIONS
-        val labels = values.map { getString(R.string.battery_value_kwh, it) }.toTypedArray()
-        val selectedIndex = values.indices.minByOrNull { kotlin.math.abs(values[it] - currentValue) } ?: 1
+    /** First choice: automatic, then the three MG4 batteries. */
+    private fun showBatteryCapacityDialog(
+        resolved: BatteryCapacityResolver.Resolved,
+        auto: BatteryCapacityResolver.Resolved,
+    ) {
+        val packs = BatteryCapacityResolver.PACKS
+        val labels = listOf(
+            getString(R.string.battery_auto_option, getString(R.string.battery_value_kwh, auto.netKwh), capacitySource(auto))
+        ) + packs.map { (pack, usable) -> getString(R.string.battery_pack_option, pack, usable) }
+        val selectedIndex = if (resolved.netSource != BatteryCapacityResolver.Source.MANUAL) 0
+            else 1 + packs.indices.minByOrNull { kotlin.math.abs(packs[it].second - resolved.netKwh) }!!
         MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
             .setTitle(R.string.battery_net_capacity_kwh)
-            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
-                pendingBatteryNetCapacityKwh = values[which]
+            .setSingleChoiceItems(labels.toTypedArray(), selectedIndex) { dialog, which ->
+                if (which == 0) {
+                    pendingCapacityManual = false
+                } else {
+                    pendingBatteryNetCapacityKwh = packs[which - 1].second
+                    pendingCapacityManual = true
+                }
                 checkChanges()
                 updateSettingsList()
                 dialog.dismiss()
@@ -394,10 +426,64 @@ class ChargingInfoFragment : Fragment() {
             .show()
     }
 
-    private fun formatDecimal(value: Float): String =
-        java.math.BigDecimal(value.toString()).stripTrailingZeros().toPlainString()
+    /** Values the screen shows: the pending manual choices, or what automatic finds now. */
+    private fun previewBattery(manual: Boolean = true): BatteryCapacityResolver.Resolved =
+        BatteryCapacityResolver.resolve(
+            manualNetKwh = pendingBatteryNetCapacityKwh.takeIf { manual && pendingCapacityManual == true },
+            manualSohPercent = pendingBatteryStateOfHealthPercent.takeIf { manual && pendingSohManual == true },
+            carKwh = BatteryCapacityResolver.carCapacityKwh(),
+            mg4Dash = Mg4DashBattery.read(requireContext()),
+        )
 
-    companion object {
-        private val BATTERY_CAPACITY_OPTIONS = floatArrayOf(50.8f, 61.7f, 74.4f)
+    private fun capacityText(resolved: BatteryCapacityResolver.Resolved) = batteryCapacityText(requireContext(), resolved)
+
+    private fun capacitySource(resolved: BatteryCapacityResolver.Resolved) = batteryCapacitySource(requireContext(), resolved)
+
+    private fun sohText(resolved: BatteryCapacityResolver.Resolved) = batterySohText(requireContext(), resolved)
+
+    private fun formatDecimal(value: Float): String = formatBatteryDecimal(value)
+}
+
+/** "61.0 kWh · automatic (64 kWh battery by default)", or the value set by hand. */
+internal fun batteryCapacityText(context: Context, resolved: BatteryCapacityResolver.Resolved): String {
+    val kwh = context.getString(R.string.battery_value_kwh, resolved.netKwh)
+    return if (resolved.netSource == BatteryCapacityResolver.Source.MANUAL) {
+        context.getString(R.string.battery_manual_value, kwh)
+    } else {
+        context.getString(R.string.battery_auto_value, kwh, batteryCapacitySource(context, resolved))
     }
 }
+
+internal fun batteryCapacitySource(context: Context, resolved: BatteryCapacityResolver.Resolved): String =
+    when (resolved.netSource) {
+        BatteryCapacityResolver.Source.CAR -> context.getString(R.string.battery_source_car)
+        else -> context.getString(
+            R.string.battery_source_default_pack, resolved.pack ?: BatteryCapacityResolver.DEFAULT_PACK)
+    }
+
+internal fun batterySohText(context: Context, resolved: BatteryCapacityResolver.Resolved): String =
+    when (resolved.sohSource) {
+        BatteryCapacityResolver.Source.MANUAL -> context.getString(
+            R.string.battery_soh_manual_value,
+            context.getString(R.string.battery_value_percent, formatBatteryDecimal(resolved.sohPercent)),
+        )
+        BatteryCapacityResolver.Source.MEASURED -> context.getString(
+            R.string.battery_auto_value,
+            context.getString(R.string.battery_value_percent,
+                String.format(java.util.Locale.getDefault(), "%.1f", resolved.sohPercent)),
+            context.getString(R.string.battery_soh_source_measured),
+        )
+        // No figure to show yet: Maps is told BatteryCapacityResolver.DEFAULT_SOH meanwhile.
+        else -> context.getString(
+            R.string.battery_soh_measuring,
+            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.progressPercent(context).toInt(),
+            com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.MIN_DROP.toInt(),
+        )
+    }
+
+/** 98.75 → "98,75" in French; up to two decimals, as typed. */
+private fun formatBatteryDecimal(value: Float): String =
+    java.text.NumberFormat.getNumberInstance(java.util.Locale.getDefault()).apply {
+        maximumFractionDigits = 2
+        isGroupingUsed = false
+    }.format(value.toDouble())

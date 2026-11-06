@@ -11,8 +11,8 @@ installation.
 
 | Build | Package ID | Intended use |
 | --- | --- | --- |
-| `car` | `com.drivehub.diauto.mg4` | MG4 head unit; platform-signed |
-| `phone` | `com.drivehub.diauto.mg4.phone` | Phone/tablet desk testing; no system UID |
+| `car` | `com.allgo.app.androidauto` | MG4 head unit; platform-signed |
+| `phone` | `com.allgo.app.androidauto.phone` | Phone/tablet desk testing; no system UID |
 
 The phone build is not expected to read MG4 SoC/BMS through CarProperty or force-stop
 OEM Android Auto apps. These phone-flavor behaviors have not been verified on a
@@ -68,8 +68,17 @@ runbook](MG4_ROLLBACK.md). Do not proceed without a tested recovery path.
   was available: with no saved password and no readable live configuration an empty
   passphrase can be advertised, and Android Auto usually refuses to join. Re-enter
   SSID and password in **Settings → Connection setup** (uninstalling removes local app data).
-- If the phone does not connect, confirm Bluetooth pairing, Wi-Fi is enabled, and the
-  MG4 built-in hotspot details are correct in DiAuto-MG4's connection settings.
-- For reports, include MG4 model/firmware, phone model/Android version, connection
-  type, app version, and reproducible steps. Review diagnostic logs for identifiers
-  or network details before sharing.
+- If a 2.4 GHz connection repeatedly starts and disconnects before video appears,
+  try lowering resolution and frame rate in Display and performance, then reconnect.
+  This release leaves video preferences under your control; it does not force a
+  lower-resolution profile. This will not resolve every Bluetooth or Wi-Fi join failure.
+
+- If scrolling stutters, compare a USB connection. Wireless conditions and concurrent
+  car Wi-Fi connections can affect performance. DiAuto now prefers a supported matching
+  5 GHz channel but cannot guarantee that firmware or the phone will accept it.
+- If Bluetooth music cuts out, verify **Music through car Bluetooth** is enabled and
+  reconnect. Test assistant prompts and calls too; report the route and circumstances.
+- If the picture is wrong, try the other **View Mode** in Display and performance.
+- For reports, include head-unit model/firmware, phone model/Android, connection type,
+  DiAuto version and reproducible steps. Remove locations, device identifiers and
+  account details from public logs/screenshots.

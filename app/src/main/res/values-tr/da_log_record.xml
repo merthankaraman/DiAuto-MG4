@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Günlük kaydet</string>
+    <string name="dset_log_record_summary">Varsayılan olarak açık, sorun olursa GitHub issue\'suna eklemek için. Küçük, hedef ve ad içermez. Hiçbir şey yazılmaması için kapatın.</string>
+</resources>

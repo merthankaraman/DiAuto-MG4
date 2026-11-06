@@ -158,17 +158,15 @@ class UsbAttachedActivity : Activity() {
 
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         val usbMode = UsbAccessoryMode(usbManager)
+        // Log only: at every car start a dongle (or a phone) goes through this once or twice, and
+        // the toasts ("Switching USB device…", then "Failed" for the attach that comes back as the
+        // accessory) only worried drivers while the connection came up anyway (issue #9).
         AppLog.i("Switching USB device to accessory mode " + deviceCompat.uniqueName)
-        ToastUtils.showToast(this, getString(R.string.switching_usb_accessory_mode, deviceCompat.uniqueName), Toast.LENGTH_SHORT)
         val useLibusb = settings?.useLibusb ?: false
         Thread {
             val result = usbMode.connectAndSwitch(device, useLibusb)
             runOnUiThread {
-                if (result) {
-                    ToastUtils.showToast(this, getString(R.string.success), Toast.LENGTH_SHORT)
-                } else {
-                    ToastUtils.showToast(this, getString(R.string.failed), Toast.LENGTH_SHORT)
-                }
+                AppLog.i("Accessory mode switch for ${deviceCompat.uniqueName}: ${if (result) "requested" else "not done"}")
                 finish()
             }
         }.start()

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">батарея %1$d кВт·год, виміряно в поїздках</string>
+    <string name="battery_source_measuring">батарея %1$d кВт·год за замовчуванням, триває вимірювання в поїздках (%2$d з %3$d %%)</string>
+    <string name="battery_soh_source_measured">виміряно в поїздках</string>
+</resources>

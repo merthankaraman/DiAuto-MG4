@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Voice clarity</string>
+    <string name="dset_voice_clarity_summary">Filter for prompts and the assistant: removes the low rumble and brings out consonants. From the next prompt.</string>
+    <string name="dset_voice_headroom">Voice headroom</string>
+    <string name="dset_voice_headroom_summary">Turns prompts down a little so the car\'s processing does not saturate; raise the car\'s navigation volume to compensate.</string>
+</resources>

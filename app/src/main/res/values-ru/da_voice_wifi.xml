@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Высокие частоты голоса</string>
+    <string name="dset_voice_enhance_summary">Восстанавливает высокие частоты, срезанные телефоном: мягкий или сильный эксайтер либо нейросеть (Opus). Со следующей подсказки.</string>
+    <string name="dset_voice_enhance_standard">Выкл.</string>
+    <string name="dset_voice_enhance_light">Мягко</string>
+    <string name="dset_voice_enhance_strong">Сильно</string>
+    <string name="dset_voice_enhance_neural">Нейросеть</string>
+    <string name="dset_voice_experimental">Чёткость и высокие частоты голоса — экспериментальные настройки: напишите нам на GitHub, какая звучит для вас лучше.</string>
+    <string name="dset_wifi_channel">Канал Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Канал точки доступа автомобиля. «Авто» выбирает наименее загруженный при запуске точки доступа, никогда во время подключения.</string>
+    <string name="dset_wifi_channel_auto">Авто</string>
+</resources>

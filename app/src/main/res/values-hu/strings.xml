@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto MG4+</string>
     <string name="menu">Menü</string>
     <string name="settings">Beállítások</string>
 
@@ -866,11 +866,8 @@
     <string name="playback_focus_mode_always_hint">Always pauses other audio while Android Auto plays. If your music stops after a second or two whenever Bluetooth is on, switch back to Automatic.</string>
     <string name="playback_focus_mode_never_hint">Never touches system audio focus. Other audio on the headunit may keep playing over Android Auto.</string>
     <string name="playback_focus_mode_static_hint">With Static Audio Focus on, this applies from the moment the phone connects and lasts the whole session, rather than only while audio is playing.</string>
-    <string name="github_issues_url">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
     <string name="support_rules_english_title">All posts in English</string>
-    <string name="boot_loop_paused_title">Wireless start-up paused</string>
-    <string name="boot_loop_paused_generic">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. USB still works. Open the app to turn it back on.</string>
-    <string name="boot_loop_paused_native_wifi_direct">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. On some head units the WiFi chipset takes the whole system down when a phone joins a WiFi Direct network. Try switching Android Auto mode to the head unit hotspot. USB still works.</string>
     <string name="vehicle_make_hint">A real car brand shows that brand\'s logo on the Android Auto exit button, but Android Auto then stops listing apps installed from outside the Play Store. Set it back to \"Google\" to get those apps listed again.</string>
     <string name="external_bt_nativeaa">Native Wireless cannot work on this head unit</string>
     <string name="external_bt_nativeaa_desc">This head unit uses its own Bluetooth module (%1$s) instead of the one Android exposes to apps. Your phone pairs with that module, so anything this app sends over Bluetooth never reaches it — the connection will look like it is working and then stall.\n\nThis is a hardware limitation and cannot be worked around from the app. Please use USB, or the \"Wireless Helper\" or \"Auto (Headunit Server)\" mode, which do not need the Bluetooth handshake.</string>
@@ -897,7 +894,7 @@
     <string name="battery_for_google_maps">Battery for Google Maps</string>
     <string name="battery_for_google_maps_description">Send MG4 charge and range to Android Auto so Google Maps can show battery level. Set net capacity and SOH below. Needs a platform-signed install on the car.</string>
     <string name="battery_net_capacity_kwh">Net capacity (kWh)</string>
-    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 50.8, 61.7 or 74.4 kWh. Maps uses capacity × SOH.</string>
+    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 49, 61 or 72.5 kWh. Maps uses capacity × SOH.</string>
     <string name="battery_net_capacity_enter">Enter net (usable) capacity when new, in kWh</string>
     <string name="battery_soh_percent">Battery SOH (%)</string>
     <string name="battery_soh_description">Enter battery state of health from 1 to 100. Decimal values such as 98.75 are supported. Effective usable capacity = capacity × SOH / 100.</string>
@@ -970,8 +967,6 @@
     <string name="native_local_hotspot_wifi_settings_unavailable">Open Wi-Fi from the car’s Settings app.</string>
     <string name="native_ap_transport_local_hotspot">Local hotspot</string>
     <string name="native_ap_transport_local_hotspot_hint">Experimental. DiAuto uses a separate local hotspot for Android Auto; no car internet plan is needed. Older Android versions must let the app verify a 5 GHz hotspot from the Wi-Fi driver. If maps or music stutter on DiLink 5.1, try turning off the car’s Wi-Fi switch in car settings. Keep Bluetooth and your phone’s Wi-Fi on. Compatibility depends on the car.</string>
-    <string name="byd_navigation_title">BYD HUD and instrument cluster</string>
-    <string name="byd_navigation_description">Show Android Auto directions on supported BYD displays. Experimental; vehicle compatibility varies.</string>
     <string name="da_connection_setup">Connection setup</string>
     <string name="da_connection_setup_hint">Choose a connection and set up your car hotspot.</string>
     <string name="da_diagnostics">Diagnostics</string>

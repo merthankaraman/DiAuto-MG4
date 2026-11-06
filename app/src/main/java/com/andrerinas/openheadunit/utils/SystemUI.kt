@@ -132,8 +132,11 @@ object SystemUI {
         val manualR = settings.insetRight
         val manualB = settings.insetBottom
 
-        root.setPadding(manualL, manualT, manualR, manualB)
-        HeadUnitScreenConfig.updateInsets(manualL, manualT, manualR, manualB)
+        // Same MG4 top-strip reserve the insets listener applies below; without it this first report
+        // sizes AA to 1920x720 and a phone connecting before the listener fires gets the wrong margins.
+        val oemTop = OemDisplayChrome.topBarReservePx(mode == Settings.FullscreenMode.NAV_ONLY)
+        root.setPadding(manualL, manualT + oemTop, manualR, manualB)
+        HeadUnitScreenConfig.updateInsets(manualL, manualT + oemTop, manualR, manualB)
 
         // Android 4.x Legacy Fallback
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

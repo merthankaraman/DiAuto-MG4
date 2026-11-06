@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Phần mềm xe của bạn (%1$s) không chạy được Android Auto không dây: Bluetooth của nó chỉ cho phép một kết nối ứng dụng mỗi lúc. DiAuto không thể khắc phục. Hãy yêu cầu đại lý cập nhật lên %2$s hoặc mới hơn.</string>
+    <string name="da_firmware_incompatible" formatted="true">Phần mềm xe của bạn (%1$s) không chạy được Android Auto không dây: Bluetooth của nó chỉ cho phép một kết nối ứng dụng mỗi lúc. DiAuto không thể khắc phục. Hãy hỏi đại lý xem có phần mềm mới hơn không.</string>
+</resources>

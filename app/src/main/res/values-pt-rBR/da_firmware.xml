@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">O firmware do seu carro (%1$s) não roda Android Auto sem fio: o Bluetooth dele só aceita uma conexão de app por vez. O DiAuto não consegue contornar isso. Peça à concessionária a %2$s ou mais recente.</string>
+    <string name="da_firmware_incompatible" formatted="true">O firmware do seu carro (%1$s) não roda Android Auto sem fio: o Bluetooth dele só aceita uma conexão de app por vez. O DiAuto não consegue contornar isso. Pergunte à concessionária se há um firmware mais recente.</string>
+</resources>

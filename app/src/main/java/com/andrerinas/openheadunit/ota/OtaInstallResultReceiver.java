@@ -41,6 +41,8 @@ public final class OtaInstallResultReceiver extends BroadcastReceiver {
                 Toast.makeText(context, R.string.ota_install_success, Toast.LENGTH_LONG).show();
                 break;
             default:
+                OtaPackageReplacedReceiver.clearUpdateFromScreen(context);
+                OtaController.onInstallFailed(message != null ? message : String.valueOf(status));
                 Toast.makeText(
                         context,
                         context.getString(R.string.ota_install_failed_status,

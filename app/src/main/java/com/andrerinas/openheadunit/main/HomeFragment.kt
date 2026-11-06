@@ -4,6 +4,7 @@ import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,10 +19,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.andrerinas.openheadunit.App
+import com.andrerinas.openheadunit.BuildConfig
 import com.andrerinas.openheadunit.R
 import com.andrerinas.openheadunit.aap.AapProjectionActivity
 import com.andrerinas.openheadunit.aap.AapService
 import com.andrerinas.openheadunit.connection.CommManager
+import com.andrerinas.openheadunit.ota.OtaController
 import com.andrerinas.openheadunit.utils.BluetoothHelper
 import com.andrerinas.openheadunit.utils.Settings
 import com.google.android.material.button.MaterialButton
@@ -32,6 +35,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
     private val app get() = App.provide(requireContext())
     private var activeDialog: androidx.appcompat.app.AlertDialog? = null
+    private var ota: OtaController? = null
     private val bluetoothPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -40,35 +44,49 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View =
-        inflater.inflate(R.layout.fragment_home, container, false)
+        inflater.inflate(R.layout.da_home, container, false)
 
     override fun onViewCreated(view: View, state: Bundle?) {
-        view.findViewById<View>(R.id.wifi_button).setOnClickListener {
+        view.findViewById<TextView>(R.id.home_version).text =
+            BuildConfig.VERSION_NAME.removeSuffix("-debug").removeSuffix("-phone")
+        FirmwareCompat.warning(requireContext(), com.evsuite.hardware.FirmwareInfo.getDetectedString())?.let { text ->
+            view.findViewById<TextView>(R.id.home_firmware_warning).apply {
+                this.text = text
+                visibility = View.VISIBLE
+            }
+        }
+        view.findViewById<View>(R.id.home_main_button).setOnClickListener {
             if (app.commManager.isConnected) openProjection()
             else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT)
             } else connectWireless()
         }
-        view.findViewById<View>(R.id.usb_button).setOnClickListener {
-            if (app.commManager.isConnected) openProjection()
-            else findNavController().navigate(R.id.action_homeFragment_to_usbListFragment)
+        view.findViewById<View>(R.id.home_settings).setOnClickListener {
+            startActivity(DaSettingsActivity.intent(requireContext()))
         }
-        view.findViewById<View>(R.id.settings_button).setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        view.findViewById<View>(R.id.home_trip).setOnClickListener {
+            TripDialogs.toggle(requireActivity()) { showTripTile() }
         }
-        // Going back to the car does not tear down a connection or disable reconnect.
-        view.findViewById<View>(R.id.exit_button).setOnClickListener { requireActivity().moveTaskToBack(true) }
+        val updateHint = view.findViewById<TextView>(R.id.home_update_hint)
+        ota = OtaController(requireActivity()).also { controller ->
+            controller.setStateListener { status -> updateHint.text = updateText(requireContext(), status) }
+        }
+        view.findViewById<View>(R.id.home_update).setOnClickListener { ota?.checkOrDownload() }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 app.commManager.connectionState.collect { state ->
-                    val status = when (state) {
-                        is CommManager.ConnectionState.Disconnected -> R.string.da_ready
-                        is CommManager.ConnectionState.TransportStarted -> R.string.da_connected
-                        else -> R.string.da_connecting
+                    val connected = state is CommManager.ConnectionState.TransportStarted
+                    val phone = app.settings.autoStartBluetoothDeviceName
+                    view.findViewById<TextView>(R.id.home_state).text = when {
+                        connected && phone.isNotBlank() -> getString(R.string.dhome_connected, phone)
+                        connected -> getString(R.string.dhome_connected_generic)
+                        state is CommManager.ConnectionState.Disconnected -> getString(R.string.dhome_waiting)
+                        else -> getString(R.string.dhome_connecting)
                     }
-                    view.findViewById<TextView>(R.id.connection_status).setText(status)
-                    view.findViewById<MaterialButton>(R.id.wifi_button).setText(
+                    view.findViewById<TextView>(R.id.home_state_hint).setText(
+                        if (connected) R.string.dhome_connected_hint else R.string.dhome_waiting_hint)
+                    view.findViewById<TextView>(R.id.home_main_label).setText(
                         if (app.commManager.isConnected) R.string.da_open else R.string.da_connect)
                 }
             }
@@ -76,6 +94,13 @@ class HomeFragment : Fragment() {
         if (app.settings.autoStartOnBoot || app.settings.autoStartOnScreenOn) {
             ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), AapService::class.java))
         }
+    }
+
+    private fun showTripTile() {
+        val view = view ?: return
+        val on = App.provide(requireContext()).settings.tripRecording
+        view.findViewById<View>(R.id.home_trip).visibility = if (on) View.VISIBLE else View.GONE
+        if (on) view.findViewById<TextView>(R.id.home_trip_label).setText(TripDialogs.buttonLabel(requireActivity()))
     }
 
     private fun openProjection() {
@@ -139,10 +164,7 @@ class HomeFragment : Fragment() {
             showBluetoothHelp(R.string.bt_permission_denied)
         }
     }
-
-    private fun startNativeAa(device: BluetoothDevice) {
-        app.settings.wifiConnectionMode = 3
-        // Remember this phone so the next Bluetooth ACL_CONNECTED auto-starts without a tap.
+    private fun rememberAutoStartDevice(device: BluetoothDevice) {
         val macs = app.settings.autoStartBluetoothDeviceMacs
         if (!macs.contains(device.address)) {
             val updated = macs + device.address
@@ -150,6 +172,11 @@ class HomeFragment : Fragment() {
             app.settings.autoStartBluetoothDeviceName = device.name ?: "Unknown Device"
             Settings.syncAutoStartBtMacsToDeviceStorage(requireContext(), updated)
         }
+    }
+
+    private fun startNativeAa(device: BluetoothDevice) {
+        // Remember this phone so the next Bluetooth ACL_CONNECTED auto-starts without a tap.
+        rememberAutoStartDevice(device)
         (activity as? MainActivity)?.beginAutoConnect(
             "native wireless ${device.address}", MainActivity.ConnectionUiMode.PILL)
         ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), AapService::class.java).apply {
@@ -173,15 +200,40 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        showTripTile()
+        // Also after Settings, where the beta option may have changed.
+        ota?.checkOnStartup()
+    }
+
     override fun onPause() {
         activeDialog?.dismiss()
         activeDialog = null
         super.onPause()
     }
 
-    companion object {
-        // Retained for existing automation entry points; self projection has no standby control.
-        var forceSelfModeLaunch = false
-        fun resetAutoStart() { forceSelfModeLaunch = false }
+    override fun onDestroyView() {
+        ota?.stop()
+        ota = null
+        super.onDestroyView()
+    }
+}
+
+/** The update tile's line: the version to install when one is offered, else where things stand. */
+internal fun updateText(context: android.content.Context, status: OtaController.Status): String {
+    val version = BuildConfig.VERSION_NAME.removeSuffix("-debug").removeSuffix("-phone")
+    if (status.state == OtaController.State.AVAILABLE) {
+        return context.getString(R.string.da_update_install, status.latestVersion)
+    }
+    return when (status.state) {
+        OtaController.State.CHECKING -> context.getString(R.string.da_update_hint_checking)
+        OtaController.State.AVAILABLE -> context.getString(
+            if (status.prerelease) R.string.da_update_hint_available_beta else R.string.da_update_hint_available)
+        OtaController.State.UP_TO_DATE -> context.getString(
+            if (status.allowBeta) R.string.da_update_hint_up_to_date_beta else R.string.da_update_hint_up_to_date,
+            version)
+        OtaController.State.FAILED -> context.getString(R.string.da_update_hint_failed, version)
+        else -> context.getString(R.string.da_update_hint_current, version)
     }
 }

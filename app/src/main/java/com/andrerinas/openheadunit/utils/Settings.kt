@@ -42,15 +42,13 @@ class Settings(private val context: Context) {
             prefs.edit().putStringSet("allow-devices", devices).apply()
         }
 
-    var networkAddresses: Set<String>
-        get() = prefs.getStringSet("network-addresses", HashSet<String>())!!
-        set(addrs) {
-            prefs.edit().putStringSet("network-addresses", addrs).apply()
-        }
-
     var bluetoothAddress: String
         get() = prefs.getString("bt-address", "")!!
         set(value) = prefs.edit().putString("bt-address", value).apply()
+
+    /** A real position is known for sunset/sunrise: a fixed one, or one the car's GPS gave. */
+    val hasSunriseLocation: Boolean
+        get() = useFixedSunriseLocation || prefs.contains("last-loc-latitude")
 
     var lastKnownLocation: Location
         get() {
@@ -116,10 +114,6 @@ class Settings(private val context: Context) {
             prefs.edit().putBoolean("gps-navigation", value).apply()
         }
 
-    var bydNavigationEnabled: Boolean
-        get() = prefs.getBoolean("byd-navigation-enabled", false)
-        set(value) { prefs.edit().putBoolean("byd-navigation-enabled", value).apply() }
-
     var showNavigationNotifications: Boolean
         get() = prefs.getBoolean("show-navigation-notifications", false)
         set(value) {
@@ -175,11 +169,12 @@ class Settings(private val context: Context) {
         }
 
     var exporterLogLevel: LogExporter.LogLevel
-        // Default Silent. Key renamed so existing installs drop the old Info default
-        // and pick up Silent without a prefs migration.
+        // Default Info while this fork is in beta, written to a file in Downloads (see the
+        // log source / location / capture defaults below), so a lost-audio drive can be read back.
+        // Key renamed (v3) so existing installs pick it up without a prefs migration.
         get() = LogExporter.LogLevel.entries.getOrElse(
-            prefs.getInt(KEY_LOG_LEVEL, LogExporter.LogLevel.SILENT.ordinal)
-        ) { LogExporter.LogLevel.SILENT }
+            prefs.getInt(KEY_LOG_LEVEL, LogExporter.LogLevel.INFO.ordinal)
+        ) { LogExporter.LogLevel.INFO }
         set(value) { prefs.edit().putInt(KEY_LOG_LEVEL, value.ordinal).apply() }
 
     enum class LogSource {
@@ -193,17 +188,21 @@ class Settings(private val context: Context) {
     }
 
     var logSource: LogSource
-        get() = LogSource.entries.getOrElse(prefs.getInt(KEY_LOG_SOURCE, LogSource.LOGCAT.ordinal)) { LogSource.LOGCAT }
+        get() = LogSource.entries.getOrElse(prefs.getInt(KEY_LOG_SOURCE, LogSource.APPLOG_FILE.ordinal)) { LogSource.APPLOG_FILE }
         set(value) { prefs.edit().putInt(KEY_LOG_SOURCE, value.ordinal).apply() }
 
     var logLocation: LogLocation
-        get() = LogLocation.entries.getOrElse(prefs.getInt(KEY_LOG_LOCATION, LogLocation.DEFAULT.ordinal)) { LogLocation.DEFAULT }
+        get() = LogLocation.entries.getOrElse(prefs.getInt(KEY_LOG_LOCATION, LogLocation.DOWNLOADS.ordinal)) { LogLocation.DOWNLOADS }
         set(value) { prefs.edit().putInt(KEY_LOG_LOCATION, value.ordinal).apply() }
 
-    /** Whether log capture should be active across restarts. Default: false (disabled). */
+    /**
+     * Logs are written only when the driver switches them on (Settings > About): off by default,
+     * so the head unit's storage is not written all day and nothing personal is kept on it.
+     * New key: installs that had the old always-on default start with logs off.
+     */
     var exporterCaptureEnabled: Boolean
-        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED, false)
-        set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED, value).apply() }
+        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, true)
+        set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED_V2, value).apply() }
     val logLevel: Int get() = exporterLogLevel.logLevel
 
     var viewMode: ViewMode
@@ -250,20 +249,73 @@ class Settings(private val context: Context) {
             prefs.edit().putBoolean("fake_speed", value).apply()
         }
 
+    /** Switch the car's Wi-Fi client on during a USB session, so it joins known networks. */
+    var usbWifiClient: Boolean
+        get() = prefs.getBoolean("usb-wifi-client", true)
+        set(value) { prefs.edit().putBoolean("usb-wifi-client", value).apply() }
+
+    /**
+     * How long wireless Android Auto must stay down before the car's Wi-Fi client, switched off
+     * for the session, comes back: long enough to ride out a quick reconnection.
+     */
+    var stationRestoreDelaySeconds: Int
+        get() = prefs.getInt("station-restore-delay-s", 10).coerceIn(10, 300)
+        set(value) { prefs.edit().putInt("station-restore-delay-s", value.coerceIn(10, 300)).apply() }
+
+    /** DiAuto's own energy model for Maps (vehicle/Mg4MapsEnergyModel); off = the car's average consumption. */
+    var mapsEnergyModel: Boolean
+        get() = prefs.getBoolean("maps-energy-model", true)
+        set(value) { prefs.edit().putBoolean("maps-energy-model", value).apply() }
+
+    /** Shows the button that records a chosen trip for tuning the Maps model (vehicle/TripRecorder). */
+    var tripRecording: Boolean
+        get() = prefs.getBoolean("trip-recording", false)
+        set(value) { prefs.edit().putBoolean("trip-recording", value).apply() }
+
+    /** Test mode: live figures of the Maps energy model over the projection (vehicle/MapsModelTrip). */
+    var mapsModelOverlay: Boolean
+        get() = testMode && prefs.getBoolean("maps-model-overlay", false)
+        set(value) { prefs.edit().putBoolean("maps-model-overlay", value).apply() }
+
+    /** The car access point's 5 GHz channel: 0 automatic, or 36, 40, 44, 48 (see WifiChannelPicker). */
+    var wifiChannel: Int
+        get() = prefs.getInt("wifi-channel", 0).let { if (it in WifiChannelPicker.CHANNELS) it else 0 }
+        set(value) { prefs.edit().putInt("wifi-channel", if (value in WifiChannelPicker.CHANNELS) value else 0).apply() }
+
+    /** The channel automatic mode chose last. */
+    var wifiAutoChannel: Int
+        get() = prefs.getInt("wifi-auto-channel", 36).let { if (it in WifiChannelPicker.CHANNELS) it else 36 }
+        set(value) { prefs.edit().putInt("wifi-auto-channel", value).apply() }
+
+    /** Clarity equaliser on prompts and the assistant (separate audio streams). */
+    var voiceClarity: Boolean
+        get() = testMode && prefs.getBoolean("voice-clarity", false)
+        set(value) { prefs.edit().putBoolean("voice-clarity", value).apply() }
+
+    /**
+     * How the 16 kHz voice is brought to 48 kHz: 0 standard filter, 1 light exciter, 2 strong
+     * exciter, 3 Opus neural bandwidth extension (see VoiceUpsampler).
+     */
+    var voiceEnhancement: Int
+        get() = if (testMode) prefs.getInt("voice-enhancement", 0).coerceIn(0, 3) else 0
+        set(value) { prefs.edit().putInt("voice-enhancement", value.coerceIn(0, 3)).apply() }
+
+    /** Prompts and the assistant turned down by this many dB (0, 3 or 6) to leave headroom. */
+    var voiceHeadroomDb: Int
+        get() = if (testMode) prefs.getInt("voice-headroom-db", 6).coerceIn(0, 6) else 6
+        set(value) { prefs.edit().putInt("voice-headroom-db", value.coerceIn(0, 6)).apply() }
+
+    /** The first-start tutorial was shown (or skipped). */
+    var tutorialShown: Boolean
+        get() = prefs.getBoolean("tutorial-shown", false)
+        set(value) {
+            prefs.edit().putBoolean("tutorial-shown", value).apply()
+        }
+
     var gestureHintShown: Boolean
         get() = prefs.getBoolean("gesture_hint_shown", false)
         set(value) {
             prefs.edit().putBoolean("gesture_hint_shown", value).apply()
-        }
-
-    // One-time notice telling users the app is being rebranded. Shown once on the home screen.
-    // The key is versioned on purpose: an earlier build could spend the original flag behind the
-    // onboarding wizard without the notice ever being seen, so a new key lets the corrected
-    // notice reach everyone once, including users who still carry the old flag.
-    var renameNoticeShown: Boolean
-        get() = prefs.getBoolean("rename_notice_shown_v2", false)
-        set(value) {
-            prefs.edit().putBoolean("rename_notice_shown_v2", value).apply()
         }
 
     // Custom Insets (Screen Margins)
@@ -372,52 +424,6 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putString("debug-force-memory-profile", value?.name).apply() }
 
     /**
-     * Puts the Native AA WiFi Direct group on 2.4 GHz instead of asking for 5 GHz.
-     *
-     * Off by default, and it is a rig lever rather than a preference: 5 GHz is what a working
-     * session runs on and nothing here recommends moving off it. What it exists for is that the
-     * link-outage reports come from 2.4 GHz head units and the rig could never be put on that band
-     * - the group is requested as 5 GHz and any group that lands on 2.4 GHz is torn down and
-     * remade. Both of those are turned off together by this one flag; see
-     * [com.andrerinas.openheadunit.aap.NativeGroupBandPolicy], which is where the coupling lives.
-     *
-     * Applies to the next group, so it needs a reconnect rather than only a settings write.
-     */
-    var debugForceP2pBand24: Boolean
-        get() = prefs.getBoolean("debug-force-p2p-band-24", false)
-        set(value) { prefs.edit().putBoolean("debug-force-p2p-band-24", value).apply() }
-
-    /**
-     * On a device with no band API, asks the P2P stack for a 5 GHz operating channel.
-     *
-     * Below API 29 there is no `WifiP2pConfig.Builder`, so the group's band is the driver's choice
-     * and this app has never had a say in it - which is every pre-Android-10 head unit, including
-     * both units in the periodic-outage reports. The hidden `setWifiP2pChannels` is the one lever
-     * left; see [com.andrerinas.openheadunit.aap.P2pOperatingChannelPolicy].
-     *
-     * **Off by default, and it should stay off until a unit reports back.** The request is a
-     * disallowed-frequency list, so a unit whose P2P firmware cannot host a 5 GHz group owner is not
-     * left on 2.4 GHz - it is left unable to form a group at all. The bring-up clears the restriction
-     * and retries once when that happens, but an opt-in costs nothing and a wrong default costs
-     * every pre-Q unit its connection.
-     *
-     * Ignored from API 29 up, where the supported band request does this properly.
-     */
-    var p2pLegacyFiveGhz: Boolean
-        get() = prefs.getBoolean("p2p-legacy-5ghz", false)
-        set(value) { prefs.edit().putBoolean("p2p-legacy-5ghz", value).apply() }
-
-    /**
-     * Asks for UNII-3 (channel 149) instead of UNII-1 (channel 36) when [p2pLegacyFiveGhz] is on.
-     *
-     * Both are non-DFS and channel 36 is what the reference implementations use, so this exists only
-     * for a regulatory domain that refuses the lower range.
-     */
-    var p2pLegacyFiveGhzUpperBand: Boolean
-        get() = prefs.getBoolean("p2p-legacy-5ghz-upper", false)
-        set(value) { prefs.edit().putBoolean("p2p-legacy-5ghz-upper", value).apply() }
-
-    /**
      * Asks the decoder for low-latency mode, through whichever key its vendor understands.
      *
      * Off by default, and it stays off until a log from a real device shows a component accepting the
@@ -491,6 +497,35 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("battery-for-google-maps", true)
         set(value) { prefs.edit().putBoolean("battery-for-google-maps", value).apply() }
 
+    /** MG4 version for the Maps energy model: "auto" (from the car's pack) or a [com.andrerinas.openheadunit.vehicle.Mg4Variant] key. */
+    var mg4Variant: String
+        get() = prefs.getString("mg4-variant", com.andrerinas.openheadunit.vehicle.Mg4Variant.AUTO)!!
+        set(value) { prefs.edit().putString("mg4-variant", value).apply() }
+
+    /** Which sections of the Maps energy model are sent (see VehicleEnergyModelEncoder.Layout). */
+    /**
+     * Test mode (off by default): shows the features still being tested in Settings. Off, they
+     * use their defaults whatever was chosen while it was on (the choices are kept for next time).
+     */
+    var testMode: Boolean
+        get() = prefs.getBoolean("test-mode", false)
+        set(value) { prefs.edit().putBoolean("test-mode", value).apply() }
+
+    /** Model format sent to Maps: C (dc_curve) outside test mode. */
+    var evModelLayout: String
+        get() = if (testMode) prefs.getString("ev-model-layout", "dc_curve")!! else "dc_curve"
+        set(value) { prefs.edit().putString("ev-model-layout", value).apply() }
+
+    /** Switch battery heating on before a charging stop on the route (off by default). */
+    var batteryPreheatBeforeCharger: Boolean
+        get() = prefs.getBoolean("battery-preheat-before-charger", false)
+        set(value) { prefs.edit().putBoolean("battery-preheat-before-charger", value).apply() }
+
+    /** How long before the charging stop, in minutes (5 to 60, in steps of 5). */
+    var batteryPreheatMinutes: Int
+        get() = prefs.getInt("battery-preheat-minutes", 30).coerceIn(5, 60)
+        set(value) { prefs.edit().putInt("battery-preheat-minutes", value.coerceIn(5, 60)).apply() }
+
     /**
      * When true, [com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider] uses the demo
      * SoC/range/capacity fields below instead of EVHardware (for desk / non-MG4 testing).
@@ -511,29 +546,41 @@ class Settings(private val context: Context) {
 
     /**
      * User-declared net (usable) pack capacity when new, in kWh.
-     * Placeholder default 61.7 is only a MG4 Long Range suggestion — not measured on the car.
+     * Placeholder default 61 is only a MG4 Long Range suggestion — not measured on the car.
      * Effective energy for Maps = [batteryNetCapacityKwh] × [batteryStateOfHealthPercent] / 100.
      */
     var batteryNetCapacityKwh: Float
         get() {
+            if (prefs.contains("battery-net-capacity-v2-kwh")) {
+                return prefs.getFloat("battery-net-capacity-v2-kwh", 61f).coerceIn(1f, 200f)
+            }
             if (prefs.contains("battery-net-capacity-kwh")) {
-                return prefs.getFloat("battery-net-capacity-kwh", 61.7f).coerceIn(1f, 200f)
+                return currentPackFigure(prefs.getFloat("battery-net-capacity-kwh", 61f)).coerceIn(1f, 200f)
             }
             if (prefs.contains("battery-demo-capacity-kwh-f")) {
-                return prefs.getFloat("battery-demo-capacity-kwh-f", 61.7f).coerceIn(1f, 200f)
+                return currentPackFigure(prefs.getFloat("battery-demo-capacity-kwh-f", 61f)).coerceIn(1f, 200f)
             }
             if (prefs.contains("battery-demo-capacity-kwh")) {
                 return prefs.getInt("battery-demo-capacity-kwh", 64).toFloat().coerceIn(1f, 200f)
             }
-            return 61.7f
+            return 61f
         }
         set(value) {
             prefs.edit()
-                .putFloat("battery-net-capacity-kwh", value.coerceIn(1f, 200f))
+                .putFloat("battery-net-capacity-v2-kwh", value.coerceIn(1f, 200f))
+                .remove("battery-net-capacity-kwh")
                 .remove("battery-demo-capacity-kwh-f")
                 .remove("battery-demo-capacity-kwh")
                 .apply()
         }
+
+    /** A battery version saved with its former figure (before 2.2.2) moves to the current one. */
+    private fun currentPackFigure(kwh: Float): Float = when {
+        kotlin.math.abs(kwh - 50.8f) < 0.05f -> 49f
+        kotlin.math.abs(kwh - 61.7f) < 0.05f -> 61f
+        kotlin.math.abs(kwh - 74.4f) < 0.05f -> 72.5f
+        else -> kwh
+    }
 
     /** Pack state of health 1–100%, including decimal values such as 98.75. */
     var batteryStateOfHealthPercent: Float
@@ -549,6 +596,26 @@ class Settings(private val context: Context) {
             prefs.edit().putFloat("battery-state-of-health-percent", value.coerceIn(1f, 100f)).apply()
         }
 
+    /**
+     * [batteryNetCapacityKwh] was set by hand. Otherwise BatteryCapacityResolver finds the
+     * capacity. Values saved before this option are kept when they differ from the old default.
+     */
+    var batteryCapacityManual: Boolean
+        get() = prefs.getBoolean(
+            "battery-capacity-manual",
+            listOf("battery-net-capacity-v2-kwh", "battery-net-capacity-kwh", "battery-demo-capacity-kwh-f", "battery-demo-capacity-kwh")
+                .any(prefs::contains) && kotlin.math.abs(batteryNetCapacityKwh - 61f) > 0.05f,
+        )
+        set(value) { prefs.edit().putBoolean("battery-capacity-manual", value).apply() }
+
+    /** [batteryStateOfHealthPercent] was set by hand. Otherwise MG4 Dash's estimate, or 100 %. */
+    var batterySohManual: Boolean
+        get() = prefs.getBoolean(
+            "battery-soh-manual",
+            prefs.contains("battery-state-of-health-percent") && batteryStateOfHealthPercent < 99.95f,
+        )
+        set(value) { prefs.edit().putBoolean("battery-soh-manual", value).apply() }
+
     /** Net × SOH — capacity Wh sent to VehicleEnergyModel. */
     val batteryEffectiveNetCapacityKwh: Float
         get() = (batteryNetCapacityKwh * batteryStateOfHealthPercent / 100f).coerceIn(1f, 200f)
@@ -561,25 +628,6 @@ class Settings(private val context: Context) {
     var headUnitModel: String
         get() = prefs.getString("head-unit-model", "SWI69")!!
         set(value) { prefs.edit().putString("head-unit-model", value).apply() }
-
-    // 0 = Manual, 1 = Auto (Headunit Server), 2 = Helper (Wifi Launcher), 3 = Native AA
-    var wifiConnectionMode: Int
-        get() {
-            // Migration: Check if old helper boolean exists
-            if (prefs.contains("wifi-launcher-mode")) {
-                val old = prefs.getBoolean("wifi-launcher-mode", false)
-                val newMode = if (old) 2 else 1
-                prefs.edit().putInt("wifi-connection-mode", newMode).remove("wifi-launcher-mode").apply()
-                return newMode
-            }
-            // Migration: Check if native-aa-wireless was true
-            if (prefs.getBoolean("native-aa-wireless", false)) {
-                prefs.edit().putInt("wifi-connection-mode", 3).remove("native-aa-wireless").apply()
-                return 3
-            }
-            return prefs.getInt("wifi-connection-mode", 3) // Native Android Auto; no companion app
-        }
-        set(value) { prefs.edit().putInt("wifi-connection-mode", value).apply() }
 
     var videoCodec: String
         get() = prefs.getString("video-codec", "Auto")!!
@@ -707,10 +755,10 @@ class Settings(private val context: Context) {
 
     /**
      * Hybrid: AA video over Wi‑Fi, music on car Bluetooth/A2DP (MEDIA sink omitted — Wi‑Fi
-     * media PCM stutters on MG4). Key bumped to v4 so upgrades pick up default ON.
+     * media PCM stutters on MG4). Default OFF since v5: music goes over Android Auto like the stock app.
      */
     var musicViaBluetooth: Boolean
-        get() = prefs.getBoolean(KEY_MUSIC_VIA_BLUETOOTH, true)
+        get() = prefs.getBoolean(KEY_MUSIC_VIA_BLUETOOTH, false)
         set(value) { prefs.edit().putBoolean(KEY_MUSIC_VIA_BLUETOOTH, value).apply() }
 
     /**
@@ -756,8 +804,8 @@ class Settings(private val context: Context) {
 
     /** Voice / nav / media on separate Android streams — helps calls not share MUSIC with radio. */
     var separateAudioStreams: Boolean
-        get() = prefs.getBoolean("separate-audio-streams", true)
-        set(value) { prefs.edit().putBoolean("separate-audio-streams", value).apply() }
+        get() = prefs.getBoolean("separate-audio-streams-v3", true)
+        set(value) { prefs.edit().putBoolean("separate-audio-streams-v3", value).apply() }
 
     var micInputSource: Int
         get() = prefs.getInt("mic-input-source", 0) // Default: DEFAULT
@@ -826,29 +874,32 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean("use-native-ssl", false)
         set(value) { prefs.edit().putBoolean("use-native-ssl", value).apply() }
 
-    var autoStartSelfMode: Boolean
-        get() = prefs.getBoolean("auto-start-self-mode", false)
-        set(value) { prefs.edit().putBoolean("auto-start-self-mode", value).apply() }
-
     var autoStartOnUsb: Boolean
         get() = prefs.getBoolean("auto-start-on-usb", false)
         set(value) { prefs.edit().putBoolean("auto-start-on-usb", value).apply() }
+
+    /** Android Auto takes the screen when the phone connects; otherwise the car's Android Auto button opens it. */
+    var openProjectionOnConnect: Boolean
+        get() = prefs.getBoolean("open-projection-on-connect", true)
+        set(value) { prefs.edit().putBoolean("open-projection-on-connect", value).apply() }
 
     var autoStartOnBoot: Boolean
         get() = prefs.getBoolean("auto-start-on-boot", true)
         set(value) { prefs.edit().putBoolean("auto-start-on-boot", value).apply() }
 
+    /** Native AA RFCOMM servers in a row that died without accepting a connection. */
+    var nativeAaServerFailures: Int
+        get() = prefs.getInt("native-aa-server-failures", 0)
+        set(value) { prefs.edit().putInt("native-aa-server-failures", value).apply() }
+
+    /** Open the app's own screen at car start (off: connect in the background, show the projection once connected). */
+    var showAppOnCarStart: Boolean
+        get() = prefs.getBoolean("show-app-on-car-start", false)
+        set(value) { prefs.edit().putBoolean("show-app-on-car-start", value).apply() }
+
     var autoStartOnScreenOn: Boolean
         get() = prefs.getBoolean("auto-start-on-screen-on", false)
         set(value) { prefs.edit().putBoolean("auto-start-on-screen-on", value).apply() }
-
-    var autoStartOnWifi: Boolean
-        get() = prefs.getBoolean("auto-start-on-wifi", false)
-        set(value) { prefs.edit().putBoolean("auto-start-on-wifi", value).apply() }
-
-    var autoStartWifiSsid: String
-        get() = prefs.getString("auto-start-wifi-ssid", "")!!
-        set(value) { prefs.edit().putString("auto-start-wifi-ssid", value).apply() }
 
     var listenForUsbDevices: Boolean
         get() = prefs.getBoolean("listen-for-usb-devices", true)
@@ -936,12 +987,14 @@ class Settings(private val context: Context) {
         set(value) { prefs.edit().putInt("media-volume-offset", value).apply() }
 
     var assistantVolumeOffset: Int
-        get() = prefs.getInt("assistant-volume-offset", 0)
-        set(value) { prefs.edit().putInt("assistant-volume-offset", value).apply() }
+        // v3: back to no boost by default. Prompts arrive near full scale, so any boost goes
+        // through the limiter and degrades the voice; the car's volume makes it louder cleanly.
+        get() = prefs.getInt("assistant-volume-offset-v3", DEFAULT_VOICE_VOLUME_OFFSET)
+        set(value) { prefs.edit().putInt("assistant-volume-offset-v3", value).apply() }
 
     var navigationVolumeOffset: Int
-        get() = prefs.getInt("navigation-volume-offset", 0)
-        set(value) { prefs.edit().putInt("navigation-volume-offset", value).apply() }
+        get() = prefs.getInt("navigation-volume-offset-v3", DEFAULT_VOICE_VOLUME_OFFSET)
+        set(value) { prefs.edit().putInt("navigation-volume-offset-v3", value).apply() }
 
     // Custom loading screen
     var loadingScreenMediaPath: String
@@ -980,7 +1033,6 @@ class Settings(private val context: Context) {
             syncAutoStartOnBootToDeviceStorage(context, false)
             syncAutoStartOnScreenOnToDeviceStorage(context, false)
             syncAutoStartOnUsbToDeviceStorage(context, false)
-            syncAutoStartOnWifiToDeviceStorage(context, false)
             syncListenForUsbDevicesToDeviceStorage(context, true)
             syncAutoStartBtMacToDeviceStorage(context, "")
         }
@@ -1056,7 +1108,9 @@ class Settings(private val context: Context) {
         LIGHT_SENSOR(4),
         SCREEN_BRIGHTNESS(5),
         CAR_SIGNAL(6),
-        LOCATION(7);
+        LOCATION(7),
+        /** Sunset to sunrise at the car's position (what AUTO did before it followed the car). */
+        SUN(8);
 
         companion object {
             private val map = NightMode.values().associateBy(NightMode::value)
@@ -1145,6 +1199,9 @@ class Settings(private val context: Context) {
         }
 
     companion object {
+        /** Voice (assistant + navigation) level above the music, in %; the slider runs -50 … +200. */
+        const val DEFAULT_VOICE_VOLUME_OFFSET = 0
+        const val MAX_VOICE_VOLUME_OFFSET = 200
         const val PREFS_NAME = "settings"
 
         const val CONNECTION_TYPE_WIFI = "wifi"
@@ -1157,11 +1214,11 @@ class Settings(private val context: Context) {
 
         /** SharedPreferences key; also used by [AapService] for change listener. */
         // Was "log-level" (default Info). Renamed so upgrades reset to Silent.
-        const val KEY_LOG_LEVEL = "log-level-v2"
-        const val KEY_LOG_SOURCE = "log-source"
-        const val KEY_LOG_LOCATION = "log-location"
-        // Was music-via-bluetooth / v2 (ON) / v3 (OFF). v4 resets upgrades to ON (hybrid default).
-        const val KEY_MUSIC_VIA_BLUETOOTH = "music-via-bluetooth-v4"
+        const val KEY_LOG_LEVEL = "log-level-v3"
+        const val KEY_LOG_SOURCE = "log-source-v2"
+        const val KEY_LOG_LOCATION = "log-location-v2"
+        // Was music-via-bluetooth / v2 (ON) / v3 (OFF) / v4 (ON). v5 resets upgrades to OFF: music over Android Auto.
+        const val KEY_MUSIC_VIA_BLUETOOTH = "music-via-bluetooth-v5"
         // Was connection-modes (WiFi-only via NATIVE_AA default). v2 defaults to USB+WiFi.
         const val KEY_CONNECTION_MODES = "connection-modes-v2"
         // Was stretch_to_fill (default ON). v2 resets upgrades to OFF.
@@ -1176,9 +1233,13 @@ class Settings(private val context: Context) {
         // (SurfaceView, Auto DPI→227@1080p, 30 fps) instead of keeping TextureView/60 fps.
         const val KEY_VIEW_MODE = "view-mode-allgo"
         const val KEY_DPI_PIXEL_DENSITY = "dpi-pixel-density-allgo"
-        const val KEY_FPS_LIMIT = "fps-limit-allgo"
+        // Renamed again so upgrades move back to 30 fps: half the frames for the phone to encode and
+        // send over Wi-Fi, smooth enough in a car; 60 stays one setting away (Video → FPS Limit).
+        const val KEY_FPS_LIMIT = "fps-limit-30"
         /** Persist whether log capture should be active across restarts. */
-        const val KEY_LOG_CAPTURE_ENABLED = "log-capture-enabled"
+        const val KEY_LOG_CAPTURE_ENABLED = "log-capture-enabled-v2"
+        /** Logs off by default from 2.2.1-beta25 on (the earlier key defaulted to on). */
+        const val KEY_LOG_CAPTURE_ENABLED_V2 = "log-capture-enabled-v4"
 
         const val KEY_MEDIA_VOLUME_OFFSET = "media-volume-offset"
         const val KEY_ASSISTANT_VOLUME_OFFSET = "assistant-volume-offset"
@@ -1226,68 +1287,6 @@ class Settings(private val context: Context) {
             }
         }
 
-        private const val KEY_BOOT_LOOP_STRIKES = "boot-loop-strikes"
-        private const val KEY_WIRELESS_PAUSED_BY_BOOT_LOOP = "wireless-paused-by-boot-loop"
-
-        /**
-         * The device-protected store, which is readable at LOCKED_BOOT_COMPLETED — before the user
-         * has unlocked, and so before ordinary preferences exist. The boot-loop counters have to
-         * live here for the same reason the auto-start flags do: they are read and written by
-         * [com.andrerinas.openheadunit.app.BootCompleteReceiver] on a device that has just booted.
-         */
-        private fun bootPrefs(context: Context) =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                context.createDeviceProtectedStorageContext()
-                    .getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
-            } else {
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            }
-
-        /** Consecutive boot-started runs that did not last. See `aap/BootLoopPolicy`. */
-        fun getBootLoopStrikes(context: Context): Int = try {
-            bootPrefs(context).getInt(KEY_BOOT_LOOP_STRIKES, 0)
-        } catch (e: Exception) {
-            AppLog.d("Settings: Could not read the boot-loop strike count: ${e.message}")
-            0
-        }
-
-        fun setBootLoopStrikes(context: Context, strikes: Int) {
-            try {
-                bootPrefs(context).edit().putInt(KEY_BOOT_LOOP_STRIKES, strikes).apply()
-            } catch (e: Exception) {
-                AppLog.d("Settings: Could not store the boot-loop strike count: ${e.message}")
-            }
-        }
-
-        /**
-         * Whether wireless bring-up is currently paused because it looked like it was crashing the
-         * device. Sticky on purpose: cleared when the user opens the app, not by surviving a run,
-         * so the cycle ends outright instead of resuming every few boots.
-         */
-        fun isWirelessPausedByBootLoop(context: Context): Boolean = try {
-            bootPrefs(context).getBoolean(KEY_WIRELESS_PAUSED_BY_BOOT_LOOP, false)
-        } catch (e: Exception) {
-            AppLog.d("Settings: Could not read the boot-loop pause flag: ${e.message}")
-            false
-        }
-
-        fun setWirelessPausedByBootLoop(context: Context, paused: Boolean) {
-            try {
-                bootPrefs(context).edit()
-                    .putBoolean(KEY_WIRELESS_PAUSED_BY_BOOT_LOOP, paused)
-                    .apply()
-            } catch (e: Exception) {
-                AppLog.d("Settings: Could not store the boot-loop pause flag: ${e.message}")
-            }
-        }
-
-        /** Both counters back to their defaults, for when the user is present and can act. */
-        fun clearBootLoopState(context: Context) {
-            if (getBootLoopStrikes(context) == 0 && !isWirelessPausedByBootLoop(context)) return
-            AppLog.i("Settings: Clearing the boot-loop guard — the app was opened by hand.")
-            setBootLoopStrikes(context, 0)
-            setWirelessPausedByBootLoop(context, false)
-        }
 
         private const val KEY_AUTO_START_ON_SCREEN_ON = "auto-start-on-screen-on"
 
@@ -1343,49 +1342,6 @@ class Settings(private val context: Context) {
                 deviceContext.getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
                     .edit()
                     .putBoolean(KEY_AUTO_START_ON_USB, enabled)
-                    .apply()
-            }
-        }
-
-        private const val KEY_AUTO_START_ON_WIFI = "auto-start-on-wifi"
-        private const val KEY_AUTO_START_WIFI_SSID = "auto-start-wifi-ssid"
-
-        fun isAutoStartOnWifiEnabled(context: Context): Boolean {
-            val prefs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val deviceContext = context.createDeviceProtectedStorageContext()
-                deviceContext.getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
-            } else {
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            }
-            return prefs.getBoolean(KEY_AUTO_START_ON_WIFI, false)
-        }
-
-        fun syncAutoStartOnWifiToDeviceStorage(context: Context, enabled: Boolean) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val deviceContext = context.createDeviceProtectedStorageContext()
-                deviceContext.getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .putBoolean(KEY_AUTO_START_ON_WIFI, enabled)
-                    .apply()
-            }
-        }
-
-        fun getAutoStartWifiSsid(context: Context): String {
-            val prefs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val deviceContext = context.createDeviceProtectedStorageContext()
-                deviceContext.getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
-            } else {
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            }
-            return prefs.getString(KEY_AUTO_START_WIFI_SSID, "") ?: ""
-        }
-
-        fun syncAutoStartWifiSsidToDeviceStorage(context: Context, ssid: String) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val deviceContext = context.createDeviceProtectedStorageContext()
-                deviceContext.getSharedPreferences(DEVICE_PREFS_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .putString(KEY_AUTO_START_WIFI_SSID, ssid)
                     .apply()
             }
         }
@@ -1594,54 +1550,10 @@ class Settings(private val context: Context) {
         get() = prefs.getBoolean(KEY_AUTO_ENABLE_HOTSPOT, true)
         set(value) { prefs.edit().putBoolean(KEY_AUTO_ENABLE_HOTSPOT, value).apply() }
 
-    var waitForWifiBeforeWifiDirect: Boolean
-        get() = prefs.getBoolean("wait-for-wifi-before-wifi-direct", false)
-        set(value) { prefs.edit().putBoolean("wait-for-wifi-before-wifi-direct", value).apply() }
-
-    var waitForWifiTimeout: Int
-        get() = prefs.getInt("wait-for-wifi-timeout", 10)
-        set(value) { prefs.edit().putInt("wait-for-wifi-timeout", value).apply() }
-
-    // 0 = Common Wifi (NSD), 1 = Wifi Direct P2P, 2 = Nearby Devices, 3 = Phone Hotspot (Host), 4 = Headunit Hotspot (Passive)
-    var helperConnectionStrategy: Int
-        get() {
-            val stored = prefs.getInt("helper-connection-strategy", 4)
-            if (stored != 2 || hasGoogleServicesFramework()) return stored
-
-            // Existing MG4 installs may have inherited the old Nearby default. Nearby depends on
-            // GSF and crashes Google-free firmware, so migrate those installs to the same passive
-            // car-hotspot transport used by the stable wireless setup.
-            prefs.edit().putInt("helper-connection-strategy", 4).apply()
-            return 4
-        }
-        set(value) = prefs.edit().putInt("helper-connection-strategy", value).apply()
-
-    private fun hasGoogleServicesFramework(): Boolean =
-        context.packageManager.resolveContentProvider("com.google.android.gsf.gservices", 0) != null
-
-    var lastNearbyDeviceName: String
-        get() = prefs.getString("last-nearby-device-name", "")!!
-        set(value) = prefs.edit().putString("last-nearby-device-name", value).apply()
-
     var bluetoothManagerServiceName: String
         get() = prefs.getString("bluetooth-manager-service-name", "bluetooth_manager")!!
         set(value) = prefs.edit().putString("bluetooth-manager-service-name", value).apply()
 
-    // Which network the Native AA mode (wifiConnectionMode 3) puts the phone on.
-    // 0 = WiFi Direct, 1 = car hotspot. Legacy local-hotspot value 2 migrates to 1.
-    //
-    // Deliberately not folded into helperConnectionStrategy: that setting belongs to mode 2 and
-    // means something different in every one of its five values. A wireless mode that reuses
-    // another mode's selector is how the two call sites of the old usesWifiDirect() drifted apart.
-    var nativeApTransport: Int
-        get() {
-            val stored = prefs.getInt("native-ap-transport", 1)
-            return if (stored == 2) {
-                prefs.edit().putInt("native-ap-transport", 1).apply()
-                1
-            } else stored
-        }
-        set(value) = prefs.edit().putInt("native-ap-transport", if (value == 2) 1 else value).apply()
 
     // Whether the Native AA handshake opens with a WifiVersionRequest (Type 4), as real head units
     // and the OEM ZLink app do, instead of going straight to WifiStartRequest.

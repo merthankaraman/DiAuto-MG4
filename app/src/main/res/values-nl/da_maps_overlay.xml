@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Modelcijfers voor Maps op het scherm</string>
+    <string name="dset_maps_overlay_summary">Toont over Android Auto wat het model verwacht en wat de accu echt verbruikt, voor testritten.</string>
+</resources>

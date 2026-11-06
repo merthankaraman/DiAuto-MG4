@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Fogyasztási modell a Mapshez</string>
+    <string name="dset_maps_model_summary">A Google Térkép az MG4 modelljével (sebesség, hideg, klíma) becsüli az érkezéskori akkut, nem az autó átlagfogyasztásával.</string>
+    <string name="dset_maps_model_explain">Mit csinál: a Google Térkép az autó leírásából becsüli az akku töltöttségét a célnál, nem a pillanatnyi átlagfogyasztásból. Így számít a sebesség, a hideg és a fűtés.\n\nHogyan: a DiAuto közli a Térképpel az autó menetellenállását (gördülési, hidegben nagyobb, és légellenállás), valamint a klíma és az elektronika teljesítményét a külső hőmérséklet szerint. A Google szerverei kiszámítják az útvonal minden szakaszának energiáját a várható sebességgel, forgalommal és szintkülönbséggel.\n\nHasznált adatok: az autó változata (akku-beállítás), az akku szintje és kapacitása, a külső hőmérséklet és hogy be van-e kapcsolva a klíma. Csak a telefonjára jutnak, ahogy ma az akku szintje.\n\nAz értékek becslések, az előrejelzés eltérhet, amíg nincsenek kalibrálva.</string>
+    <string name="dset_maps_model_enable">Bekapcsolás</string>
+</resources>

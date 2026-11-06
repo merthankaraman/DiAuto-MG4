@@ -8,7 +8,6 @@ import com.andrerinas.openheadunit.aap.AapTransport
 import com.andrerinas.openheadunit.aap.KeyDebouncePolicy
 import com.andrerinas.openheadunit.aap.MediaKeyRoutingPolicy
 import com.andrerinas.openheadunit.aap.PlaybackFocusPolicy
-import com.andrerinas.openheadunit.aap.UnresponsivePeerPolicy
 import com.andrerinas.openheadunit.aap.VideoStarvationPolicy
 import com.andrerinas.openheadunit.utils.AppLog
 import com.andrerinas.openheadunit.utils.BluetoothHelper
@@ -123,12 +122,21 @@ class CommManager(
     /** Cached answer of the Bluetooth media probe used by media-key routing, and when it was taken. */
     private var btMediaLinkCached: Boolean? = null
     private var btMediaLinkCheckedAt: Long? = null
+    private val PAUSE_TAIL_FLUSH_MS = 400L
+    /** How long music the phone keeps sending after a pause is held back. */
+    private val PAUSE_SILENCE_MS = 6_000L
     private val BT_MEDIA_LINK_CACHE_MS = 2_000L
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected())
 
     /** Callback for audio focus state changes (isPlaying). Set by AapService. */
     var onAudioFocusStateChanged: ((Boolean) -> Unit)? = null
+
+    /** The phone's music started playing over Wi-Fi. Set by AapService. */
+    var onMediaPlaybackStarted: (() -> Unit)? = null
+
+    /** A prompt ended while the phone.s music keeps playing. Set by AapService. */
+    var onSpeechEndedDuringMedia: (() -> Unit)? = null
 
     /** Now-playing metadata from the phone (AAP media channel). Set by AapService. */
     var onAaMediaMetadata: ((MediaPlayback.MediaMetaData) -> Unit)? = null
@@ -147,21 +155,6 @@ class CommManager(
     @Volatile var lastAttemptedEndpoint: String? = null
         private set
 
-    /**
-     * Consecutive handshakes against one endpoint where the peer accepted the connection and then
-     * sent nothing at all. Read by the discovery rescheduler to back off — see
-     * [com.andrerinas.openheadunit.aap.UnresponsivePeerPolicy].
-     *
-     * Counted here rather than from a [ConnectionState.Error] collector because that state is not
-     * observable: [connectionState] is a `MutableStateFlow`, so collection is conflated, and
-     * [startHandshake] calls [disconnect] with no suspension point after emitting the error — the
-     * value has already moved on to `Disconnected` before any collector resumes.
-     */
-    @Volatile var silentPeerFailures: Int = 0
-        private set
-
-    /** The endpoint [silentPeerFailures] is counting; a different one starts its own streak. */
-    @Volatile private var silentPeerEndpoint: String? = null
     var onUpdateUiConfigReplyReceived: (() -> Unit)? = null
     @Volatile private var _connection: AccessoryConnection? = null
 
@@ -281,7 +274,7 @@ class CommManager(
             }
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -296,7 +289,7 @@ class CommManager(
         // Another caller already started the connection — do nothing.
         if (_connectionState.value is ConnectionState.Connecting) {
             // [BUG_FIX] But close what we are refusing. A socket handed to connect() has no
-            // other owner: NetworkDiscovery gives ownership up at this call, and WirelessServer's
+            // other owner: WirelessServer's
             // accept loop closes the sockets it refuses itself, so returning without closing
             // leaves the peer holding a session nobody will ever read from. This guard is the
             // only one of the three that did not, and it is the reachable one — isConnected
@@ -321,48 +314,14 @@ class CommManager(
             _connection = SocketAccessoryConnection(socket, context)
 
             if (_connection?.connect() ?: false) {
-                // [FIX] Don't overwrite NEARBY connection type with WIFI + localhost IP (::1)
-                if (socket !is NearbySocket) {
-                    settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = socket.inetAddress?.hostAddress ?: "")
-                }
+                settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = socket.inetAddress?.hostAddress ?: "")
                 _connectionState.emit(ConnectionState.Connected)
             } else {
                 _connectionState.emit(ConnectionState.Disconnected())
             }
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
-        }
-    }
-
-    /**
-     * Opens a TCP connection to [ip]:[port] and advances to [ConnectionState.Connected].
-     *
-     * Used by the manual IP entry flow and the NSD-discovered device list.
-     */
-    suspend fun connect(ip: String, port: Int) = withContext(Dispatchers.IO) {
-        // Another caller already started the connection — do nothing.
-        if (_connectionState.value is ConnectionState.Connecting)
-            return@withContext
-
-        lastAttemptedEndpoint = "$ip:$port"
-
-        _disconnectJob?.join()
-
-        try {
-            _connectionState.emit(ConnectionState.Connecting)
-            _connection?.disconnect()
-            _connection = SocketAccessoryConnection(ip, port, context)
-
-            if (_connection?.connect() ?: false) {
-                settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = ip)
-                _connectionState.emit(ConnectionState.Connected)
-            } else {
-                _connectionState.emit(ConnectionState.Disconnected())
-            }
-        } catch (e: Exception) {
-            _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -411,10 +370,13 @@ class CommManager(
                         _transport = null
 
                         if (oldTransport != null) {
-                            transportedQuited(isClean)
+                            // Read from the transport that quit: _transport is already null here.
+                            transportedQuited(isClean, oldTransport.wasUserExit)
                         }
                     }
                     _transport!!.onAudioFocusStateChanged = { isPlaying -> onAudioFocusStateChanged?.invoke(isPlaying) }
+                    _transport!!.onMediaPlaybackStarted = { onMediaPlaybackStarted?.invoke() }
+                    _transport!!.onSpeechEndedDuringMedia = { onSpeechEndedDuringMedia?.invoke() }
                     _transport!!.onUpdateUiConfigReplyReceived = { onUpdateUiConfigReplyReceived?.invoke() }
                     com.andrerinas.openheadunit.vehicle.Mg4EnergyReporter.bind(_transport!!)
                 }
@@ -427,56 +389,20 @@ class CommManager(
                     // VideoStarvationPolicy for what it means when one ends without carrying any.
                     sessionReachedHandshake = true
                     videoDecoder.framesRenderedThisSession = 0L
-                    silentPeerFailures = 0
                     _connectionState.emit(ConnectionState.HandshakeComplete)
                 } else {
                     val silent = transport?.lastHandshakeFailure == AapTransport.HandshakeFailure.PEER_SILENT
-                    noteHandshakeOutcome(silent)
                     _connectionState.emit(
                         ConnectionState.Error(if (silent) ERROR_HANDSHAKE_PEER_SILENT else "Handshake failed")
                     )
-                    disconnect()
+                    disconnect(sendByeBye = false, isUserExit = false)
                 }
             } else {
                 _connectionState.emit(ConnectionState.Error("Starting handshake without connection"))
             }
         } catch (e: Exception) {
-            // An exception is never the silent-peer case; clear the streak rather than leaving it
-            // to age into a backoff that no longer describes what is happening.
-            noteHandshakeOutcome(silent = false)
             _connectionState.emit(ConnectionState.Error("Handshake failed: ${e.message}"))
-            disconnect()
-        }
-    }
-
-    /**
-     * Updates [silentPeerFailures] after a failed handshake, and explains the situation once when
-     * the streak reaches the point where the retry cadence drops.
-     */
-    private fun noteHandshakeOutcome(silent: Boolean) {
-        if (!silent) {
-            // Any other failure means this is not the deaf-peer case, so the streak — and the
-            // backoff resting on it — starts over.
-            silentPeerFailures = 0
-            return
-        }
-        val endpoint = lastAttemptedEndpoint
-        silentPeerFailures =
-            UnresponsivePeerPolicy.countAfterSilentFailure(silentPeerFailures, silentPeerEndpoint, endpoint)
-        silentPeerEndpoint = endpoint
-        // Only Android Auto's head unit server — the peer on 5277, so the discovery path and Self
-        // Mode — has something the user can restart. The phone dialling our own server on 5288 and
-        // the Nearby helper can both reach this branch, and sending their users into Android Auto's
-        // developer settings after a switch they never turned on would be worse than saying nothing.
-        if (UnresponsivePeerPolicy.shouldExplain(silentPeerFailures) && endpoint?.endsWith(":5277") == true) {
-            AppLog.e(
-                "CommManager: $endpoint has accepted $silentPeerFailures connections in a row " +
-                    "without answering any of them. Slowing discovery to one attempt every " +
-                    "${UnresponsivePeerPolicy.BACKOFF_RESCAN_MS / 1000}s. Android Auto's head unit " +
-                    "server does not recover on its own once this happens — stop and start it again " +
-                    "on the phone, in Android Auto's developer settings, and this will reconnect by " +
-                    "itself."
-            )
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -531,7 +457,7 @@ class CommManager(
             _connectionState.emit(ConnectionState.TransportStarted)
         } catch (e: Exception) {
             _connectionState.emit(ConnectionState.Error("Start reading failed: ${e.message}"))
-            disconnect()
+            disconnect(sendByeBye = false, isUserExit = false)
         }
     }
 
@@ -543,8 +469,7 @@ class CommManager(
      * `false` immediately) then schedules cleanup. `sendByeBye` is `false` because the
      * connection is already dead — there is no point sending a `ByeByeRequest`.
      */
-    private fun transportedQuited(isClean: Boolean) {
-        val wasUserExit = _transport?.wasUserExit ?: false
+    private fun transportedQuited(isClean: Boolean, wasUserExit: Boolean) {
         _connectionState.value = ConnectionState.Disconnected(isClean, isUserExit = wasUserExit)
         // Transport already quit on its own — no ByeByeRequest needed (connection is dead).
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye = false) }
@@ -617,7 +542,11 @@ class CommManager(
         // not be sent again, or one press performs the action twice. See MediaKeyRoutingPolicy.
         // Only media keys can be held back, so nothing else pays for the Bluetooth probe.
         if (isMedia) {
-            val routing = settings.mediaKeyRouting
+            // Music over Bluetooth: the car's Bluetooth side already sends the phone the same
+            // pause or play (AVRCP), so a second toggle over Android Auto undid it ~2 s later.
+            val routing = settings.mediaKeyRouting.let {
+                if (settings.musicViaBluetooth && it == MediaKeyRoutingPolicy.Mode.ALWAYS) MediaKeyRoutingPolicy.Mode.AUTO else it
+            }
             if (!MediaKeyRoutingPolicy.shouldForward(routing, true, btMediaLinkForKeys())) {
                 AppLog.v("CommManager: Not sending media key $logicalCode to Android Auto " +
                         "(routing=$routing, src=$source)")
@@ -648,6 +577,30 @@ class CommManager(
 
         AppLog.i("CommManager: TX Key -> AA=$logicalCode (isPress=$isPress) src=$source")
         _transport?.send(logicalCode, isPress)
+        if (isPress) cutBufferedAudioOnPause(logicalCode)
+    }
+
+    /**
+     * Pause would otherwise be heard only after the Wi-Fi jitter buffer (about 1 s of music already
+     * here) has played out. When the key pauses playing music, that audio is dropped at once, and
+     * again shortly after for what the phone sent before it stopped.
+     */
+    private fun cutBufferedAudioOnPause(keyCode: Int) {
+        val track = audioDecoder.getTrack(com.andrerinas.openheadunit.aap.protocol.Channel.ID_AUD) ?: return
+        // A toggle while the pause still holds the music back is a play.
+        if (track.isSilenced() && (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)) {
+            track.unsilence()
+            return
+        }
+        val pauses = keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE ||
+            (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE && track.isPlayingMusic())
+        if (!pauses) return
+        track.silenceFor(PAUSE_SILENCE_MS)
+        track.flushForTrackChange()
+        _scope.launch {
+            kotlinx.coroutines.delay(PAUSE_TAIL_FLUSH_MS)
+            if (!track.isReceivingAudio()) track.flushForTrackChange()
+        }
     }
 
     /**
@@ -808,6 +761,35 @@ class CommManager(
         _transport?.aapAudio?.reclaimPlaybackFocusIfNeeded()
     }
 
+    /** Whether the phone's music is playing over Wi-Fi right now. */
+    val isMediaPlaying: Boolean
+        get() = _transport?.aapAudio?.isMediaPlaying == true
+
+    /** Static audio focus: a change on AapService's permanent request, to pass on to the phone. */
+    /** Drops the buffered audio of the track being skipped (see [com.andrerinas.openheadunit.decoder.AudioTrackWrapper.flushForTrackChange]). */
+    fun flushMediaForTrackChange() {
+        audioDecoder.getTrack(com.andrerinas.openheadunit.aap.protocol.Channel.ID_AUD)?.flushForTrackChange()
+    }
+
+    /** See [com.andrerinas.openheadunit.aap.AapAudio.resumeFromUser]. */
+    fun resumeAudioFromUser(): Boolean = _transport?.aapAudio?.resumeFromUser() == true
+
+    fun markOwnFocusRequest() {
+        _transport?.aapAudio?.markOwnFocusRequest()
+    }
+
+    /** When the car or the user last took the audio focus away and the phone was told. */
+    val lastCarFocusLossMs: Long
+        get() = _transport?.aapAudio?.lastCarFocusLossMs ?: 0L
+
+    fun onCarSourceFocusChange(focusChange: Int) {
+        _transport?.aapAudio?.onCarSourceFocusChange(focusChange)
+    }
+
+    fun onPermanentFocusChange(focusChange: Int) {
+        _transport?.aapAudio?.onPermanentFocusChange(focusChange)
+    }
+
     // -----------------------------------------------------------------------------------------
     // Disconnect
     // -----------------------------------------------------------------------------------------
@@ -881,7 +863,7 @@ class CommManager(
         val connection = _connection
         _transport = null
         _connection = null
-        com.andrerinas.openheadunit.vehicle.Mg4EnergyReporter.unbind()
+        com.andrerinas.openheadunit.vehicle.Mg4EnergyReporter.unbind(transport)
         keyStates.clear()
         btMediaLinkCached = null
         btMediaLinkCheckedAt = null
@@ -969,7 +951,11 @@ class CommManager(
 
     fun destroy() {
         doDisconnect()
-        _scope.cancel()
+        // This instance is the app-wide one from AppComponent and outlives the service that calls
+        // destroy(): a later AapService in the same process uses it again. Cancelling the scope
+        // itself made every later launch a no-op, so disconnects never ran their cleanup. Cancel
+        // only the work in flight.
+        _scope.coroutineContext.cancelChildren()
     }
 
     companion object {

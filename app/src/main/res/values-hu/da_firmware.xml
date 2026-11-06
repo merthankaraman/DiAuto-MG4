@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Az autó firmware-e (%1$s) nem tud vezeték nélküli Android Autót: a Bluetooth-a egyszerre csak egy alkalmazáskapcsolatot enged. A DiAuto ezt nem tudja megkerülni. Kérje a márkakereskedőtől a %2$s vagy újabb verziót.</string>
+    <string name="da_firmware_incompatible" formatted="true">Az autó firmware-e (%1$s) nem tud vezeték nélküli Android Autót: a Bluetooth-a egyszerre csak egy alkalmazáskapcsolatot enged. A DiAuto ezt nem tudja megkerülni. Kérdezze meg a márkakereskedőt, van-e újabb firmware.</string>
+</resources>

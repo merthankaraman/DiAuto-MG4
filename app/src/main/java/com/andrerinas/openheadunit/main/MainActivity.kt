@@ -129,10 +129,8 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = Settings(this).screenOrientation.androidOrientation
         super.onCreate(savedInstanceState)
-        com.andrerinas.openheadunit.hud.BydNavigationOutputs.onAppOpened(applicationContext)
 
         logLaunchSource()
-        clearBootLoopGuardIfOpenedByHand()
 
         // If an Android Auto session is active, bring the projection activity to front
         if (App.provide(this).commManager.isConnected && !App.isPiPActive) {
@@ -177,11 +175,6 @@ class MainActivity : BaseActivity() {
         val serviceIntent = Intent(this, AapService::class.java)
         ContextCompat.startForegroundService(this, serviceIntent)
 
-        // Silent OTA check (toast only when an update exists).
-        runCatching {
-            com.andrerinas.openheadunit.ota.OtaController(this).checkOnStartup()
-        }
-
         setFullscreen()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as androidx.navigation.fragment.NavHostFragment
@@ -222,7 +215,6 @@ class MainActivity : BaseActivity() {
         // installs; for users who already finished onboarding we request them from checkSetupFlow().
         viewModel.register()
         handleLaunchIntent(intent)
-        setupWifiDirectInfo()
 
         ContextCompat.registerReceiver(
             this, finishReceiver,
@@ -471,7 +463,17 @@ class MainActivity : BaseActivity() {
         autoConnectWatchdog?.cancel()
         autoConnectWatchdog = lifecycleScope.launch {
             delay(AUTO_CONNECT_WATCHDOG_MS)
-            if (autoConnectInProgress) {
+            if (autoConnectInProgress && App.provide(this@MainActivity).commManager.isConnected) {
+                // The attempt succeeded without clearing the flag; never end a live session for it
+                // (2026-10-29 09:00 and 09:07: drives disconnected 125 s after connecting).
+                AppLog.i("Auto-connect overlay: watchdog fired with a session up — just hiding the overlay")
+                autoConnectWatchdog = null
+                autoConnectInProgress = false
+                hasAdvancedToActiveState = false
+                autoConnectStatusText = null
+                hideAutoConnectPill()
+                findViewById<View>(R.id.auto_connect_loading_overlay)?.visibility = View.GONE
+            } else if (autoConnectInProgress) {
                 AppLog.w(
                     "Auto-connect overlay: watchdog timeout after ${AUTO_CONNECT_WATCHDOG_MS}ms, giving up",
                 )
@@ -725,23 +727,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun setupWifiDirectInfo() {
-        val tvInfo = findViewById<android.widget.TextView>(R.id.wifi_direct_info)
-        val settings = Settings(this)
-
-        lifecycleScope.launch {
-            AapService.wifiDirectName.collectLatest { name ->
-                val isHelperMode = settings.wifiConnectionMode == 2
-                if (isHelperMode && name != null) {
-                    tvInfo.text = "WiFi Direct: $name"
-                    tvInfo.visibility = View.VISIBLE
-                } else {
-                    tvInfo.visibility = View.GONE
-                }
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
     }
@@ -768,21 +753,6 @@ class MainActivity : BaseActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleLaunchIntent(intent)
-    }
-
-    /**
-     * Releases the boot-loop guard, but only when a person opened the app.
-     *
-     * The distinction matters: the service launches this activity itself on every boot auto-start
-     * ([AapService] passes "Boot auto-start"), so clearing unconditionally would reset the guard on
-     * exactly the runs it exists to count. Tapping the guard's own notification does count as
-     * opening it by hand — that is a person reading the notice and acting on it.
-     */
-    private fun clearBootLoopGuardIfOpenedByHand() {
-        // No source at all is a launcher tap, which is as human as it gets.
-        val source = intent?.getStringExtra(EXTRA_LAUNCH_SOURCE) ?: ""
-        if (AUTOMATIC_LAUNCH_SOURCES.contains(source)) return
-        Settings.clearBootLoopState(this)
     }
 
     private fun logLaunchSource() {
@@ -824,32 +794,13 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        if (intentAction == AapService.ACTION_START_SELF_MODE || 
-           (intentData?.scheme == "headunit" && intentData.host == "selfmode")) {
-            AppLog.i("MainActivity: Forced self-mode start requested")
-            HomeFragment.forceSelfModeLaunch = true
-            val selfModeIntent = Intent(this, AapService::class.java).apply {
-                this.action = AapService.ACTION_START_SELF_MODE
-            }
-            ContextCompat.startForegroundService(this, selfModeIntent)
-        }
-
         if (intent.action == Intent.ACTION_VIEW) {
             if (intentData?.scheme == "headunit" && intentData.host == "connect") {
-                val ip = intentData.getQueryParameter("ip")
-                if (!ip.isNullOrEmpty()) {
-                    AppLog.i("Received connect intent for IP: $ip")
-                    ContextCompat.startForegroundService(this, Intent(this, AapService::class.java).apply {
-                        action = AapService.ACTION_CONNECT_SOCKET
-                    })
-                    lifecycleScope.launch(Dispatchers.IO) { App.provide(this@MainActivity).commManager.connect(ip, 5277) }
-                } else {
-                    AppLog.i("Received connect intent without IP -> triggering last session auto-connect")
-                    val autoIntent = Intent(this, AapService::class.java).apply {
-                        action = AapService.ACTION_CHECK_USB
-                    }
-                    ContextCompat.startForegroundService(this, autoIntent)
+                AppLog.i("Received connect intent -> triggering last session auto-connect")
+                val autoIntent = Intent(this, AapService::class.java).apply {
+                    action = AapService.ACTION_CHECK_USB
                 }
+                ContextCompat.startForegroundService(this, autoIntent)
             } else if (intentData?.scheme == "headunit" && intentData.host == "disconnect") {
                 AppLog.i("Received disconnect intent")
                 val stopIntent = Intent(this, AapService::class.java).apply {
@@ -964,6 +915,7 @@ class MainActivity : BaseActivity() {
         ContextCompat.registerReceiver(this, orientationReceiver, android.content.IntentFilter(AapService.ACTION_ORIENTATION_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
         isOrientationReceiverRegistered = true
 
+        inFront = true
         // If an Android Auto session is active, bring the projection activity to front
         if (App.provide(this).commManager.isConnected && !App.isPiPActive && !AapProjectionActivity.isForeground) {
             AppLog.i("MainActivity: Active session detected, bringing projection to front")
@@ -989,6 +941,7 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        inFront = false
         if (isOrientationReceiverRegistered) {
             unregisterReceiver(orientationReceiver)
             isOrientationReceiverRegistered = false
@@ -996,18 +949,12 @@ class MainActivity : BaseActivity() {
     }
 
     fun checkSetupFlow() {
-        val appSettings = Settings(this)
-        // Show the intelligent onboarding wizard once whenever the stored version is
-        // older than the current one (covers fresh installs and upgraders alike).
-        val wizardPending = appSettings.onboardingVersion < OnboardingActivity.CURRENT_ONBOARDING_VERSION
-        if (wizardPending && !OnboardingActivity.deferredThisSession) {
-            // The wizard's permissions step handles runtime permissions, so don't also prompt here.
-            startActivity(Intent(this, OnboardingActivity::class.java))
-        } else if (!wizardPending) {
-            // Onboarding already completed (e.g. upgraders): request runtime permissions directly.
-            requestPermissions()
+        // No first-run wizard on the MG4: DiAuto is ready as installed (system app, permissions
+        // granted), and the settings have MG4 defaults. Only a short tutorial, once.
+        requestPermissions()
+        if (!App.provide(this).settings.tutorialShown && !App.provide(this).commManager.isConnected) {
+            startActivity(DaTutorialActivity.intent(this))
         }
-        // Wizard deferred this session ("Do it later"): wait until it runs on the next launch.
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -1044,20 +991,14 @@ class MainActivity : BaseActivity() {
             unregisterReceiver(autoConnectStatusReceiver)
             isAutoConnectStatusReceiverRegistered = false
         }
-        if (isFinishing) {
-            AppLog.i("MainActivity finishing, resetting auto-start flag.")
-            HomeFragment.resetAutoStart()
-        }
     }
 
     companion object {
+        /** DiAuto's own home screen is in front. */
+        @Volatile var inFront = false
+
         private const val permissionRequestCode = 97
         const val EXTRA_LAUNCH_SOURCE = "launch_source"
-
-        /** Launch sources that mean the app opened itself, with nobody necessarily watching. */
-        private val AUTOMATIC_LAUNCH_SOURCES = setOf(
-            "Boot auto-start", "USB auto-start", "WiFi auto-start", "Bluetooth auto-start"
-        )
 
         /**
          * Hard upper bound for how long the auto-connect overlay may stay visible

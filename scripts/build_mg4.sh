@@ -25,7 +25,7 @@ if [ ! -f "$KEYS/platform.pk8" ]; then
   echo "Error: platform.pk8 not found in $KEYS. Set MG4_PLATFORM_KEYS_DIR to folder containing platform.pk8 & platform.x509.pem" >&2
   exit 1
 fi
-VERSION="1.9.8"
+VERSION="2.3.0"
 APK_DIR="$ROOT/app/build/outputs/apk/car/debug"
 ALIGNED="$APK_DIR/DiAuto-MG4-v$VERSION-aligned.apk"
 SIGNED="$APK_DIR/DiAuto-MG4-v$VERSION.apk"

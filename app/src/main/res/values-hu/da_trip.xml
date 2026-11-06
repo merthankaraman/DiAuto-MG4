@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Utak rögzítése a Térképhez</string>
+    <string name="trip_option_summary">Gombot ad egy választott út rögzítéséhez, hogy pontosabbak legyenek a Térkép előrejelzései: fogyasztás, sebesség, klíma, hőmérséklet. Helyadatok és személyes adatok nélkül.</string>
+    <string name="trip_start">Út rögzítése</string>
+    <string name="trip_stop">Rögzítés leállítása</string>
+    <string name="trip_button_summary">A rögzítés parkolásig vagy leállításig tart, a kétujjas menüből és a kezdőképernyőről is.</string>
+    <string name="trip_no_battery">Az akku töltöttsége nem olvasható: próbálja újra kicsit később.</string>
+    <string name="trip_bad_percent">Adjon meg egy számot 0 és 100 között.</string>
+    <string name="trip_started">Az út rögzítése elindult.</string>
+    <string name="trip_saved">Út mentve.</string>
+    <string name="trip_too_short">Túl rövid út: nincs mentve.</string>
+    <string name="trip_files">Rögzített utak</string>
+    <string name="trip_files_summary">Mentve: %1$d. USB-kulcsra másolódnak, majd törlődnek az autóból.</string>
+    <string name="trip_copy">Másolás USB-re</string>
+    <string name="trip_copied">USB-kulcsra másolt utak: %1$d.</string>
+    <string name="trip_copy_failed">Nincs USB-kulcs vagy a másolás sikertelen: az utak az autóban maradnak.</string>
+    <string name="trip_picker_title">Akkuszint érkezéskor a Térkép szerint</string>
+    <string name="trip_picker_note">Most %1$d %%. A használható út legalább %2$d %% akkut fogyaszt, töltési megálló nélkül.</string>
+    <string name="trip_battery_low">Az akku túl alacsony egy használható út rögzítéséhez.</string>
+</resources>

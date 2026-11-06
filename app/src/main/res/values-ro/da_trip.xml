@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Înregistrează călătorii pentru Maps</string>
+    <string name="trip_option_summary">Adaugă un buton pentru a înregistra o călătorie aleasă și a ajuta la ajustarea previziunilor Maps: consum, viteză, climatizare, temperatură. Fără poziție sau date personale.</string>
+    <string name="trip_start">Înregistrează această călătorie</string>
+    <string name="trip_stop">Oprește înregistrarea</string>
+    <string name="trip_button_summary">Înregistrează până parchezi sau oprești, și din meniul cu două degete și ecranul principal.</string>
+    <string name="trip_no_battery">Nivelul bateriei nu poate fi citit: încearcă din nou imediat.</string>
+    <string name="trip_bad_percent">Introdu un număr de la 0 la 100.</string>
+    <string name="trip_started">Înregistrarea călătoriei a început.</string>
+    <string name="trip_saved">Călătorie salvată.</string>
+    <string name="trip_too_short">Călătorie prea scurtă: nesalvată.</string>
+    <string name="trip_files">Călătorii înregistrate</string>
+    <string name="trip_files_summary">%1$d salvate. Copiate pe un stick USB, apoi șterse din mașină.</string>
+    <string name="trip_copy">Copiază pe USB</string>
+    <string name="trip_copied">%1$d călătorii copiate pe stickul USB.</string>
+    <string name="trip_copy_failed">Stick USB negăsit sau copiere eșuată: călătoriile rămân în mașină.</string>
+    <string name="trip_picker_title">Baterie la sosire estimată de Maps</string>
+    <string name="trip_picker_note">Acum %1$d %%. O călătorie utilizabilă consumă cel puțin %2$d %% din baterie, fără oprire la încărcare.</string>
+    <string name="trip_battery_low">Baterie prea descărcată pentru a înregistra o călătorie utilizabilă.</string>
+</resources>

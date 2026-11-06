@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Auto-WLAN wieder nach</string>
+    <string name="dset_station_delay_summary">Das WLAN des Autos ist während Android Auto per Funk aus. Es kommt zurück, wenn die Sitzung so lange beendet ist.</string>
+</resources>

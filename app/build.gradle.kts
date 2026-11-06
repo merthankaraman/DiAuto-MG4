@@ -80,12 +80,14 @@ android {
     }
 
     defaultConfig {
-        // MG4 fork — separate id from upstream DiAuto / stock AA hosts.
-        applicationId = "com.drivehub.diauto.mg4"
+        // Installed as an update of the car's AllGo Android Auto so the stock launcher, rui and
+        // MG4 Dash see DiAuto as the car's Android Auto (was com.drivehub.diauto.mg4 up to 2.0.0-beta24).
+        // versionCode stays above AllGo's (1) and the former relay (1008).
+        applicationId = "com.allgo.app.androidauto"
         minSdk = 28
         targetSdk = 36
-        versionCode = 29
-        versionName = "1.9.10"
+        versionCode = 2200
+        versionName = "2.3.0"
         setProperty("archivesBaseName", "${applicationId}_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -238,6 +240,11 @@ android {
         disable += "PackagedPrivateKey"
     }
 
+    testOptions {
+        // ScreenshotTest renders the app's layouts.
+        unitTests.isIncludeAndroidResources = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -275,7 +282,6 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.startup:startup-runtime:1.1.1")
-    implementation("com.google.android.gms:play-services-nearby:19.3.0")
     // ViewModel and LiveData
     kapt("androidx.lifecycle:lifecycle-compiler:2.6.2")
 
@@ -309,8 +315,4 @@ dependencies {
     // ZXing for QR Code generation
     implementation("com.google.zxing:core:3.5.3")
 
-    // Shizuku for root / shell access
-    implementation("dev.rikka.shizuku:api:13.1.5")
-    implementation("dev.rikka.shizuku:provider:13.1.5")
-    implementation("com.github.topjohnwu.libsu:core:6.0.0")
 }

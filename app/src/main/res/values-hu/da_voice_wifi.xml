@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">A hang magasai</string>
+    <string name="dset_voice_enhance_summary">Visszaállítja a telefon által levágott magasakat: enyhe vagy erős exciter, illetve neurális háló (Opus). A következő utasítástól.</string>
+    <string name="dset_voice_enhance_standard">Ki</string>
+    <string name="dset_voice_enhance_light">Enyhe</string>
+    <string name="dset_voice_enhance_strong">Erős</string>
+    <string name="dset_voice_enhance_neural">Neurális</string>
+    <string name="dset_voice_experimental">A hangtisztaság és a magasak kísérleti beállítások: írja meg a GitHubon, melyik szól önnek a legjobban.</string>
+    <string name="dset_wifi_channel">Wi-Fi csatorna</string>
+    <string name="dset_wifi_channel_summary">Az autó hozzáférési pontjának csatornája. Az Auto a hozzáférési pont indulásakor a legkevésbé zsúfoltat választja, kapcsolat közben soha.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

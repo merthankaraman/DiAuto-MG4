@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Krok %1$d z %2$d</string>
+    <string name="tuto_skip">Pomiń</string>
+    <string name="tuto_back">Wstecz</string>
+    <string name="tuto_next">Dalej</string>
+    <string name="tuto_done">Zaczynamy</string>
+    <string name="tuto_welcome_title">Witaj w DiAuto dla MG4</string>
+    <string name="tuto_welcome_text">Bezprzewodowe Android Auto na ekranie Twojego MG4. Gdy telefon jest sparowany z samochodem przez Bluetooth, łączy się z hotspotem Wi-Fi samochodu i Android Auto uruchamia się samo.\n\nKolejne kroki pokazują trzy gesty działające w Android Auto.</string>
+    <string name="tuto_menu_title">Dwa palce od lewej krawędzi</string>
+    <string name="tuto_menu_text">Połóż dwa palce przy lewej krawędzi ekranu i przesuń w prawo. Otworzy się menu z dwoma dużymi przyciskami: Rozłącz i Ustawienia.\n\nDotknij w innym miejscu, aby je zamknąć.</string>
+    <string name="tuto_fullscreen_title">Dwa palce od prawej krawędzi</string>
+    <string name="tuto_fullscreen_text">Połóż dwa palce przy prawej krawędzi i przesuń w lewo, aby pokazać lub ukryć paski samochodu i użyć całego ekranu.</string>
+    <string name="tuto_top_title">Dwa palce od górnej krawędzi</string>
+    <string name="tuto_top_text">Połóż dwa palce u góry ekranu i przesuń w dół, aby wrócić do launchera samochodu. Android Auto pozostaje połączone.</string>
+    <string name="tuto_home_title">Trzy palce w dół</string>
+    <string name="tuto_home_text">Przesuń trzema palcami w dół, aby rozłączyć Android Auto i wrócić do ekranu głównego DiAuto.</string>
+    <string name="tuto_tips_title">Warto wiedzieć</string>
+    <string name="tuto_tips_text">• Mapy Google stają się planerem trasy: dostają stan baterii, zużycie i moc ładowania Twojego MG4 i wybierają postoje na ładowanie.\n• Ustawienia → Samochód: wersja Twojego MG4, pojemność i stan baterii, wykrywane automatycznie i do zmiany.\n• Automatyczne podgrzewanie baterii przed postojem na ładowanie zaplanowanym przez Mapy. Domyślnie wyłączone, włącz w Ustawienia → Samochód.\n• DiAuto instaluje się jako aktualizacja fabrycznego Android Auto samochodu (AllGo). Aby do niego wrócić: Ustawienia → Informacje → Przywróć, a następnie uruchom ponownie ekran, przytrzymując przycisk Home przez 20 s.\n• Ustawienia → Informacje: obejrzyj ten samouczek ponownie.</string>
+    <string name="tuto_settings_title">Samouczek</string>
+    <string name="tuto_settings_summary">Gesty w Android Auto i przydatne ustawienia w kilku krokach.</string>
+    <string name="tuto_settings_button">Pokaż</string>
+    <string name="da_settings">Ustawienia</string>
+</resources>

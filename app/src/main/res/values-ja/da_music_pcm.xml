@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">非圧縮の音楽（PCM）</string>
+    <string name="dset_music_pcm_summary">スマートフォンは AAC 圧縮なしで音楽を送ります。Wi-Fi で約 1.5 Mb/s のため途切れることがあります。次回の接続から有効です。</string>
+</resources>

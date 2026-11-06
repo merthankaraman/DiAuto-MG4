@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Grabar viajes para Maps</string>
+    <string name="trip_option_summary">Añade un botón para grabar un viaje elegido y ayudar a ajustar las previsiones de Maps: consumo, velocidad, climatización, temperatura. Sin ubicación ni datos personales.</string>
+    <string name="trip_start">Grabar este viaje</string>
+    <string name="trip_stop">Detener la grabación</string>
+    <string name="trip_button_summary">Graba hasta que aparques o la detengas, también desde el menú de dos dedos y la pantalla de inicio.</string>
+    <string name="trip_no_battery">No se puede leer el nivel de batería: inténtalo de nuevo en un momento.</string>
+    <string name="trip_bad_percent">Introduce un número de 0 a 100.</string>
+    <string name="trip_started">Grabación del viaje iniciada.</string>
+    <string name="trip_saved">Viaje guardado.</string>
+    <string name="trip_too_short">Viaje demasiado corto: no guardado.</string>
+    <string name="trip_files">Viajes grabados</string>
+    <string name="trip_files_summary">%1$d guardados. Se copian a una memoria USB y luego se borran del coche.</string>
+    <string name="trip_copy">Copiar a USB</string>
+    <string name="trip_copied">%1$d viajes copiados a la memoria USB.</string>
+    <string name="trip_copy_failed">No se encontró memoria USB o falló la copia: los viajes siguen en el coche.</string>
+    <string name="trip_picker_title">Batería a la llegada prevista por Maps</string>
+    <string name="trip_picker_note">Ahora %1$d %%. Un viaje útil consume al menos un %2$d %% de batería, sin parada de carga.</string>
+    <string name="trip_battery_low">Batería demasiado baja para grabar un viaje útil.</string>
+</resources>

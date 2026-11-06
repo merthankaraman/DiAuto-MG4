@@ -370,6 +370,36 @@ object BluetoothHelper {
         return asked
     }
 
+    /**
+     * Disconnect the phone's hands-free (HFP) link to this head unit, in both roles, to free the
+     * RFCOMM data port it holds. Used only by the SWI68/SWI131 experiment that tests whether the
+     * head unit's one-session RFCOMM cap is a global pool (freeing a port would then let the
+     * Android Auto channel through) or per-server (freeing a port changes nothing). Best-effort.
+     */
+    @SuppressLint("MissingPermission")
+    fun requestCarHandsFreeLink(context: Context, address: String): Boolean {
+        val adapter = try { getBluetoothAdapter(context) } catch (e: Exception) { null } ?: return false
+        val device = try { adapter.getRemoteDevice(address) } catch (e: Exception) { return false }
+        return requestProfileConnect(adapter, context, device, PROFILE_HEADSET_CLIENT)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun releaseCarHandsFreeLink(context: Context, preferredAddress: String? = null): Boolean {
+        val adapter = try { getBluetoothAdapter(context) } catch (e: Exception) { null } ?: return false
+        val bonded = try { adapter.bondedDevices.orEmpty().toList() } catch (e: Exception) { emptyList() }
+        if (bonded.isEmpty()) return false
+        val preferred = preferredAddress?.trim()?.uppercase(java.util.Locale.US).orEmpty()
+        val ordered = if (preferred.isEmpty()) bonded
+            else bonded.sortedByDescending { it.address?.uppercase(java.util.Locale.US) == preferred }
+        var asked = false
+        for (device in ordered) {
+            asked = requestProfileDisconnect(adapter, context, device, BluetoothProfile.HEADSET) || asked
+            asked = requestProfileDisconnect(adapter, context, device, PROFILE_HEADSET_CLIENT) || asked
+        }
+        AppLog.i("BluetoothHelper: releaseHandsFree asked=$asked preferred=${preferred.ifEmpty { "—" }}")
+        return asked
+    }
+
     private fun requestProfileDisconnect(
         adapter: BluetoothAdapter,
         context: Context,

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">您車輛的韌體（%1$s）無法執行無線 Android Auto：其藍牙一次只允許一個應用程式連線。DiAuto 無法繞過此問題。請向經銷商更新至 %2$s 或更新版本。</string>
+    <string name="da_firmware_incompatible" formatted="true">您車輛的韌體（%1$s）無法執行無線 Android Auto：其藍牙一次只允許一個應用程式連線。DiAuto 無法繞過此問題。請向經銷商詢問是否有更新的韌體。</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">მანქანის Wi-Fi USB-ით</string>
+    <string name="dset_usb_wifi_summary">როცა Android Auto USB კაბელით მუშაობს, მანქანის Wi-Fi უკავშირდება ცნობილ ქსელებს, მაგალითად ტელეფონის ცხელ წერტილს, ინტერნეტისთვის. კაბელის გამორთვისას ითიშება.</string>
+</resources>

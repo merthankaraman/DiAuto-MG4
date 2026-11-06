@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Cette mise à jour télécharge %1$s de données, qui peuvent être prises sur le forfait de la voiture. Si possible, connectez d\'abord la voiture à un réseau Wi-Fi en mode client, ou faites la mise à jour par USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s va être téléchargé puis installé. DiAuto redémarre ensuite et Android Auto se coupe quelques secondes.</string>
+</resources>

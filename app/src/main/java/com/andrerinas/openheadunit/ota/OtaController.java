@@ -1,57 +1,73 @@
 package com.andrerinas.openheadunit.ota;
 
 import android.app.Dialog;
-import android.app.DownloadManager;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
+import android.os.SystemClock;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.ContextCompat;
 
 import com.andrerinas.openheadunit.R;
 
-import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
- * GitHub Releases üzerinden OTA: kontrol → indir → SHA-256 → kurulum ekranı.
+ * GitHub Releases üzerinden OTA: kontrol → indir (SHA-256) → PackageInstaller.
+ * Used by the home screen button and by Settings; both share the last check.
  */
 public final class OtaController {
 
     private static final String PREFS_NAME = "diauto_ota";
     private static final String KEY_ALLOW_BETA = "allowBetaUpdates";
+    private static final long RECHECK_MS = 30 * 60_000L;
+
+    public enum State { IDLE, CHECKING, UP_TO_DATE, AVAILABLE, FAILED }
+
+    /** What the home screen shows. */
+    public static final class Status {
+        public final State state;
+        /** Newest version offered when {@link #state} is AVAILABLE. */
+        public final String latestVersion;
+        public final boolean prerelease;
+        public final boolean allowBeta;
+
+        public Status(State state, String latestVersion, boolean prerelease, boolean allowBeta) {
+            this.state = state;
+            this.latestVersion = latestVersion;
+            this.prerelease = prerelease;
+            this.allowBeta = allowBeta;
+        }
+    }
 
     public interface StatusListener {
         void onOtaStatus(String statusText, boolean updateAvailable, boolean checking);
     }
 
+    public interface StateListener {
+        void onOtaState(Status status);
+    }
+
+    // Last check, shared by every screen of the process.
+    private static OtaUpdateManager.UpdateInfo sLastInfo;
+    private static boolean sLastAllowBeta;
+    private static long sLastCheckAt;
+    /** A download or an install is running. */
+    private static boolean sBusy;
+    /** The screen that started it, told when Android refuses the install. */
+    private static WeakReference<OtaController> sActive = new WeakReference<>(null);
+
     private final FragmentActivity activity;
-    private TextView statusView;
-    private Button checkButton;
-    private CheckBox betaCheck;
     private StatusListener statusListener;
-
-    private OtaUpdateManager.UpdateInfo lastCheckInfo;
-    private final Handler progressHandler = new Handler(Looper.getMainLooper());
-    private Runnable progressRunnable;
+    private StateListener stateListener;
     private Dialog progressDialog;
-
-    private enum VerificationState { IDLE, IN_FLIGHT, PASSED, FAILED }
-
-    private long verificationDownloadId = -1L;
-    private VerificationState verificationState = VerificationState.IDLE;
-    private OtaUpdateManager.UpdateInfo activeDownloadInfo;
+    private TextView progressStatus;
+    private View progressRetry;
+    private boolean checking;
+    private boolean answerWhenChecked;
+    private boolean stopped;
 
     public OtaController(FragmentActivity activity) {
         this.activity = activity;
@@ -61,93 +77,98 @@ public final class OtaController {
         this.statusListener = listener;
     }
 
+    public void setStateListener(StateListener listener) {
+        this.stateListener = listener;
+    }
+
     /** Settings / UI without dedicated Button/CheckBox views. */
     public void bindWithoutViews() {
-        renderStatus(null, false);
+        render();
     }
 
     public boolean isAllowBeta() {
-        return allowBeta();
+        return prefs().getBoolean(KEY_ALLOW_BETA, false);
     }
 
     public void setAllowBeta(boolean allow) {
-        activity.getSharedPreferences(PREFS_NAME, 0)
-                .edit().putBoolean(KEY_ALLOW_BETA, allow).apply();
-        lastCheckInfo = null;
-        renderStatus(null, false);
+        prefs().edit().putBoolean(KEY_ALLOW_BETA, allow).apply();
+        sLastInfo = null;
+        render();
     }
 
-    /** Check for updates, or start download if an update is already known. */
+    /** Offers the update already found, otherwise checks first. */
     public void checkOrDownload() {
-        onCheckClicked();
+        if (sBusy) {
+            OtaDialogs.showMessageDialog(activity, activity.getString(R.string.ota_progress_busy));
+            return;
+        }
+        OtaUpdateManager.UpdateInfo info = currentInfo();
+        if (info != null && info.success && info.updateAvailable) {
+            confirmInstall(info);
+            return;
+        }
+        check(true);
     }
 
-    public void setup(Button checkButton, TextView statusView, CheckBox betaCheck) {
-        this.checkButton = checkButton;
-        this.statusView = statusView;
-        this.betaCheck = betaCheck;
-
-        SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, 0);
-        if (betaCheck != null) {
-            betaCheck.setChecked(prefs.getBoolean(KEY_ALLOW_BETA, false));
-            betaCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                prefs.edit().putBoolean(KEY_ALLOW_BETA, isChecked).apply();
-                lastCheckInfo = null;
-                renderStatus(null, true);
-                OtaUpdateManager.checkForUpdates(activity, isChecked, info -> {
-                    lastCheckInfo = info;
-                    renderStatus(info, false);
-                });
-            });
-        }
-
-        renderStatus(null, false);
-        if (checkButton != null) {
-            checkButton.setOnClickListener(v -> onCheckClicked());
-        }
-    }
-
-    /** Açılışta sessiz kontrol; güncelleme varsa toast. */
+    /** Silent check, unless one was made less than 30 minutes ago with the same beta choice. */
     public void checkOnStartup() {
-        boolean allowBeta = allowBeta();
-        OtaUpdateManager.checkForUpdates(activity, allowBeta, info -> {
-            lastCheckInfo = info;
-            renderStatus(info, false);
-            if (info != null && info.success && info.updateAvailable) {
-                Toast.makeText(
-                        activity,
-                        activity.getString(R.string.ota_status_update_available, info.latestVersion),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
+        if (currentInfo() != null && SystemClock.elapsedRealtime() - sLastCheckAt < RECHECK_MS) {
+            render();
+            return;
+        }
+        check(false);
     }
 
     public void stop() {
-        stopProgressWatcher();
+        stopped = true;
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        progressDialog = null;
     }
 
-    private void onCheckClicked() {
-        if (lastCheckInfo != null && lastCheckInfo.success && lastCheckInfo.updateAvailable) {
-            maybeStartDownload(lastCheckInfo);
-            return;
-        }
-        triggerCheck(true);
+    private SharedPreferences prefs() {
+        return activity.getSharedPreferences(PREFS_NAME, 0);
     }
 
-    private void triggerCheck(boolean showToast) {
-        if (showToast) {
-            Toast.makeText(activity, R.string.ota_toast_checking, Toast.LENGTH_SHORT).show();
+    private OtaUpdateManager.UpdateInfo currentInfo() {
+        return sLastInfo != null && sLastAllowBeta == isAllowBeta() ? sLastInfo : null;
+    }
+
+    /** Called by {@link OtaInstallResultReceiver} when the session failed (DiAuto still runs). */
+    static void onInstallFailed(String message) {
+        sBusy = false;
+        OtaController controller = sActive.get();
+        if (controller != null) {
+            controller.showFailure(controller.progressStatus, controller.progressRetry,
+                    controller.activity.getString(R.string.ota_install_failed_status, message));
         }
-        renderStatus(null, true);
-        OtaUpdateManager.checkForUpdates(activity, allowBeta(), info -> {
-            lastCheckInfo = info;
-            renderStatus(info, false);
+    }
+
+    private void check(boolean interactive) {
+        // A tap during the silent check gets its answer when that check returns.
+        answerWhenChecked |= interactive;
+        if (checking) return;
+        final boolean allowBeta = isAllowBeta();
+        checking = true;
+        render();
+        OtaUpdateManager.checkForUpdates(activity, allowBeta, info -> {
+            checking = false;
+            sLastInfo = info;
+            sLastAllowBeta = allowBeta;
+            sLastCheckAt = SystemClock.elapsedRealtime();
+            if (stopped) return;
+            render();
+            boolean answer = answerWhenChecked;
+            answerWhenChecked = false;
+            if (!answer) return;
             if (info != null && info.success && info.updateAvailable) {
-                maybeStartDownload(info);
+                confirmInstall(info);
             } else if (info != null && info.success) {
-                OtaDialogs.showMessageDialog(activity,
-                        activity.getString(R.string.ota_dialog_up_to_date_message));
+                boolean noStable = activity.getString(R.string.ota_status_no_stable).equals(info.message);
+                OtaDialogs.showMessageDialog(activity, activity.getString(noStable
+                        ? R.string.ota_dialog_no_stable_message
+                        : R.string.ota_dialog_up_to_date_version, displayVersion(info.currentVersion)));
             } else {
                 OtaDialogs.showMessageDialog(activity,
                         activity.getString(R.string.ota_dialog_check_failed_message));
@@ -155,342 +176,130 @@ public final class OtaController {
         });
     }
 
-    private boolean allowBeta() {
-        SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, 0);
-        if (betaCheck != null) return betaCheck.isChecked();
-        return prefs.getBoolean(KEY_ALLOW_BETA, false);
-    }
-
-    private void maybeStartDownload(OtaUpdateManager.UpdateInfo info) {
-        if (info == null || info.expectedSha256 == null || info.expectedSha256.trim().isEmpty()) {
-            OtaDialogs.showMessageDialog(
-                    activity,
-                    info != null && info.message != null && !info.message.trim().isEmpty()
-                            ? info.message
-                            : activity.getString(R.string.ota_error_no_hash)
-            );
+    private void confirmInstall(OtaUpdateManager.UpdateInfo info) {
+        if (info.expectedSha256 == null || info.expectedSha256.trim().isEmpty()) {
+            OtaDialogs.showMessageDialog(activity, info.message != null && !info.message.trim().isEmpty()
+                    ? info.message
+                    : activity.getString(R.string.ota_error_no_hash));
             return;
         }
+        String size = info.assetSize > 0L ? formatBytes(info.assetSize) : "?";
         OtaDialogs.showConfirmDialog(
                 activity,
-                activity.getString(R.string.ota_dialog_mobile_warning_message, info.latestVersion),
-                activity.getString(R.string.ota_action_download),
+                OtaDialogs.withDataWarning(
+                        activity.getString(R.string.ota_data_warning, size),
+                        activity.getString(R.string.ota_dialog_install_short, info.latestVersion)),
+                activity.getString(R.string.ota_action_install_update),
                 () -> startDownload(info)
         );
     }
 
     private void startDownload(OtaUpdateManager.UpdateInfo info) {
-        try {
-            stopProgressWatcher();
-            long downloadId = OtaUpdateManager.enqueueDownload(activity, info);
-            activeDownloadInfo = info;
-            showProgressDialog(info, downloadId);
-        } catch (Throwable t) {
-            OtaDialogs.showMessageDialog(
-                    activity,
-                    activity.getString(R.string.ota_dialog_download_failed_message, t.getClass().getSimpleName())
-            );
-        }
-    }
-
-    private void showProgressDialog(OtaUpdateManager.UpdateInfo info, long downloadId) {
+        sBusy = true;
+        sActive = new WeakReference<>(this);
         OtaDialogs.ProgressDialogHandle handle = OtaDialogs.showProgressDialog(
                 activity,
                 activity.getString(R.string.ota_dialog_download_started_message, info.latestVersion),
-                () -> retryDownload(downloadId),
-                () -> installDownloadedApk(downloadId)
+                () -> {
+                    if (progressDialog != null) progressDialog.dismiss();
+                    startDownload(info);
+                },
+                null
         );
         progressDialog = handle.dialog;
-        progressDialog.setOnDismissListener(d -> stopProgressWatcher());
-        verificationDownloadId = -1L;
-        verificationState = VerificationState.IDLE;
+        progressStatus = handle.statusView;
+        progressRetry = handle.retryButton;
+        final TextView status = handle.statusView;
+        final ProgressBar bar = handle.progressBar;
+        final View retry = handle.retryButton;
 
-        final TextView progressStatus = handle.statusView;
-        final ProgressBar progressBar = handle.progressBar;
-        final View retryButton = handle.retryButton;
-        final View installButton = handle.installButton;
-        progressRunnable = new Runnable() {
+        OtaUpdateManager.download(activity, info, new OtaUpdateManager.DownloadCallback() {
             @Override
-            public void run() {
-                boolean cont = tickProgress(downloadId, progressBar, progressStatus, retryButton, installButton);
-                if (cont && progressDialog != null && progressDialog.isShowing()) {
-                    progressHandler.postDelayed(this, 500L);
+            public void onProgress(long done, long total) {
+                if (stopped) return;
+                long expected = total > 0L ? total : info.assetSize;
+                if (bar != null && expected > 0L) {
+                    bar.setIndeterminate(false);
+                    bar.setProgress((int) Math.min(100L, done * 100L / expected));
+                }
+                if (status != null) {
+                    status.setText(expected > 0L
+                            ? activity.getString(R.string.ota_progress_downloading,
+                                    (int) Math.min(100L, done * 100L / expected), formatBytes(done), formatBytes(expected))
+                            : activity.getString(R.string.ota_progress_running_unknown, formatBytes(done)));
                 }
             }
-        };
-        progressHandler.post(progressRunnable);
-    }
 
-    private boolean tickProgress(long downloadId, ProgressBar progressBar, TextView statusView,
-                                 View retryButton, View installButton) {
-        DownloadManager dm = activity.getSystemService(DownloadManager.class);
-        if (dm == null) {
-            if (statusView != null) statusView.setText(R.string.ota_progress_unavailable);
-            return false;
-        }
-
-        try (Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(downloadId))) {
-            if (cursor == null || !cursor.moveToFirst()) {
-                if (statusView != null) statusView.setText(R.string.ota_progress_missing);
-                if (retryButton != null) retryButton.setVisibility(View.VISIBLE);
-                return false;
-            }
-
-            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
-            long downloaded = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-            long total = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-            int pct = (total > 0L) ? (int) ((downloaded * 100L) / total) : 0;
-            int reason = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
-
-            if (progressBar != null) {
-                if (total > 0L) {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setMax(100);
-                    progressBar.setProgress(Math.max(0, Math.min(100, pct)));
-                } else {
-                    progressBar.setIndeterminate(true);
+            @Override
+            public void onResult(java.io.File apk, String error) {
+                if (error != null) {
+                    sBusy = false;
+                    showFailure(status, retry, activity.getString(R.string.ota_progress_failed_reason, error));
+                    return;
                 }
-            }
-            if (statusView != null && status != DownloadManager.STATUS_SUCCESSFUL) {
-                statusView.setText(progressStatusText(status, pct, downloaded, total, reason));
-            }
-
-            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                if (retryButton != null) retryButton.setVisibility(View.GONE);
-                if (progressBar != null) {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setMax(100);
-                    progressBar.setProgress(100);
-                }
-                if (verificationState == VerificationState.PASSED || verificationState == VerificationState.FAILED) {
-                    if (installButton != null) {
-                        installButton.setVisibility(
-                                verificationState == VerificationState.PASSED ? View.VISIBLE : View.GONE);
+                if (!stopped) {
+                    if (bar != null) {
+                        bar.setIndeterminate(false);
+                        bar.setProgress(100);
                     }
-                    return false;
+                    if (status != null) status.setText(R.string.ota_progress_verified);
                 }
-                if (installButton != null) installButton.setVisibility(View.GONE);
-                if (verificationState != VerificationState.IN_FLIGHT || verificationDownloadId != downloadId) {
-                    startVerification(downloadId, statusView, installButton);
-                } else if (statusView != null) {
-                    statusView.setText(R.string.ota_progress_verifying);
-                }
-                return true;
-            }
-
-            if (retryButton != null) {
-                retryButton.setVisibility(status == DownloadManager.STATUS_FAILED ? View.VISIBLE : View.GONE);
-            }
-            if (installButton != null) installButton.setVisibility(View.GONE);
-            return status == DownloadManager.STATUS_PENDING
-                    || status == DownloadManager.STATUS_RUNNING
-                    || status == DownloadManager.STATUS_PAUSED;
-
-        } catch (Throwable t) {
-            if (statusView != null) {
-                statusView.setText(activity.getString(R.string.ota_progress_failed_reason, t.getClass().getSimpleName()));
-            }
-            if (retryButton != null) retryButton.setVisibility(View.VISIBLE);
-            return false;
-        }
-    }
-
-    private void startVerification(long downloadId, TextView statusView, View installButton) {
-        if (verificationState == VerificationState.IN_FLIGHT && verificationDownloadId == downloadId) return;
-        verificationDownloadId = downloadId;
-        verificationState = VerificationState.IN_FLIGHT;
-        if (installButton != null) installButton.setVisibility(View.GONE);
-        if (statusView != null) statusView.setText(R.string.ota_progress_verifying);
-
-        Uri apkUri;
-        try {
-            apkUri = resolveDownloadedApkUri(downloadId);
-        } catch (Exception e) {
-            verificationState = VerificationState.FAILED;
-            if (statusView != null) {
-                statusView.setText(activity.getString(
-                        R.string.ota_progress_integrity_failed, e.getClass().getSimpleName()));
-            }
-            return;
-        }
-
-        OtaUpdateManager.verifyDownloadedApk(activity, downloadId, apkUri, activeDownloadInfo,
-                (success, computedSha256, message) -> {
-                    if (downloadId != verificationDownloadId) return;
-                    verificationState = success ? VerificationState.PASSED : VerificationState.FAILED;
-                    if (statusView != null) {
-                        if (success) {
-                            statusView.setText(R.string.ota_progress_verified);
-                        } else {
-                            statusView.setText(activity.getString(R.string.ota_progress_integrity_failed, message));
-                        }
+                // The user asked for it: installed even if the screen was left meanwhile.
+                OtaUpdateManager.install(activity, apk, installError -> {
+                    if (installError != null) {
+                        sBusy = false;
+                        showFailure(status, retry,
+                                activity.getString(R.string.ota_install_failed_status, installError));
+                        return;
                     }
-                    if (installButton != null) {
-                        installButton.setVisibility(success ? View.VISIBLE : View.GONE);
-                    }
-                    if (success) {
-                        // Doğrulama OK → kurulum ekranını aç
-                        installDownloadedApk(downloadId);
-                    }
+                    if (!stopped && status != null) status.setText(R.string.ota_progress_installing);
                 });
-    }
-
-    private void installDownloadedApk(long downloadId) {
-        try {
-            Uri apkUri = resolveDownloadedApkUri(downloadId);
-            OtaInstaller.install(activity, downloadId, apkUri);
-            // Kurulum ekranı açıldı; diğer eski APK’ları sil (kurulan dosyayı koru)
-            File keep = OtaInstaller.resolveApkFilePublic(activity, downloadId, apkUri);
-            OtaCleanup.deleteOldApks(keep);
-        } catch (Exception e) {
-            Log.w("DiAuto_OTA", "install failed, opening downloads: " + e.getMessage());
-            OtaDialogs.showMessageDialog(
-                    activity,
-                    activity.getString(R.string.ota_dialog_install_failed_message,
-                            e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())
-            );
-            openDownloadsFolder();
-        }
-    }
-
-    private void openDownloadsFolder() {
-        try {
-            Intent downloadsIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-            downloadsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            android.content.pm.PackageManager pm = activity.getPackageManager();
-            if (pm != null && downloadsIntent.resolveActivity(pm) != null) {
-                activity.startActivity(downloadsIntent);
-                return;
             }
-            throw new IllegalStateException("Downloads app not available");
-        } catch (Exception e) {
-            OtaDialogs.showMessageDialog(
-                    activity,
-                    activity.getString(R.string.ota_dialog_open_downloads_failed_message, e.getClass().getSimpleName())
-            );
-        }
+        });
     }
 
-    private Uri resolveDownloadedApkUri(long downloadId) throws Exception {
-        DownloadManager dm = activity.getSystemService(DownloadManager.class);
-        if (dm == null) return null;
-        Uri downloadedUri = dm.getUriForDownloadedFile(downloadId);
-        if (downloadedUri != null) return downloadedUri;
-        try (Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(downloadId))) {
-            if (cursor == null || !cursor.moveToFirst()) return null;
-            String localUri = cursor.getString(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI));
-            if (localUri == null || localUri.isEmpty()) return null;
-            return Uri.parse(localUri);
-        }
+    private void showFailure(TextView status, View retry, String text) {
+        if (stopped) return;
+        if (status != null) status.setText(text);
+        if (retry != null) retry.setVisibility(View.VISIBLE);
     }
 
-    private void retryDownload(long failedDownloadId) {
-        OtaUpdateManager.UpdateInfo info = activeDownloadInfo;
-        cleanupFailedDownload(failedDownloadId);
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        if (info != null) {
-            startDownload(info);
-        } else {
-            OtaDialogs.showMessageDialog(activity, activity.getString(R.string.ota_status_check_failed));
-        }
+    /** "2.0.0-beta15" for the "2.0.0-beta15-debug" build. */
+    private static String displayVersion(String version) {
+        if (version == null) return "";
+        return version.replace("-debug", "").replace("-phone", "");
     }
 
-    private void cleanupFailedDownload(long downloadId) {
-        if (downloadId <= 0L) return;
-        try {
-            DownloadManager dm = activity.getSystemService(DownloadManager.class);
-            if (dm != null) dm.remove(downloadId);
-        } catch (Throwable ignored) {
-        }
-    }
-
-    private void stopProgressWatcher() {
-        if (progressRunnable != null) {
-            progressHandler.removeCallbacks(progressRunnable);
-            progressRunnable = null;
-        }
-        verificationDownloadId = -1L;
-        verificationState = VerificationState.IDLE;
-        activeDownloadInfo = null;
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        progressDialog = null;
-    }
-
-    private void renderStatus(OtaUpdateManager.UpdateInfo info, boolean checking) {
-        String statusText;
-        boolean updateAvailable = false;
+    private void render() {
+        boolean allowBeta = isAllowBeta();
+        OtaUpdateManager.UpdateInfo info = currentInfo();
+        State state;
+        String text;
         if (checking) {
-            statusText = activity.getString(R.string.ota_status_checking);
-            if (statusView != null) {
-                statusView.setText(statusText);
-                statusView.setTextColor(ContextCompat.getColor(activity, R.color.da_muted));
-            }
-            if (statusListener != null) statusListener.onOtaStatus(statusText, false, true);
-            return;
-        }
-        if (info != null && info.success && info.updateAvailable) {
-            statusText = activity.getString(R.string.ota_status_update_available, info.latestVersion);
-            updateAvailable = true;
-            if (statusView != null) {
-                statusView.setText(statusText);
-                statusView.setTextColor(ContextCompat.getColor(activity, R.color.da_accent));
-            }
-            if (checkButton != null) {
-                checkButton.setText(R.string.btn_ota_download);
-            }
-            if (statusListener != null) statusListener.onOtaStatus(statusText, true, false);
-            return;
-        }
-        if (info != null && info.success) {
-            statusText = activity.getString(R.string.ota_status_up_to_date);
-            if (statusView != null) {
-                statusView.setText(statusText);
-                statusView.setTextColor(ContextCompat.getColor(activity, R.color.da_accent));
-            }
-            if (checkButton != null) {
-                checkButton.setText(R.string.btn_ota_check);
-            }
-            if (statusListener != null) statusListener.onOtaStatus(statusText, false, false);
-            return;
-        }
-        if (info != null) {
-            statusText = activity.getString(R.string.ota_status_check_failed_detail,
-                    info.message != null ? info.message : "");
+            state = State.CHECKING;
+            text = activity.getString(R.string.ota_status_checking);
+        } else if (info == null) {
+            state = State.IDLE;
+            text = activity.getString(R.string.ota_status_idle);
+        } else if (info.success && info.updateAvailable) {
+            state = State.AVAILABLE;
+            text = activity.getString(R.string.ota_status_update_available, info.latestVersion);
+        } else if (info.success) {
+            state = State.UP_TO_DATE;
+            text = info.message != null ? info.message : activity.getString(R.string.ota_status_up_to_date);
         } else {
-            statusText = activity.getString(R.string.ota_status_idle);
+            state = State.FAILED;
+            text = activity.getString(R.string.ota_status_check_failed_detail,
+                    info.message != null ? info.message : "");
         }
-        if (statusView != null) {
-            statusView.setText(statusText);
-            statusView.setTextColor(ContextCompat.getColor(activity, R.color.da_muted));
+        if (statusListener != null) {
+            statusListener.onOtaStatus(text, state == State.AVAILABLE, state == State.CHECKING);
         }
-        if (checkButton != null) {
-            checkButton.setText(R.string.btn_ota_check);
+        if (stateListener != null) {
+            stateListener.onOtaState(new Status(state,
+                    info != null ? info.latestVersion : null,
+                    info != null && info.prerelease, allowBeta));
         }
-        if (statusListener != null) statusListener.onOtaStatus(statusText, updateAvailable, false);
-    }
-
-    private CharSequence progressStatusText(int status, int pct, long downloaded, long total, int reason) {
-        if (status == DownloadManager.STATUS_SUCCESSFUL) {
-            return activity.getString(R.string.ota_progress_complete);
-        }
-        if (status == DownloadManager.STATUS_FAILED) {
-            return activity.getString(R.string.ota_progress_failed_reason, "reason " + reason);
-        }
-        if (status == DownloadManager.STATUS_PAUSED) {
-            return activity.getString(R.string.ota_progress_paused, pct);
-        }
-        if (status == DownloadManager.STATUS_PENDING) {
-            return activity.getString(R.string.ota_progress_pending);
-        }
-        if (total > 0L) {
-            return activity.getString(R.string.ota_progress_downloading,
-                    pct, formatBytes(downloaded), formatBytes(total));
-        }
-        return activity.getString(R.string.ota_progress_running_unknown, formatBytes(downloaded));
     }
 
     private static String formatBytes(long bytes) {

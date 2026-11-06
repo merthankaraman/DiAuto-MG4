@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Fahrten für Maps aufzeichnen</string>
+    <string name="trip_option_summary">Fügt eine Taste hinzu, um eine gewählte Fahrt aufzuzeichnen und die Prognosen von Maps zu verbessern: Verbrauch, Geschwindigkeit, Klima, Temperatur. Ohne Standort oder persönliche Daten.</string>
+    <string name="trip_start">Diese Fahrt aufzeichnen</string>
+    <string name="trip_stop">Aufzeichnung beenden</string>
+    <string name="trip_button_summary">Zeichnet auf, bis Sie parken oder sie beenden, auch im Zwei-Finger-Menü und auf dem Startbildschirm.</string>
+    <string name="trip_no_battery">Akkustand nicht lesbar: Versuchen Sie es gleich noch einmal.</string>
+    <string name="trip_bad_percent">Geben Sie eine Zahl von 0 bis 100 ein.</string>
+    <string name="trip_started">Aufzeichnung der Fahrt gestartet.</string>
+    <string name="trip_saved">Fahrt gespeichert.</string>
+    <string name="trip_too_short">Fahrt zu kurz: nicht gespeichert.</string>
+    <string name="trip_files">Aufgezeichnete Fahrten</string>
+    <string name="trip_files_summary">%1$d gespeichert. Werden auf einen USB-Stick kopiert und dann aus dem Auto entfernt.</string>
+    <string name="trip_copy">Auf USB kopieren</string>
+    <string name="trip_copied">%1$d Fahrten auf den USB-Stick kopiert.</string>
+    <string name="trip_copy_failed">Kein USB-Stick gefunden oder Kopieren fehlgeschlagen: Fahrten bleiben im Auto.</string>
+    <string name="trip_picker_title">Von Maps prognostizierter Akkustand bei Ankunft</string>
+    <string name="trip_picker_note">Aktuell %1$d %%. Eine verwertbare Fahrt verbraucht mindestens %2$d %% Akku, ohne Ladestopp.</string>
+    <string name="trip_battery_low">Akku zu niedrig, um eine verwertbare Fahrt aufzuzeichnen.</string>
+</resources>

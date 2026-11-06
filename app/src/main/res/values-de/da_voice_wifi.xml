@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Sprach-Höhen</string>
+    <string name="dset_voice_enhance_summary">Stellt die Höhen wieder her, die das Telefon abschneidet: leichter oder starker Exciter oder neuronales Netz (Opus). Ab der nächsten Ansage.</string>
+    <string name="dset_voice_enhance_standard">Aus</string>
+    <string name="dset_voice_enhance_light">Leicht</string>
+    <string name="dset_voice_enhance_strong">Stark</string>
+    <string name="dset_voice_enhance_neural">Neuronal</string>
+    <string name="dset_voice_experimental">Sprachklarheit und Sprach-Höhen sind experimentell: Sagen Sie uns auf GitHub, welche Einstellung für Sie am besten klingt.</string>
+    <string name="dset_wifi_channel">WLAN-Kanal</string>
+    <string name="dset_wifi_channel_summary">Kanal des Zugangspunkts des Autos. Auto wählt beim Start des Zugangspunkts den am wenigsten belegten, nie während einer Verbindung.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

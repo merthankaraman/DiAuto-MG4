@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Firmware vašeho auta (%1$s) nezvládne bezdrátové Android Auto: jeho Bluetooth dovolí jen jedno připojení aplikace najednou. DiAuto to neobejde. Požádejte prodejce o %2$s nebo novější.</string>
+    <string name="da_firmware_incompatible" formatted="true">Firmware vašeho auta (%1$s) nezvládne bezdrátové Android Auto: jeho Bluetooth dovolí jen jedno připojení aplikace najednou. DiAuto to neobejde. Zeptejte se prodejce na novější firmware.</string>
+</resources>

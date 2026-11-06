@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi del coche vuelve tras</string>
+    <string name="dset_station_delay_summary">El Wi-Fi del coche se apaga durante Android Auto inalámbrico. Vuelve cuando la sesión lleva este tiempo terminada.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi auta při USB</string>
+    <string name="dset_usb_wifi_summary">Když Android Auto běží přes kabel USB, Wi-Fi auta se připojí ke známým sítím, třeba k hotspotu telefonu, a má internet. Po odpojení kabelu se vypne.</string>
+</resources>

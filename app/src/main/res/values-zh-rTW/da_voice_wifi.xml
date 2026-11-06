@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">語音高音</string>
+    <string name="dset_voice_enhance_summary">恢復手機截掉的高音：輕度或強度激勵器，或神經網路（Opus）。從下一則提示起生效。</string>
+    <string name="dset_voice_enhance_standard">關</string>
+    <string name="dset_voice_enhance_light">輕度</string>
+    <string name="dset_voice_enhance_strong">強度</string>
+    <string name="dset_voice_enhance_neural">神經網路</string>
+    <string name="dset_voice_experimental">語音清晰度和高音為實驗性設定：歡迎在 GitHub 告訴我們哪種聽起來最好。</string>
+    <string name="dset_wifi_channel">Wi-Fi 頻道</string>
+    <string name="dset_wifi_channel_summary">車輛熱點的頻道。自動模式在熱點啟動時選擇最不擁擠的頻道，連線期間絕不更換。</string>
+    <string name="dset_wifi_channel_auto">自動</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Độ rõ giọng</string>
+    <string name="dset_voice_clarity_summary">Bộ lọc cho chỉ dẫn và trợ lý: bỏ âm trầm đục và làm rõ phụ âm. Từ chỉ dẫn tiếp theo.</string>
+    <string name="dset_voice_headroom">Khoảng dư giọng</string>
+    <string name="dset_voice_headroom_summary">Giảm nhẹ chỉ dẫn để bộ xử lý của xe không bị bão hòa; tăng âm lượng dẫn đường của xe để bù.</string>
+</resources>

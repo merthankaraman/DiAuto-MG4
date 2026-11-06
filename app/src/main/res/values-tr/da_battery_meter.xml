@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">sürüşte ölçülen %1$d kWh batarya</string>
+    <string name="battery_source_measuring">varsayılan %1$d kWh batarya, sürüşte ölçülüyor (%2$d / %3$d %%)</string>
+    <string name="battery_soh_source_measured">sürüşte ölçüldü</string>
+</resources>

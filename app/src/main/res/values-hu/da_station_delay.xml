@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Az autó Wi-Fi-je vissza</string>
+    <string name="dset_station_delay_summary">Vezeték nélküli Android Auto alatt az autó Wi-Fi-je ki van kapcsolva. Visszajön, ha a munkamenet ennyi ideje véget ért.</string>
+</resources>

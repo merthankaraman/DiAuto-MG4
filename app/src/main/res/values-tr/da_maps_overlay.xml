@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Maps modeli verileri ekranda</string>
+    <string name="dset_maps_overlay_summary">Deneme sürüşleri için, Android Auto üzerinde modelin beklentisini ve bataryanın gerçek tüketimini gösterir.</string>
+</resources>

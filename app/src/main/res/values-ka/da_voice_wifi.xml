@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">ხმის მაღალი სიხშირეები</string>
+    <string name="dset_voice_enhance_summary">აღადგენს ტელეფონის მიერ მოჭრილ მაღალ სიხშირეებს: მსუბუქი ან ძლიერი ექსაიტერი, ან ნეირონული ქსელი (Opus). შემდეგი მითითებიდან.</string>
+    <string name="dset_voice_enhance_standard">გამორთ.</string>
+    <string name="dset_voice_enhance_light">მსუბუქი</string>
+    <string name="dset_voice_enhance_strong">ძლიერი</string>
+    <string name="dset_voice_enhance_neural">ნეირონული</string>
+    <string name="dset_voice_experimental">ხმის სიცხადე და მაღალი სიხშირეები ექსპერიმენტულია: GitHub-ზე გვითხარით, რომელი ჟღერს თქვენთვის საუკეთესოდ.</string>
+    <string name="dset_wifi_channel">Wi-Fi არხი</string>
+    <string name="dset_wifi_channel_summary">მანქანის წვდომის წერტილის არხი. ავტომატური რეჟიმი წვდომის წერტილის ჩართვისას ირჩევს ყველაზე ნაკლებად დატვირთულს, კავშირის დროს არასოდეს.</string>
+    <string name="dset_wifi_channel_auto">ავტო</string>
+</resources>

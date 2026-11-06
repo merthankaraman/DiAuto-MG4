@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">%2$d단계 중 %1$d단계</string>
+    <string name="tuto_skip">건너뛰기</string>
+    <string name="tuto_back">이전</string>
+    <string name="tuto_next">다음</string>
+    <string name="tuto_done">시작하기</string>
+    <string name="tuto_welcome_title">MG4용 DiAuto에 오신 것을 환영합니다</string>
+    <string name="tuto_welcome_text">MG4 화면에서 무선 Android Auto를 사용할 수 있습니다. 휴대전화를 블루투스로 차량과 페어링하면 차량의 Wi-Fi 핫스팟에 연결되고 Android Auto가 자동으로 시작됩니다.\n\n다음 단계에서는 Android Auto 위에서 쓸 수 있는 세 가지 제스처를 보여 줍니다.</string>
+    <string name="tuto_menu_title">왼쪽 가장자리에서 두 손가락</string>
+    <string name="tuto_menu_text">화면 왼쪽 가장자리에 두 손가락을 대고 오른쪽으로 밉니다. 큰 버튼 두 개(연결 해제, 설정)가 있는 메뉴가 열립니다.\n\n다른 곳을 탭하면 닫힙니다.</string>
+    <string name="tuto_fullscreen_title">오른쪽 가장자리에서 두 손가락</string>
+    <string name="tuto_fullscreen_text">오른쪽 가장자리에 두 손가락을 대고 왼쪽으로 밀면 차량 바를 표시하거나 숨겨 화면 전체를 사용할 수 있습니다.</string>
+    <string name="tuto_top_title">위쪽 가장자리에서 두 손가락</string>
+    <string name="tuto_top_text">화면 위쪽에 두 손가락을 대고 아래로 밀면 차량 홈 화면으로 돌아갑니다. Android Auto는 연결된 상태로 유지됩니다.</string>
+    <string name="tuto_home_title">세 손가락으로 아래로</string>
+    <string name="tuto_home_text">세 손가락으로 아래로 밀면 Android Auto 연결이 끊기고 DiAuto 홈 화면으로 돌아갑니다.</string>
+    <string name="tuto_tips_title">알아 두면 좋은 점</string>
+    <string name="tuto_tips_text">• Google 지도가 경로 플래너가 됩니다. MG4의 배터리, 전비, 충전 출력을 받아 충전 정차 지점을 고릅니다.\n• 설정 → 차량: MG4 버전, 배터리 용량과 상태. 자동으로 감지되며 조정할 수 있습니다.\n• 지도가 계획한 충전 정차 전에 배터리를 자동으로 예열합니다. 기본값은 꺼짐이며 설정 → 차량에서 켤 수 있습니다.\n• DiAuto는 차량 순정 Android Auto(AllGo)의 업데이트로 설치됩니다. 되돌리려면 설정 → 정보 → 되돌리기을 누른 뒤 Home 버튼을 20초 길게 눌러 화면을 다시 시작하세요.\n• 설정 → 정보: 이 튜토리얼 다시 보기.</string>
+    <string name="tuto_settings_title">튜토리얼</string>
+    <string name="tuto_settings_summary">Android Auto 위의 제스처와 유용한 설정을 몇 단계로 안내합니다.</string>
+    <string name="tuto_settings_button">보기</string>
+    <string name="da_settings">설정</string>
+</resources>

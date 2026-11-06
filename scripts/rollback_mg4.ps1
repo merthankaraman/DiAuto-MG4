@@ -4,6 +4,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# LEGACY package only (the 1.9.x application id). Since 2.3.0 the app uses the OEM application id
+# com.allgo.app.androidauto: do NOT point this script at it. To go back to the car's own Android Auto
+# use Settings > About > Go back to the car's Android Auto (AllGo), see README.
 $Package = "com.drivehub.diauto.mg4"
 
 if (-not (Get-Command adb -ErrorAction SilentlyContinue)) {

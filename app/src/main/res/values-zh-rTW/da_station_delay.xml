@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">車輛 Wi-Fi 恢復時間</string>
+    <string name="dset_station_delay_summary">無線 Android Auto 期間車輛 Wi-Fi 會關閉。工作階段結束超過此時間後恢復。</string>
+</resources>

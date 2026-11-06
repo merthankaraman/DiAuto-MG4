@@ -27,7 +27,7 @@ final class OtaReleaseAssets {
             String name = asset.optString("name", "");
             String downloadUrl = asset.optString("browser_download_url", "");
             if (!name.toLowerCase(Locale.US).endsWith(".apk") || downloadUrl.isEmpty()) continue;
-            candidates.add(new ApkAsset(name, downloadUrl));
+            candidates.add(new ApkAsset(name, downloadUrl, asset.optLong("size", 0L)));
         }
         return chooseBestApkAsset(candidates, flavor);
     }
@@ -120,10 +120,12 @@ final class OtaReleaseAssets {
     static final class ApkAsset {
         final String name;
         final String downloadUrl;
+        final long size;
 
-        ApkAsset(String name, String downloadUrl) {
+        ApkAsset(String name, String downloadUrl, long size) {
             this.name = name;
             this.downloadUrl = downloadUrl;
+            this.size = size;
         }
     }
 

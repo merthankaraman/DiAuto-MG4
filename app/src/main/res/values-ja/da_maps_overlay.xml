@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">マップ用モデルの数値を画面に表示</string>
+    <string name="dset_maps_overlay_summary">テスト走行用に、モデルの予測とバッテリーの実際の消費を Android Auto の上に表示します。</string>
+</resources>

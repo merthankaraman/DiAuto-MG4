@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Clarté de la voix</string>
+    <string name="dset_voice_clarity_summary">Filtre pour le guidage et l\'assistant : retire les graves sourds et fait ressortir les consonnes. Dès la prochaine annonce.</string>
+    <string name="dset_voice_headroom">Marge de la voix</string>
+    <string name="dset_voice_headroom_summary">Baisse un peu le guidage pour que le traitement de la voiture ne sature pas ; montez le volume de navigation de la voiture pour compenser.</string>
+</resources>

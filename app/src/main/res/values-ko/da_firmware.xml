@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">차량 펌웨어(%1$s)는 무선 Android Auto를 실행할 수 없습니다. 블루투스가 한 번에 하나의 앱 연결만 허용하기 때문입니다. DiAuto로는 해결할 수 없습니다. 대리점에 %2$s 이상으로 업데이트를 요청하세요.</string>
+    <string name="da_firmware_incompatible" formatted="true">차량 펌웨어(%1$s)는 무선 Android Auto를 실행할 수 없습니다. 블루투스가 한 번에 하나의 앱 연결만 허용하기 때문입니다. DiAuto로는 해결할 수 없습니다. 더 최신 펌웨어가 있는지 대리점에 문의하세요.</string>
+</resources>

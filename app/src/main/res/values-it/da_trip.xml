@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Registra i viaggi per Maps</string>
+    <string name="trip_option_summary">Aggiunge un pulsante per registrare un viaggio scelto e aiutare ad affinare le previsioni di Maps: consumi, velocità, clima, temperatura. Senza posizione né dati personali.</string>
+    <string name="trip_start">Registra questo viaggio</string>
+    <string name="trip_stop">Interrompi la registrazione</string>
+    <string name="trip_button_summary">Registra finché parcheggi o la interrompi, anche dal menu a due dita e dalla schermata iniziale.</string>
+    <string name="trip_no_battery">Livello della batteria non leggibile: riprova tra poco.</string>
+    <string name="trip_bad_percent">Inserisci un numero da 0 a 100.</string>
+    <string name="trip_started">Registrazione del viaggio avviata.</string>
+    <string name="trip_saved">Viaggio salvato.</string>
+    <string name="trip_too_short">Viaggio troppo breve: non salvato.</string>
+    <string name="trip_files">Viaggi registrati</string>
+    <string name="trip_files_summary">%1$d salvati. Copiati su una chiavetta USB, poi rimossi dall\'auto.</string>
+    <string name="trip_copy">Copia su USB</string>
+    <string name="trip_copied">%1$d viaggi copiati sulla chiavetta USB.</string>
+    <string name="trip_copy_failed">Chiavetta USB non trovata o copia non riuscita: viaggi conservati nell\'auto.</string>
+    <string name="trip_picker_title">Batteria all\'arrivo prevista da Maps</string>
+    <string name="trip_picker_note">Ora %1$d %%. Un viaggio utilizzabile consuma almeno il %2$d %% di batteria, senza soste di ricarica.</string>
+    <string name="trip_battery_low">Batteria troppo scarica per registrare un viaggio utilizzabile.</string>
+</resources>

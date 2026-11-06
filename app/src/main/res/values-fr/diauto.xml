@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_brand">DiAuto</string>
+    <string name="da_brand">DiAuto for MG4</string>
     <string name="da_tagline">VOTRE TÉLÉPHONE. VOTRE CONDUITE.</string>
     <string name="da_headline">Une conduite familière.</string>
     <string name="da_description">Vos cartes, votre musique et vos conversations.\nAndroid Auto, directement sur l’écran de la voiture.</string>
@@ -14,9 +14,18 @@
     <string name="da_wireless">ANDROID AUTO SANS FIL</string>
     <string name="da_usb">Connecter en USB</string>
     <string name="da_usb_hint">Vous préférez un câble ? Branchez votre téléphone.</string>
-    <string name="da_settings">Paramètres</string>
+    <string name="da_settings">Réglages</string>
     <string name="da_settings_hint">Faites comme chez vous.</string>
     <string name="da_close">Accueil voiture</string>
+    <string name="da_update">Mises à jour</string>
+    <string name="da_update_install">Installer la %1$s</string>
+    <string name="da_update_hint_checking">Recherche d’une mise à jour…</string>
+    <string name="da_update_hint_current">Version %1$s</string>
+    <string name="da_update_hint_up_to_date">Version %1$s · à jour</string>
+    <string name="da_update_hint_up_to_date_beta">Version %1$s · à jour, bêtas incluses</string>
+    <string name="da_update_hint_available">Nouvelle version disponible</string>
+    <string name="da_update_hint_available_beta">Nouvelle bêta disponible</string>
+    <string name="da_update_hint_failed">Version %1$s · vérification impossible</string>
     <string name="da_pair">Apparier un téléphone</string>
     <string name="da_no_paired">Appariez d’abord votre téléphone Android avec la voiture. Revenez ici une fois l’appairage terminé.</string>
     <string name="da_bluetooth_off">Activez le Bluetooth dans les réglages de la voiture pour connecter votre téléphone.</string>

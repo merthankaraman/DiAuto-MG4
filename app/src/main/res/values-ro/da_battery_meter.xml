@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">baterie %1$d kWh măsurată în mers</string>
+    <string name="battery_source_measuring">baterie %1$d kWh implicit, măsurare în mers (%2$d din %3$d %%)</string>
+    <string name="battery_soh_source_measured">măsurat în mers</string>
+</resources>

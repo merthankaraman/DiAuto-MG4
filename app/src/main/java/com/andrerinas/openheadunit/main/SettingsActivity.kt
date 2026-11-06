@@ -49,9 +49,9 @@ class SettingsActivity : BaseActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.settings_nav_host) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Set the start destination to settingsFragment instead of homeFragment
+        // Only the battery screen is left here (opened from the Car tab).
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-        navGraph.startDestination = R.id.driveSettingsFragment
+        navGraph.startDestination = R.id.chargingInfoFragment
         navController.graph = navGraph
 
         // Open a specific sub-screen when requested (e.g. from the onboarding wizard),
@@ -59,7 +59,7 @@ class SettingsActivity : BaseActivity() {
         val requestedDestination = intent?.getIntExtra(EXTRA_DESTINATION, 0) ?: 0
         val restoredDestination = if (requestedDestination != 0) requestedDestination
             else savedInstanceState?.getInt(KEY_CURRENT_DESTINATION, 0) ?: 0
-        if (restoredDestination != 0 && restoredDestination != R.id.driveSettingsFragment) {
+        if (restoredDestination != 0 && restoredDestination != R.id.chargingInfoFragment) {
             try {
                 navController.navigate(restoredDestination)
             } catch (_: Exception) {}

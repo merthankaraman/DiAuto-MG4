@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fullscreen_reconnecting">新しい画面の高さを使うため Android Auto を再接続しています…</string>
+</resources>

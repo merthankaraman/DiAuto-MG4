@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Записывать журналы</string>
+    <string name="dset_log_record_summary">По умолчанию включено, чтобы приложить к issue на GitHub при проблеме. Небольшие, без пунктов назначения и имён. Выключите, чтобы ничего не записывать.</string>
+</resources>

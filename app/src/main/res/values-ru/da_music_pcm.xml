@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">Музыка без сжатия (PCM)</string>
+    <string name="dset_music_pcm_summary">Телефон передаёт музыку без сжатия AAC. Около 1,5 Мбит/с по Wi-Fi: возможны прерывания. Со следующего подключения.</string>
+</resources>

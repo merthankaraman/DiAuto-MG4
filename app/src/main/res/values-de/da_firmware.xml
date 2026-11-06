@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Die Firmware Ihres Autos (%1$s) kann kein kabelloses Android Auto: Ihr Bluetooth erlaubt nur eine App-Verbindung gleichzeitig. DiAuto kann das nicht umgehen. Fragen Sie Ihren Händler nach %2$s oder neuer.</string>
+    <string name="da_firmware_incompatible" formatted="true">Die Firmware Ihres Autos (%1$s) kann kein kabelloses Android Auto: Ihr Bluetooth erlaubt nur eine App-Verbindung gleichzeitig. DiAuto kann das nicht umgehen. Fragen Sie Ihren Händler nach einer neueren Firmware.</string>
+</resources>

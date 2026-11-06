@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">음성 고음</string>
+    <string name="dset_voice_enhance_summary">휴대폰이 잘라낸 고음을 복원합니다: 약한/강한 익사이터 또는 신경망(Opus). 다음 안내부터 적용.</string>
+    <string name="dset_voice_enhance_standard">끔</string>
+    <string name="dset_voice_enhance_light">약하게</string>
+    <string name="dset_voice_enhance_strong">강하게</string>
+    <string name="dset_voice_enhance_neural">신경망</string>
+    <string name="dset_voice_experimental">음성 선명도와 고음은 실험적인 설정입니다. 어떤 설정이 가장 잘 들리는지 GitHub에 알려 주세요.</string>
+    <string name="dset_wifi_channel">Wi-Fi 채널</string>
+    <string name="dset_wifi_channel_summary">차량 액세스 포인트의 채널. 자동은 액세스 포인트 시작 시 가장 덜 혼잡한 채널을 고르며, 연결 중에는 바꾸지 않습니다.</string>
+    <string name="dset_wifi_channel_auto">자동</string>
+</resources>

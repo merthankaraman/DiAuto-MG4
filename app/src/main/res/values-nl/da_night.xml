@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_night_sun">Zon</string>
+    <string name="dset_night_summary_modes">Donkere kleuren in Android Auto. Zoals de auto: donker als de lichten aan zijn, en van zonsondergang tot zonsopkomst. Zon: donker van zonsondergang tot zonsopkomst op de positie van de auto.</string>
+</resources>

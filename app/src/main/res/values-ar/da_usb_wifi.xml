@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi السيارة عند USB</string>
+    <string name="dset_usb_wifi_summary">عند تشغيل Android Auto عبر كابل USB، يتصل Wi-Fi السيارة بالشبكات المعروفة، مثل نقطة اتصال الهاتف، للحصول على الإنترنت. ويتوقف عند فصل الكابل.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Questo aggiornamento scarica %1$s di dati, che possono essere presi dal piano dati dell\'auto. Se possibile, collega prima l\'auto a una rete Wi-Fi come client, oppure aggiorna via USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s verrà scaricato e installato. Poi DiAuto si riavvia e Android Auto si interrompe per qualche secondo.</string>
+</resources>

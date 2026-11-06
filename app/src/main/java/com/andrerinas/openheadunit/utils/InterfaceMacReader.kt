@@ -6,11 +6,6 @@ import java.io.File
  * Reads an interface's MAC from outside the framework, for when
  * `NetworkInterface.getHardwareAddress()` returns null or a placeholder — the norm for ordinary
  * apps since Android 6.0.
- *
- * Separate from `WifiDirectManager.getMacFromShell()` on purpose: that one carries `[BUG_FIX]`
- * annotations and a six-deep chain tuned against specific hardware, and sharing it would risk the
- * WiFi Direct path to serve the hotspot one. ~30 duplicated lines, minus its leak — it never
- * destroys the `ip link` process or closes its streams, and this runs on a poll loop.
  */
 object InterfaceMacReader {
 

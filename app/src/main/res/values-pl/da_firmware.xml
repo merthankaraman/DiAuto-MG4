@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Oprogramowanie samochodu (%1$s) nie obsługuje bezprzewodowego Android Auto: jego Bluetooth pozwala tylko na jedno połączenie aplikacji naraz. DiAuto nie może tego obejść. Poproś dealera o %2$s lub nowsze.</string>
+    <string name="da_firmware_incompatible" formatted="true">Oprogramowanie samochodu (%1$s) nie obsługuje bezprzewodowego Android Auto: jego Bluetooth pozwala tylko na jedno połączenie aplikacji naraz. DiAuto nie może tego obejść. Zapytaj dealera o nowsze oprogramowanie.</string>
+</resources>

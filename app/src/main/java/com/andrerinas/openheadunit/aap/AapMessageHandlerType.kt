@@ -47,8 +47,9 @@ internal class AapMessageHandlerType(
         // 2. Try processing as Audio stream (Speech, System, Media)
         if (message.isAudio) {
             if (aapAudio.process(message)) {
-                // Send ACK AFTER processing
-                if (msgType == 0 || msgType == 1) {
+                // A chunk a track took is acked by that track once it leaves its queue; anything
+                // else is acked now.
+                if ((msgType == 0 || msgType == 1) && !aapAudio.lastChunkAckDeferred) {
                     transport.sendMediaAck(message.channel)
                 }
                 return

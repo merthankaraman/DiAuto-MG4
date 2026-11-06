@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Maps için yolculukları kaydet</string>
+    <string name="trip_option_summary">Maps tahminlerini iyileştirmek için seçilen bir yolculuğu kaydetme düğmesi ekler: tüketim, hız, klima, sıcaklık. Konum veya kişisel veri içermez.</string>
+    <string name="trip_start">Bu yolculuğu kaydet</string>
+    <string name="trip_stop">Kaydı durdur</string>
+    <string name="trip_button_summary">Park edene veya durdurana kadar kaydeder; iki parmak menüsünden ve ana ekrandan da kullanılabilir.</string>
+    <string name="trip_no_battery">Pil seviyesi okunamıyor: birazdan yeniden deneyin.</string>
+    <string name="trip_bad_percent">0 ile 100 arasında bir sayı girin.</string>
+    <string name="trip_started">Yolculuk kaydı başladı.</string>
+    <string name="trip_saved">Yolculuk kaydedildi.</string>
+    <string name="trip_too_short">Yolculuk çok kısa: kaydedilmedi.</string>
+    <string name="trip_files">Kayıtlı yolculuklar</string>
+    <string name="trip_files_summary">%1$d kayıtlı. USB belleğe kopyalanır, sonra araçtan silinir.</string>
+    <string name="trip_copy">USB\'ye kopyala</string>
+    <string name="trip_copied">%1$d yolculuk USB belleğe kopyalandı.</string>
+    <string name="trip_copy_failed">USB bellek bulunamadı veya kopyalama başarısız: yolculuklar araçta kaldı.</string>
+    <string name="trip_picker_title">Maps\'in öngördüğü varış pili</string>
+    <string name="trip_picker_note">Şu an %%%1$d. Kullanılabilir bir yolculuk şarj molası olmadan en az %%%2$d pil tüketir.</string>
+    <string name="trip_battery_low">Pil, kullanılabilir bir yolculuk kaydetmek için çok düşük.</string>
+</resources>

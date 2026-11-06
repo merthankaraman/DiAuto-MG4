@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Modello di consumo per Maps</string>
+    <string name="dset_maps_model_summary">Google Maps stima la batteria residua all\'arrivo con un modello della MG4 (velocità, freddo, clima) invece del consumo medio dell\'auto.</string>
+    <string name="dset_maps_model_explain">Cosa fa: Google Maps stima la batteria residua a destinazione da una descrizione dell\'auto, non più dal consumo medio del momento. Velocità, freddo e riscaldamento vengono così considerati.\n\nCome: DiAuto comunica a Maps la resistenza dell\'auto all\'avanzamento (rotolamento, maggiorato col freddo, e aria) e la potenza di clima ed elettronica secondo la temperatura esterna. I server di Google calcolano l\'energia di ogni tratto del percorso, con velocità prevista, traffico e dislivello.\n\nDati usati: la versione dell\'auto (impostazione della batteria), livello e capacità della batteria, temperatura esterna e stato del clima. Vanno solo al tuo telefono, come oggi il livello della batteria.\n\nI valori sono stime, la previsione può scostarsi finché non sono calibrati.</string>
+    <string name="dset_maps_model_enable">Attiva</string>
+</resources>

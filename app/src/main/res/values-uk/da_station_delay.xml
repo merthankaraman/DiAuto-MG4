@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi автомобіля повернеться через</string>
+    <string name="dset_station_delay_summary">Під час бездротового Android Auto Wi-Fi автомобіля вимкнено. Він повернеться, коли сеанс завершено стільки часу.</string>
+</resources>

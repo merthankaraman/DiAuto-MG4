@@ -1,0 +1,12 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:viewportWidth="18"
+    android:viewportHeight="18"
+    android:width="64dp"
+    android:height="64dp">
+  <!-- Material "file download" arrow, cropped to the same visual size as the other buttons' icons. -->
+  <group android:translateX="-3" android:translateY="-2.5">
+    <path
+        android:pathData="M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z"
+        android:fillColor="#fff" />
+  </group>
+</vector>

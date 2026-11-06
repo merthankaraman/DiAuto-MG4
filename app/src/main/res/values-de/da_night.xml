@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_night_sun">Sonne</string>
+    <string name="dset_night_summary_modes">Dunkle Farben in Android Auto. Wie das Auto: dunkel, wenn das Licht an ist, und von Sonnenuntergang bis -aufgang. Sonne: dunkel von Sonnenuntergang bis -aufgang am Standort des Autos.</string>
+</resources>

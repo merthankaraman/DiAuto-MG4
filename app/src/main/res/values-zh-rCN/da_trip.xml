@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">为地图记录行程</string>
+    <string name="trip_option_summary">添加按钮以记录所选行程，帮助改进地图的预测：能耗、车速、空调、温度。不含位置和个人数据。</string>
+    <string name="trip_start">记录此行程</string>
+    <string name="trip_stop">停止记录</string>
+    <string name="trip_button_summary">记录至停车或手动停止，也可从双指菜单和主屏幕操作。</string>
+    <string name="trip_no_battery">无法读取电池电量：请稍后再试。</string>
+    <string name="trip_bad_percent">请输入 0 到 100 之间的数字。</string>
+    <string name="trip_started">已开始记录行程。</string>
+    <string name="trip_saved">行程已保存。</string>
+    <string name="trip_too_short">行程太短，未保存。</string>
+    <string name="trip_files">已记录的行程</string>
+    <string name="trip_files_summary">已保存 %1$d 条。复制到 U 盘后从车上删除。</string>
+    <string name="trip_copy">复制到 USB</string>
+    <string name="trip_copied">已将 %1$d 条行程复制到 U 盘。</string>
+    <string name="trip_copy_failed">未找到 U 盘或复制失败：行程保留在车上。</string>
+    <string name="trip_picker_title">地图预测的到达时电量</string>
+    <string name="trip_picker_note">当前 %1$d %%。有效行程至少消耗 %2$d %% 电量，且途中不充电。</string>
+    <string name="trip_battery_low">电量过低，无法记录有效行程。</string>
+</resources>

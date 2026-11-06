@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Acuti della voce</string>
+    <string name="dset_voice_enhance_summary">Ricrea gli acuti che il telefono taglia: exciter leggero o forte, oppure rete neurale (Opus). Dalla prossima indicazione.</string>
+    <string name="dset_voice_enhance_standard">No</string>
+    <string name="dset_voice_enhance_light">Leggero</string>
+    <string name="dset_voice_enhance_strong">Forte</string>
+    <string name="dset_voice_enhance_neural">Neurale</string>
+    <string name="dset_voice_experimental">Chiarezza e acuti della voce sono sperimentali: dicci su GitHub quale impostazione ti suona meglio.</string>
+    <string name="dset_wifi_channel">Canale Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Canale del punto di accesso dell\'auto. Auto sceglie il meno affollato all\'avvio del punto di accesso, mai durante una connessione.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">batteria da %1$d kWh misurata in marcia</string>
+    <string name="battery_source_measuring">batteria da %1$d kWh predefinita, misura in marcia (%2$d su %3$d %%)</string>
+    <string name="battery_soh_source_measured">misurato in marcia</string>
+</resources>

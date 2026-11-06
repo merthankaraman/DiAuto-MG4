@@ -1,5 +1,11 @@
 # MG4 rollback and recovery — DiAuto car 1.9.8
 
+> **Since 2.3.0 (application id `com.allgo.app.androidauto`):** this runbook was written for the 1.9.x line, where DiAuto
+> was installed as `com.drivehub.diauto.mg4` next to the OEM app. `scripts/rollback_mg4.ps1` still removes only that legacy
+> package, which is useful if the automatic removal of the old app after the upgrade did not happen. It must not be pointed
+> at `com.allgo.app.androidauto`, which is now DiAuto's own id and also the OEM package name. To return to the car's original
+> Android Auto use the in-app option or the steps in the README. The remaining steps below have not been re-checked for 2.3.0.
+
 This is a conservative operator runbook, not an SAIC service procedure. The rollback
 procedure itself has not been validated on a vehicle. The operator reports running
 v1.9.8 on SWI68-29958-1300R63; this cannot be verified from source. Use only on the

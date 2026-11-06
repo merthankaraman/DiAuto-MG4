@@ -21,7 +21,7 @@ if (-not $BuildTools) {
     $BuildTools = (Get-ChildItem (Join-Path $sdk "build-tools") -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
 }
 
-$Version = "1.9.8"
+$Version = "2.3.0"
 $apkDir = "$Root\app\build\outputs\apk\car\debug"
 $gradleApkFilter = {
     $_.Name -notlike "DiAuto-MG4-v*.apk" -and $_.Name -notmatch "aligned|unsigned"

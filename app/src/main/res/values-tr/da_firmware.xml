@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Aracınızın yazılımı (%1$s) kablosuz Android Auto çalıştıramaz: Bluetooth\'u aynı anda yalnızca bir uygulama bağlantısına izin verir. DiAuto bunu aşamaz. Bayinizden %2$s veya daha yenisini isteyin.</string>
+    <string name="da_firmware_incompatible" formatted="true">Aracınızın yazılımı (%1$s) kablosuz Android Auto çalıştıramaz: Bluetooth\'u aynı anda yalnızca bir uygulama bağlantısına izin verir. DiAuto bunu aşamaz. Bayinize daha yeni bir yazılım olup olmadığını sorun.</string>
+</resources>

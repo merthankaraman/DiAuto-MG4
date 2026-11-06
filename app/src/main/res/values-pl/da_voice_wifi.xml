@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Wysokie tony głosu</string>
+    <string name="dset_voice_enhance_summary">Odtwarza wysokie tony obcinane przez telefon: lekki lub mocny exciter albo sieć neuronowa (Opus). Od następnego komunikatu.</string>
+    <string name="dset_voice_enhance_standard">Wył.</string>
+    <string name="dset_voice_enhance_light">Lekki</string>
+    <string name="dset_voice_enhance_strong">Mocny</string>
+    <string name="dset_voice_enhance_neural">Neuronowy</string>
+    <string name="dset_voice_experimental">Wyrazistość i wysokie tony głosu są eksperymentalne: napisz nam na GitHubie, które ustawienie brzmi dla Ciebie najlepiej.</string>
+    <string name="dset_wifi_channel">Kanał Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Kanał punktu dostępu samochodu. Auto wybiera najmniej zatłoczony przy starcie punktu dostępu, nigdy w trakcie połączenia.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

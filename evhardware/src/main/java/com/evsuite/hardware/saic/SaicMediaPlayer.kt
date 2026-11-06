@@ -125,10 +125,6 @@ object SaicMediaPlayer {
     private const val RUI_CLASS = "com.allgo.rui.RemoteUIService"
     private const val DESC_RUI = "com.allgo.rui.IRemoteUIService"
     private const val TX_RUI_MEDIA_KEY = 0x12
-    /** `launchApp(appType, remoteUiType)` — stock uses (1, 2) for AA music. */
-    private const val TX_RUI_LAUNCH_APP = 8
-    private const val RUI_APP_MUSIC = 1
-    private const val RUI_TYPE_ANDROID_AUTO = 2
 
     /**
      * `sendMediaPlayControlKey` values. Skip carries a press and a release: leaving a key
@@ -249,16 +245,9 @@ object SaicMediaPlayer {
             AppLogger.i(TAG, "switchToAndroidAuto: no context for car-source AudioFocus")
             return false
         }
-        // Wake RemoteUI's AA media browser session so SystemUI's mAAController has a token.
-        remoteUi.connect(ctx)
-        val launchOk = SaicAidl.callInt(
-            remoteUi.binder(),
-            DESC_RUI,
-            TX_RUI_LAUNCH_APP,
-            RUI_APP_MUSIC,
-            RUI_TYPE_ANDROID_AUTO,
-        )
-        AppLogger.i(TAG, "switchToAndroidAuto: RemoteUI launchAAMusic=$launchOk")
+        // No RemoteUI launchApp(music) here any more: DiAuto is the car's Android Auto app now,
+        // so rui handed that call straight back to it, which opened the projection on Android
+        // Auto's music screen each time the source was switched (2026-10-28).
         return SaicCarAudioSource.claimAndroidAuto(ctx)
     }
 

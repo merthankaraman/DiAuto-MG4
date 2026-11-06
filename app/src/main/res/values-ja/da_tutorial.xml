@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">ステップ %1$d / %2$d</string>
+    <string name="tuto_skip">スキップ</string>
+    <string name="tuto_back">戻る</string>
+    <string name="tuto_next">次へ</string>
+    <string name="tuto_done">はじめる</string>
+    <string name="tuto_welcome_title">DiAuto for MG4 へようこそ</string>
+    <string name="tuto_welcome_text">MG4 の画面でワイヤレス Android Auto を使えます。スマートフォンを Bluetooth で車とペアリングすると、車の Wi-Fi アクセスポイントに接続し、Android Auto が自動で起動します。\n\n次のステップでは、Android Auto 上で使える 3 つのジェスチャーを紹介します。</string>
+    <string name="tuto_menu_title">左端から 2 本指</string>
+    <string name="tuto_menu_text">画面の左端に 2 本の指を置いて右へスワイプします。2 つの大きなボタン（切断 と 設定）のメニューが開きます。\n\n他の場所をタップすると閉じます。</string>
+    <string name="tuto_fullscreen_title">右端から 2 本指</string>
+    <string name="tuto_fullscreen_text">右端に 2 本の指を置いて左へスワイプすると、車のバーの表示・非表示が切り替わり、画面全体を使えます。</string>
+    <string name="tuto_top_title">上端から 2 本指</string>
+    <string name="tuto_top_text">画面の上部に 2 本の指を置いて下へスライドすると、車のランチャーに戻ります。Android Auto は接続されたままです。</string>
+    <string name="tuto_home_title">3 本指で下へ</string>
+    <string name="tuto_home_text">3 本の指で下へスワイプすると、Android Auto を切断して DiAuto のホーム画面に戻ります。</string>
+    <string name="tuto_tips_title">知っておくと便利</string>
+    <string name="tuto_tips_text">• Google マップがルートプランナーになります。MG4 のバッテリー、電費、充電出力を受け取り、充電スポットを選びます。\n• 設定 → 車：MG4 のバージョン、バッテリー容量と状態。自動で検出され、調整もできます。\n• マップが計画した充電スポットの前にバッテリーを自動で予熱します。初期設定はオフで、設定 → 車 でオンにできます。\n• DiAuto は車の純正 Android Auto（AllGo）のアップデートとしてインストールされます。元に戻すには 設定 → このアプリについて → 元に戻す を選び、Home ボタンを 20 秒長押しして画面を再起動します。\n• 設定 → このアプリについて：このチュートリアルをもう一度見る。</string>
+    <string name="tuto_settings_title">チュートリアル</string>
+    <string name="tuto_settings_summary">Android Auto 上のジェスチャーと便利な設定を数ステップで紹介します。</string>
+    <string name="tuto_settings_button">表示</string>
+    <string name="da_settings">設定</string>
+</resources>

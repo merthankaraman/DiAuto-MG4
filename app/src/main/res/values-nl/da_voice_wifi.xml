@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Hoge tonen van de stem</string>
+    <string name="dset_voice_enhance_summary">Herstelt de hoge tonen die de telefoon wegsnijdt: lichte of sterke exciter, of neuraal netwerk (Opus). Vanaf de volgende aanwijzing.</string>
+    <string name="dset_voice_enhance_standard">Uit</string>
+    <string name="dset_voice_enhance_light">Licht</string>
+    <string name="dset_voice_enhance_strong">Sterk</string>
+    <string name="dset_voice_enhance_neural">Neuraal</string>
+    <string name="dset_voice_experimental">Spraakhelderheid en hoge tonen zijn experimenteel: laat ons op GitHub weten welke instelling voor jou het best klinkt.</string>
+    <string name="dset_wifi_channel">Wifi-kanaal</string>
+    <string name="dset_wifi_channel_summary">Kanaal van het toegangspunt van de auto. Auto kiest het minst drukke bij het starten van het toegangspunt, nooit tijdens een verbinding.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

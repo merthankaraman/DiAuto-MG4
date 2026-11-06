@@ -1,11 +1,13 @@
 package com.evsuite.hardware.saic
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import com.evsuite.hardware.AppLogger
 
 /**
@@ -40,8 +42,27 @@ object SaicCarAudioSource {
     @Volatile
     private var aaFocusGranted = false
 
+    @Volatile
+    private var lastClaimElapsedMs = 0L
+
+    /**
+     * Whether [claimAndroidAuto] ran in the last [windowMs]. A focus loss the app sees right then
+     * comes from that claim taking over its own other requests, not from the car or the user.
+     */
+    fun claimedWithin(windowMs: Long): Boolean =
+        SystemClock.elapsedRealtime() - lastClaimElapsedMs < windowMs
+
+    /**
+     * Every focus change of the car-source request. Once the phone's own requests are released,
+     * this is the only focus the app holds, so a source the car (or a launcher) picks shows up
+     * here and nowhere else.
+     */
+    @Volatile
+    var onFocusChange: ((Int) -> Unit)? = null
+
     private val quietListener = AudioManager.OnAudioFocusChangeListener { change ->
         AppLogger.i(TAG, "car-source AA focus change=$change")
+        onFocusChange?.invoke(change)
         if (change == AudioManager.AUDIOFOCUS_LOSS ||
             change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
         ) {
@@ -65,8 +86,33 @@ object SaicCarAudioSource {
         }
     }
 
-    fun audioManager(context: Context): AudioManager? =
-        attributionContext(context).getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+    @Volatile
+    private var allgoAudioManager: AudioManager? = null
+
+    /**
+     * An AudioManager whose focus requests carry AllGo's package name. A package context alone is
+     * not enough: AudioManager sends [Context.getOpPackageName], which createPackageContext keeps as
+     * this app's, so the car's MEDIA.SOURCE saw `com.drivehub.diauto.mg4` and the stock launcher
+     * saved source type -1 (not Android Auto) and sent the steering-wheel arrows to the radio.
+     * AllGo shares the system uid with this app, so AudioService accepts the name.
+     */
+    fun audioManager(context: Context): AudioManager? {
+        allgoAudioManager?.let { return it }
+        val base = attributionContext(context)
+        val am = try {
+            val identity = object : ContextWrapper(base) {
+                override fun getPackageName(): String = PKG_ALLGO_ANDROID_AUTO
+                override fun getOpPackageName(): String = PKG_ALLGO_ANDROID_AUTO
+                override fun getApplicationContext(): Context = this
+            }
+            AudioManager::class.java.getConstructor(Context::class.java).newInstance(identity)
+        } catch (e: Exception) {
+            AppLogger.w(TAG, "AllGo-named AudioManager unavailable (${e.message}); using this app's name")
+            base.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        }
+        allgoAudioManager = am
+        return am
+    }
 
     /**
      * MEDIA / music attributes tagged with a car source id so the head-unit
@@ -101,29 +147,21 @@ object SaicCarAudioSource {
     @Synchronized
     fun claimAndroidAuto(context: Context): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-        val focusCtx = attributionContext(context)
-        val am = focusCtx.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        // One request on one AudioManager for the whole process: a new client on every claim made
+        // the previous one lose focus (change=-1) to this app itself.
+        val am = aaFocusAudioManager
+            ?: audioManager(context)
             ?: return false
         return try {
-            val request = if (aaFocusAudioManager === am) {
-                aaFocusRequest
-            } else {
-                aaFocusAudioManager?.let { previousManager ->
-                    aaFocusRequest?.let { previousRequest ->
-                        runCatching { previousManager.abandonAudioFocusRequest(previousRequest) }
-                    }
-                }
-                null
-            } ?: AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            val request = aaFocusRequest ?: AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(mediaAttributes(SRC_ANDROID_AUTO))
                 .setWillPauseWhenDucked(false)
                 .setAcceptsDelayedFocusGain(true)
                 .setOnAudioFocusChangeListener(quietListener)
                 .build()
-                .also {
-                    aaFocusRequest = it
-                    aaFocusAudioManager = am
-                }
+            aaFocusRequest = request
+            aaFocusAudioManager = am
+            lastClaimElapsedMs = SystemClock.elapsedRealtime()
             val result = am.requestAudioFocus(request)
             aaFocusGranted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
             val lastOk = setLastSource(am, SRC_ANDROID_AUTO)
@@ -131,7 +169,7 @@ object SaicCarAudioSource {
             AppLogger.i(
                 TAG,
                 "claimAndroidAuto focus=$result granted=$aaFocusGranted " +
-                    "pkg=${focusCtx.packageName} setLastSource=$lastOk " +
+                    "setLastSource=$lastOk " +
                     "currentSourceType=$current",
             )
             aaFocusGranted || current == SRC_ANDROID_AUTO || lastOk

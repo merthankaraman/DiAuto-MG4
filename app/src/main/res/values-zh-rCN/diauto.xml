@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_brand">DiAuto</string>
+    <string name="da_brand">DiAuto for MG4</string>
     <string name="da_tagline">你的手机，你的旅程。</string>
     <string name="da_headline">熟悉的出行体验。</string>
     <string name="da_description">你的地图、音乐和通话。\nAndroid Auto，就在车载屏幕上。</string>

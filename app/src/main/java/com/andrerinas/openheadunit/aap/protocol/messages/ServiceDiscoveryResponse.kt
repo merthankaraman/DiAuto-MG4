@@ -1,12 +1,9 @@
 package com.andrerinas.openheadunit.aap.protocol.messages
 
 import android.content.Context
-import android.os.SystemClock
-import android.widget.Toast
 import com.andrerinas.openheadunit.App
 import com.andrerinas.openheadunit.R
 import com.andrerinas.openheadunit.aap.AapMessage
-import com.andrerinas.openheadunit.aap.AapService
 import com.andrerinas.openheadunit.aap.HybridMusicPolicy
 import com.andrerinas.openheadunit.aap.KeyCode
 import com.andrerinas.openheadunit.aap.protocol.AudioConfigs
@@ -213,17 +210,15 @@ class ServiceDiscoveryResponse(private val context: Context)
             services.add(audio2)
 
             if (settings.enableAudioSink) {
-                if (!AapService.selfMode) {
-                    val audio1 = Control.Service.newBuilder().also { service ->
-                        service.id = Channel.ID_AU1
-                        service.mediaSinkService = Control.Service.MediaSinkService.newBuilder().also {
-                            it.availableType = speechCodec
-                            it.audioType = Media.AudioStreamType.SPEECH
-                            it.addAudioConfigs(AudioConfigs.get(Channel.ID_AU1))
-                        }.build()
+                val audio1 = Control.Service.newBuilder().also { service ->
+                    service.id = Channel.ID_AU1
+                    service.mediaSinkService = Control.Service.MediaSinkService.newBuilder().also {
+                        it.availableType = speechCodec
+                        it.audioType = Media.AudioStreamType.SPEECH
+                        it.addAudioConfigs(AudioConfigs.get(Channel.ID_AU1))
                     }.build()
-                    services.add(audio1)
-                }
+                }.build()
+                services.add(audio1)
 
                 // Hybrid: never put media PCM on Wi‑Fi AA (stutters on MG4). Music stays on
                 // car Bluetooth.
@@ -265,7 +260,7 @@ class ServiceDiscoveryResponse(private val context: Context)
                         )
                     }
                 }
-                if (!AapService.selfMode && !omitMedia) {
+                if (!omitMedia) {
                     // Do not release A2DP here: Native AA still rides BT until Wi‑Fi lands.
                     // AapService releases media profiles after TransportStarted settles.
                     AppLog.i(
@@ -300,11 +295,17 @@ class ServiceDiscoveryResponse(private val context: Context)
 
             // Bluetooth Service — always advertise A2DP+HFP (phone pairing UI). Wi‑Fi media
             // path drops the live A2DP link after handoff via BluetoothHelper, not here.
-            if (settings.bluetoothAddress.isNotEmpty()) {
+            // Wireless Android Auto keys its record on this address, so read it from the adapter
+            // when nobody has typed one in (system uid sees the real MAC, not 02:00:00:00:00:00).
+            val carBtAddress = settings.bluetoothAddress.ifEmpty {
+                BluetoothHelper.getBluetoothMacAddress(context).orEmpty()
+            }
+            if (carBtAddress.isNotEmpty()) {
+                AppLog.i("Bluetooth service announced (address from ${if (settings.bluetoothAddress.isEmpty()) "adapter" else "settings"})")
                 val bluetooth = Control.Service.newBuilder().also { service ->
                     service.id = Channel.ID_BTH
                     service.bluetoothService = Control.Service.BluetoothService.newBuilder().also {
-                        it.carAddress = settings.bluetoothAddress
+                        it.carAddress = carBtAddress
                         it.addAllSupportedPairingMethods(
                             listOf(
                                 Control.BluetoothPairingMethod.A2DP,
@@ -364,8 +365,6 @@ class ServiceDiscoveryResponse(private val context: Context)
         }
 
         /** Reconnect storms must not toast on every Service Discovery. */
-        private const val DECODER_CAPABILITY_TOAST_COOLDOWN_MS = 30_000L
-        @Volatile private var lastDecoderCapabilityToastAt = 0L
 
         /**
          * Records whether a decoder on this device claims it can carry the profile we are about to
@@ -399,19 +398,7 @@ class ServiceDiscoveryResponse(private val context: Context)
                     "[ServiceDiscovery] Negotiating a profile no decoder here claims to carry: $capability. " +
                         "Frames shed under load and the artifacts that follow are the expected consequence."
                 )
-                val now = SystemClock.elapsedRealtime()
-                if (now - lastDecoderCapabilityToastAt >= DECODER_CAPABILITY_TOAST_COOLDOWN_MS) {
-                    lastDecoderCapabilityToastAt = now
-                    ToastUtils.showToast(
-                        context.applicationContext,
-                        context.getString(
-                            R.string.video_profile_unsupported_toast,
-                            "${width}x${height}",
-                            settings.fpsLimit,
-                        ),
-                        Toast.LENGTH_LONG,
-                    )
-                }
+                // Log only: the MG4 decoder under-reports (1080p60 runs fine), so a toast is just noise.
             }
         }
 

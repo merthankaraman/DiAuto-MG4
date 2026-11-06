@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_dongle_backup">Another way out: a USB wireless Android Auto dongle also works with DiAuto. Early reports and our own tests show a more stable and reliable connection than with the car\'s original Android Auto app.</string>
+</resources>

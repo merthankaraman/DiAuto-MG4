@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Krok %1$d z %2$d</string>
+    <string name="tuto_skip">Přeskočit</string>
+    <string name="tuto_back">Zpět</string>
+    <string name="tuto_next">Další</string>
+    <string name="tuto_done">Jdeme na to</string>
+    <string name="tuto_welcome_title">Vítejte v DiAuto pro MG4</string>
+    <string name="tuto_welcome_text">Bezdrátové Android Auto na obrazovce vašeho MG4. Jakmile je telefon spárován s autem přes Bluetooth, připojí se k Wi-Fi hotspotu auta a Android Auto se spustí samo.\n\nDalší kroky ukazují tři gesta, která fungují nad Android Auto.</string>
+    <string name="tuto_menu_title">Dva prsty od levého okraje</string>
+    <string name="tuto_menu_text">Položte dva prsty u levého okraje obrazovky a táhněte doprava. Otevře se nabídka se dvěma velkými tlačítky: Odpojit a Nastavení.\n\nKlepnutím jinam ji zavřete.</string>
+    <string name="tuto_fullscreen_title">Dva prsty od pravého okraje</string>
+    <string name="tuto_fullscreen_text">Položte dva prsty u pravého okraje a táhněte doleva, abyste zobrazili nebo skryli lišty auta a využili celou obrazovku.</string>
+    <string name="tuto_top_title">Dva prsty od horního okraje</string>
+    <string name="tuto_top_text">Položte dva prsty nahoře na obrazovku a přejeďte dolů, abyste se vrátili do launcheru vozu. Android Auto zůstane připojené.</string>
+    <string name="tuto_home_title">Tři prsty dolů</string>
+    <string name="tuto_home_text">Táhněte třemi prsty dolů, abyste odpojili Android Auto a vrátili se na úvodní obrazovku DiAuto.</string>
+    <string name="tuto_tips_title">Dobré vědět</string>
+    <string name="tuto_tips_text">• Mapy Google se stanou plánovačem trasy: dostanou baterii, spotřebu a nabíjecí výkon vašeho MG4 a vyberou zastávky na nabíjení.\n• Nastavení → Auto: verze vašeho MG4, kapacita a stav baterie, zjištěné automaticky a nastavitelné.\n• Automatické předehřátí baterie před zastávkou na nabíjení naplánovanou Mapami. Ve výchozím stavu vypnuto, zapněte v Nastavení → Auto.\n• DiAuto se instaluje jako aktualizace původního Android Auto auta (AllGo). Návrat k němu: Nastavení → O aplikaci → Vrátit, pak restartujte obrazovku podržením tlačítka Home 20 s.\n• Nastavení → O aplikaci: znovu zobrazit tento návod.</string>
+    <string name="tuto_settings_title">Návod</string>
+    <string name="tuto_settings_summary">Gesta nad Android Auto a užitečná nastavení v několika krocích.</string>
+    <string name="tuto_settings_button">Zobrazit</string>
+    <string name="da_settings">Nastavení</string>
+</resources>

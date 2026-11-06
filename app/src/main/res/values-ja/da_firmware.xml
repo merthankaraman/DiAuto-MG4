@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">お使いの車のファームウェア（%1$s）はワイヤレス Android Auto に対応できません。Bluetooth が同時に 1 つのアプリ接続しか許可しないためです。DiAuto では回避できません。販売店に %2$s 以降への更新を依頼してください。</string>
+    <string name="da_firmware_incompatible" formatted="true">お使いの車のファームウェア（%1$s）はワイヤレス Android Auto に対応できません。Bluetooth が同時に 1 つのアプリ接続しか許可しないためです。DiAuto では回避できません。新しいファームウェアがあるか販売店にお問い合わせください。</string>
+</resources>

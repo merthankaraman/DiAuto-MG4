@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">您车辆的固件（%1$s）无法运行无线 Android Auto：其蓝牙一次只允许一个应用连接。DiAuto 无法绕过此问题。请向经销商升级到 %2$s 或更新版本。</string>
+    <string name="da_firmware_incompatible" formatted="true">您车辆的固件（%1$s）无法运行无线 Android Auto：其蓝牙一次只允许一个应用连接。DiAuto 无法绕过此问题。请向经销商询问是否有更新的固件。</string>
+</resources>

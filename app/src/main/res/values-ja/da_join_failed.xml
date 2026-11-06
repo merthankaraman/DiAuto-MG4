@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">スマートフォンが車の Wi-Fi に接続できません。テザリングがオンの場合はオフにしてください。</string>
+</resources>

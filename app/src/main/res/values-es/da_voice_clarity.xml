@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Claridad de voz</string>
+    <string name="dset_voice_clarity_summary">Filtro para las indicaciones y el asistente: quita los graves sordos y realza las consonantes. Desde la próxima indicación.</string>
+    <string name="dset_voice_headroom">Margen de voz</string>
+    <string name="dset_voice_headroom_summary">Baja un poco las indicaciones para que el procesado del coche no sature; sube el volumen de navegación del coche para compensar.</string>
+</resources>

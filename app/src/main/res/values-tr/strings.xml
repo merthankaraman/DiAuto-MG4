@@ -1,6 +1,6 @@
 
 <resources>
-    <string name="app_name">DiAuto MG4</string>
+    <string name="app_name">DiAuto MG4+</string>
     <string name="menu">Menü</string>
     <string name="settings">Ayarlar</string>
 
@@ -13,7 +13,7 @@
     <string name="video">Android Auto</string>
     <string name="self_mode">Dahili Mod</string>
     <string name="to_android_auto">Android Auto\'ya Geç</string>
-    <string name="title">DiAuto MG4</string>
+    <string name="title">DiAuto</string>
     <string name="remove">Kaldır</string>
     <string name="usb">USB</string>
     <string name="wifi">WiFi</string>
@@ -64,7 +64,7 @@
     <string name="battery_for_google_maps">Google Maps için batarya</string>
     <string name="battery_for_google_maps_description">MG4 şarj ve menzil bilgisini Android Auto’ya gönderir; Google Maps pil seviyesini gösterebilir. Aşağıda net kapasite ve SOH’u ayarlayın. Araçta platform imzalı kurulum gerekir.</string>
     <string name="battery_net_capacity_kwh">Net kapasite (kWh)</string>
-    <string name="battery_net_capacity_description">MG4 için kullanılabilir batarya kapasitesini seçin: 50,8, 61,7 veya 74,4 kWh. Maps kapasite × SOH değerini kullanır.</string>
+    <string name="battery_net_capacity_description">MG4 için kullanılabilir batarya kapasitesini seçin: 49, 61 veya 72,5 kWh. Maps kapasite × SOH değerini kullanır.</string>
     <string name="battery_net_capacity_enter">Yeni haldeki net (kullanılabilir) kapasiteyi kWh olarak girin</string>
     <string name="battery_soh_percent">Batarya SOH (%)</string>
     <string name="battery_soh_description">Batarya sağlık oranını 1–100 arasında elle girin. 98,75 gibi ondalıklı değerler desteklenir. Etkin kullanılabilir kapasite = kapasite × SOH / 100.</string>
@@ -947,11 +947,8 @@
     <string name="playback_focus_mode_always_hint">Always pauses other audio while Android Auto plays. If your music stops after a second or two whenever Bluetooth is on, switch back to Automatic.</string>
     <string name="playback_focus_mode_never_hint">Never touches system audio focus. Other audio on the headunit may keep playing over Android Auto.</string>
     <string name="playback_focus_mode_static_hint">With Static Audio Focus on, this applies from the moment the phone connects and lasts the whole session, rather than only while audio is playing.</string>
-    <string name="github_issues_url">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
     <string name="support_rules_english_title">All posts in English</string>
-    <string name="boot_loop_paused_title">Wireless start-up paused</string>
-    <string name="boot_loop_paused_generic">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. USB still works. Open the app to turn it back on.</string>
-    <string name="boot_loop_paused_native_wifi_direct">This device restarted three times in a row shortly after Open Headunit started wireless, so wireless was left off this time. On some head units the WiFi chipset takes the whole system down when a phone joins a WiFi Direct network. Try switching Android Auto mode to the head unit hotspot. USB still works.</string>
     <string name="vehicle_make_hint">A real car brand shows that brand\'s logo on the Android Auto exit button, but Android Auto then stops listing apps installed from outside the Play Store. Set it back to \"Google\" to get those apps listed again.</string>
     <string name="external_bt_nativeaa">Native Wireless cannot work on this head unit</string>
     <string name="external_bt_nativeaa_desc">This head unit uses its own Bluetooth module (%1$s) instead of the one Android exposes to apps. Your phone pairs with that module, so anything this app sends over Bluetooth never reaches it — the connection will look like it is working and then stall.\n\nThis is a hardware limitation and cannot be worked around from the app. Please use USB, or the \"Wireless Helper\" or \"Auto (Headunit Server)\" mode, which do not need the Bluetooth handshake.</string>
@@ -977,8 +974,6 @@
     <string name="native_local_hotspot_wifi_settings_unavailable">Wi‑Fi’yi aracın Ayarlar uygulamasından aç.</string>
     <string name="native_ap_transport_local_hotspot">Yerel erişim noktası</string>
     <string name="native_ap_transport_local_hotspot_hint">Deneysel. DiAuto, Android Auto için ayrı bir yerel erişim noktası kullanır; araç internet paketi gerekmez. Eski Android sürümlerinde uygulamanın Wi‑Fi sürücüsünden 5 GHz erişim noktasını doğrulamasına izin verilmelidir. DiLink 5.1’de harita veya müzik takılırsa araç ayarlarından Wi‑Fi anahtarını kapatmayı dene. Bluetooth ve telefon Wi‑Fi’si açık kalsın. Uyumluluk araca bağlıdır.</string>
-    <string name="byd_navigation_title">BYD HUD ve gösterge paneli</string>
-    <string name="byd_navigation_description">Desteklenen BYD ekranlarında Android Auto yol tarifini göster. Deneysel; araç uyumluluğu değişir.</string>
     <string name="da_connection_setup">Bağlantı kurulumu</string>
     <string name="da_connection_setup_hint">Bir bağlantı seç ve araç erişim noktasını ayarla.</string>
     <string name="da_diagnostics">Tanılama</string>

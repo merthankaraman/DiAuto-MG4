@@ -53,6 +53,24 @@ class AutoStartReceiver : BroadcastReceiver() {
             return
         }
 
+        if (action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+            val device: BluetoothDevice? = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+            }
+            if (device != null && targetMacs.contains(device.address)) {
+                AppLog.i("Remembered phone left Bluetooth: the car's Wi-Fi client can come back.")
+                try {
+                    ContextCompat.startForegroundService(context, Intent(context, AapService::class.java).setAction(AapService.ACTION_BT_PHONE_LEFT))
+                } catch (e: Exception) {
+                    AppLog.e("Failed to start AapService from background: ${e.message}")
+                }
+            }
+            return
+        }
+
         if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
             val device = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
@@ -72,6 +90,7 @@ class AutoStartReceiver : BroadcastReceiver() {
             } catch (_: SecurityException) {
                 null
             }
+            AppLog.hide(name)
             AppLog.i("BT Device connected: ${name ?: "unnamed"} ($address)")
 
             if (targetMacs.contains(address)) {
@@ -132,7 +151,7 @@ class AutoStartReceiver : BroadcastReceiver() {
     }
 
     private companion object {
-        // WifiAutoStartReceiver uses 99; kept apart so one does not replace the other.
+        // 99 was the old Wi-Fi auto-start notification; kept apart from it.
         const val BT_AUTO_START_NOTIFICATION_ID = 98
     }
 }

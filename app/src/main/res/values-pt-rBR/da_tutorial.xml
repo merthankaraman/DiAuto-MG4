@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Passo %1$d de %2$d</string>
+    <string name="tuto_skip">Pular</string>
+    <string name="tuto_back">Voltar</string>
+    <string name="tuto_next">Avançar</string>
+    <string name="tuto_done">Vamos lá</string>
+    <string name="tuto_welcome_title">Bem-vindo ao DiAuto para MG4</string>
+    <string name="tuto_welcome_text">Android Auto sem fio na tela do seu MG4. Quando o celular está pareado com o carro por Bluetooth, ele se conecta ao ponto de acesso Wi-Fi do carro e o Android Auto inicia sozinho.\n\nOs próximos passos mostram os três gestos que funcionam no Android Auto.</string>
+    <string name="tuto_menu_title">Dois dedos a partir da borda esquerda</string>
+    <string name="tuto_menu_text">Coloque dois dedos perto da borda esquerda da tela e deslize para a direita. Abre-se um menu com dois botões grandes: Desconectar e Configurações.\n\nToque em outro lugar para fechá-lo.</string>
+    <string name="tuto_fullscreen_title">Dois dedos a partir da borda direita</string>
+    <string name="tuto_fullscreen_text">Coloque dois dedos perto da borda direita e deslize para a esquerda para mostrar ou ocultar as barras do carro e usar a tela inteira.</string>
+    <string name="tuto_top_title">Dois dedos a partir do topo</string>
+    <string name="tuto_top_text">Coloque dois dedos no topo da tela e deslize para baixo para voltar ao launcher do carro. O Android Auto continua conectado.</string>
+    <string name="tuto_home_title">Três dedos para baixo</string>
+    <string name="tuto_home_text">Deslize três dedos para baixo para desconectar o Android Auto e voltar à tela inicial do DiAuto.</string>
+    <string name="tuto_tips_title">Bom saber</string>
+    <string name="tuto_tips_text">• O Google Maps vira um planejador de viagem: recebe a bateria, o consumo e a potência de recarga do seu MG4 e escolhe as paradas de recarga.\n• Configurações → Carro: a versão do seu MG4, a capacidade e a saúde da bateria, detectadas automaticamente e ajustáveis.\n• Pré-aquecimento automático da bateria antes de uma parada de recarga planejada pelo Maps. Desativado por padrão, ative em Configurações → Carro.\n• O DiAuto é instalado como atualização do Android Auto original do carro (AllGo). Para voltar a ele: Configurações → Sobre → Voltar e reinicie a tela mantendo o botão Home pressionado por 20 s.\n• Configurações → Sobre: ver este tutorial de novo.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">Os gestos no Android Auto e as configurações úteis, em poucos passos.</string>
+    <string name="tuto_settings_button">Mostrar</string>
+    <string name="da_settings">Configurações</string>
+</resources>

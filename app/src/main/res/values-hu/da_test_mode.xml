@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_test_mode">Tesztmód</string>
+    <string name="dset_test_mode_summary">Megjeleníti a tesztelt funkciókat a Beállításokban: a Mapsnek küldött modellt, a fogyasztási modell adatait a képernyőn, valamint a hang magasait, tisztaságát és tartalékát. Kikapcsolva alapértékek.</string>
+</resources>

@@ -31,6 +31,7 @@ internal class AapControlMedia(
 
     private var lastNativeFocusRequestTime = 0L
     private var nativeFocusRequestCount = 0
+    private val micGeneration = java.util.concurrent.atomic.AtomicInteger()
 
     override fun execute(message: AapMessage): Int {
 
@@ -64,7 +65,13 @@ internal class AapControlMedia(
                 aapTransport.onUpdateUiConfigReplyReceived?.invoke()
                 return 0
             }
-            Media.MsgType.MEDIA_MESSAGE_ACK_VALUE -> return 0
+            Media.MsgType.MEDIA_MESSAGE_ACK_VALUE -> {
+                if (message.channel == Channel.ID_MIC) {
+                    val ack = message.parse(Media.Ack.newBuilder()).build()
+                    aapTransport.onMicAck(if (ack.ack > 0) ack.ack.toInt() else 1)
+                }
+                return 0
+            }
             else -> AppLog.e("Unsupported Media message type: ${message.type}")
         }
         return 0
@@ -93,7 +100,18 @@ internal class AapControlMedia(
         aapTransport.send(msg)
 
         if (channel == Channel.ID_VID) {
-            aapTransport.gainVideoFocus()
+            // Grant focus with the config, as reference head units do; the activity broadcast
+            // below only lands when its surface happens to appear after TransportStarted.
+            aapTransport.send(VideoFocusEvent(gain = true, unsolicited = true))
+            AppLog.i("Video focus granted after video sink setup")
+            // This asks for the projection on screen, which a background session does not want.
+            if (ProjectionOpenPolicy.shouldOpen(
+                    aapTransport.settings.openProjectionOnConnect,
+                    AapProjectionActivity.isForeground,
+                    com.andrerinas.openheadunit.main.MainActivity.inFront,
+                )) {
+                aapTransport.gainVideoFocus()
+            }
         }
 
         // Pushing AudioFocusNotification
@@ -149,21 +167,32 @@ internal class AapControlMedia(
     }
 
     private fun micRequest(micRequest: Media.MicrophoneRequest): Int {
-        AppLog.i("Mic request: open=${micRequest.open}")
-
-        val status = if (micRequest.open) {
-            val result = micRecorder.start()
-            AppLog.i("MicRecorder.start result=$result")
-            if (result == 0) {
-                Common.MessageStatus.STATUS_SUCCESS_VALUE
-            } else {
-                Common.MessageStatus.STATUS_INTERNAL_ERROR_VALUE
-            }
-        } else {
-            micRecorder.stop()
-            Common.MessageStatus.STATUS_SUCCESS_VALUE
+        AppLog.i("Mic request: open=${micRequest.open} anc=${micRequest.ancEnabled} ec=${micRequest.ecEnabled} maxUnacked=${micRequest.maxUnacked}")
+        if (!micRequest.open) {
+            micGeneration.incrementAndGet()
+            synchronized(micRecorder) { micRecorder.stop() }
+            sendMicResponse(Common.MessageStatus.STATUS_SUCCESS_VALUE)
+            return 0
         }
+        aapTransport.micOpened(micRequest.maxUnacked)
+        // Answered at once, and the recorder started off the read thread: starting it takes
+        // ~120 ms (the car's voice path needs 100 ms), which held every other message from the
+        // phone behind it while Gemini was opening the mic.
+        sendMicResponse(Common.MessageStatus.STATUS_SUCCESS_VALUE)
+        val generation = micGeneration.incrementAndGet()
+        Thread({
+            synchronized(micRecorder) {
+                // A close that came in first wins: never start a recording nobody wants.
+                if (micGeneration.get() == generation) {
+                    val result = micRecorder.start()
+                    AppLog.i("MicRecorder.start result=$result")
+                }
+            }
+        }, "MicStart").start()
+        return 0
+    }
 
+    private fun sendMicResponse(status: Int) {
         val response = Media.MicrophoneResponse.newBuilder()
             .setStatus(status)
             .setSessionId(0)
@@ -175,7 +204,6 @@ internal class AapControlMedia(
                 response,
             ),
         )
-        return 0
     }
 
     companion object {
@@ -312,6 +340,7 @@ internal class AapControlService(
 
 
     private fun serviceDiscoveryRequest(request: Control.ServiceDiscoveryRequest): Int {
+        AppLog.hide(request.phoneName)
         AppLog.i("Service Discovery Request: %s", request.phoneName)
 
         val msg = ServiceDiscoveryResponse(context)
@@ -396,7 +425,9 @@ internal class AapControlService(
                 // static path's permanent grab from CommManager, where the answer is the opposite.
                 val isRelease = notification.request.number ==
                         Control.AudioFocusRequestNotification.AudioFocusRequestType.RELEASE_VALUE
-                if (aapAudio.shouldHonourProtocolFocusRequest(isRelease)) {
+                val isMedia = notification.request.number ==
+                        Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_VALUE
+                if (aapAudio.shouldHonourProtocolFocusRequest(isRelease, isMedia)) {
                     val separate = settings.separateAudioStreams || settings.musicViaBluetooth
                     aapAudio.requestFocusChange(
                         AudioConfigs.stream(channel, separate),
@@ -440,7 +471,11 @@ internal class AapControlGateway(
         private val serviceControl: AapControl,
         private val mediaControl: AapControl,
         private val touchControl: AapControl,
-        private val sensorControl: AapControl): AapControl {
+        private val sensorControl: AapControl,
+        private val bluetoothControl: AapControl? = null): AapControl {
+
+    // Every control message for the first part of a session; enough to see how a session ends.
+    private var rxLogged = 0
 
     constructor(aapTransport: AapTransport,
                 micRecorder: MicRecorder,
@@ -451,9 +486,14 @@ internal class AapControlGateway(
             AapControlService(aapTransport, aapAudio, settings, context),
             AapControlMedia(aapTransport, micRecorder, aapAudio),
             AapControlTouch(aapTransport),
-            AapControlSensor(aapTransport, context, settings))
+            AapControlSensor(aapTransport, context, settings),
+            AapControlBluetooth(aapTransport, context))
 
     override fun execute(message: AapMessage): Int {
+        if (rxLogged < RX_LOG_LIMIT) {
+            rxLogged++
+            AppLog.i("RX: channel=${Channel.name(message.channel)} type=${message.type} size=${message.size}")
+        }
         if (message.type == 7) {
             val request = message.parse(Control.ChannelOpenRequest.newBuilder()).build()
             return channelOpenRequest(request, message.channel)
@@ -464,8 +504,13 @@ internal class AapControlGateway(
             Channel.ID_INP -> return touchControl.execute(message)
             Channel.ID_SEN -> return sensorControl.execute(message)
             Channel.ID_VID, Channel.ID_AUD, Channel.ID_AU1, Channel.ID_AU2, Channel.ID_MIC -> return mediaControl.execute(message)
+            Channel.ID_BTH -> return bluetoothControl?.execute(message) ?: 0
         }
         return 0
+    }
+
+    private companion object {
+        const val RX_LOG_LIMIT = 300
     }
 
     private fun channelOpenRequest(request: Control.ChannelOpenRequest, channel: Int): Int {

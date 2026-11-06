@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">USB 連線時的車輛 Wi-Fi</string>
+    <string name="dset_usb_wifi_summary">透過 USB 線使用 Android Auto 時，車輛 Wi-Fi 會連線到已知網路（例如手機熱點）以使用網際網路。拔掉線材後關閉。</string>
+</resources>

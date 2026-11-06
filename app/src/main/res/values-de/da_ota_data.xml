@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">Dieses Update lädt %1$s an Daten herunter, die vom Datenvolumen des Autos abgehen können. Verbinden Sie das Auto wenn möglich zuerst als Client mit einem WLAN oder aktualisieren Sie per USB.</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s wird heruntergeladen und installiert. Danach startet DiAuto neu und Android Auto ist einige Sekunden unterbrochen.</string>
+</resources>

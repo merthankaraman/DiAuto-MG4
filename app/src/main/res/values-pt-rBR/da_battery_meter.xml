@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">bateria de %1$d kWh medida ao dirigir</string>
+    <string name="battery_source_measuring">bateria de %1$d kWh por padrão, medindo ao dirigir (%2$d de %3$d %%)</string>
+    <string name="battery_soh_source_measured">medido ao dirigir</string>
+</resources>

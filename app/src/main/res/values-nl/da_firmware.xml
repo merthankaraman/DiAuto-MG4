@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">De firmware van je auto (%1$s) kan geen draadloos Android Auto: de Bluetooth staat maar één app-verbinding tegelijk toe. DiAuto kan dat niet omzeilen. Vraag je dealer om %2$s of nieuwer.</string>
+    <string name="da_firmware_incompatible" formatted="true">De firmware van je auto (%1$s) kan geen draadloos Android Auto: de Bluetooth staat maar één app-verbinding tegelijk toe. DiAuto kan dat niet omzeilen. Vraag je dealer of er nieuwere firmware is.</string>
+</resources>

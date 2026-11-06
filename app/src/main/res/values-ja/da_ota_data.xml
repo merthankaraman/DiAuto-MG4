@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ota_data_warning">このアップデートは %1$s のデータをダウンロードし、車のデータ通信量を消費する場合があります。可能であれば、先に車をクライアントとして Wi-Fi ネットワークに接続するか、USB でアップデートしてください。</string>
+    <string name="ota_dialog_install_short">DiAuto %1$s をダウンロードしてインストールします。その後 DiAuto が再起動し、Android Auto が数秒間切断されます。</string>
+</resources>

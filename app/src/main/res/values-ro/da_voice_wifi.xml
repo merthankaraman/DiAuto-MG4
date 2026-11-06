@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Înaltele vocii</string>
+    <string name="dset_voice_enhance_summary">Recreează înaltele tăiate de telefon: exciter ușor sau puternic, ori rețea neuronală (Opus). De la următoarea indicație.</string>
+    <string name="dset_voice_enhance_standard">Nu</string>
+    <string name="dset_voice_enhance_light">Ușor</string>
+    <string name="dset_voice_enhance_strong">Puternic</string>
+    <string name="dset_voice_enhance_neural">Neuronal</string>
+    <string name="dset_voice_experimental">Claritatea și înaltele vocii sunt experimentale: spune-ne pe GitHub ce setare îți sună cel mai bine.</string>
+    <string name="dset_wifi_channel">Canal Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Canalul punctului de acces al mașinii. Auto îl alege pe cel mai puțin aglomerat la pornirea punctului de acces, niciodată în timpul unei conexiuni.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

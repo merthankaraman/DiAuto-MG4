@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Gravar registros</string>
+    <string name="dset_log_record_summary">Ligado por padrão, para anexar a uma issue no GitHub se houver um problema. Pequenos, sem destinos nem nomes. Desligue para não gravar nada.</string>
+</resources>

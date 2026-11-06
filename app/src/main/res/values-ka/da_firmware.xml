@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">თქვენი მანქანის პროგრამული უზრუნველყოფა (%1$s) ვერ უშვებს უსადენო Android Auto-ს: მისი Bluetooth ერთდროულად მხოლოდ ერთ აპის კავშირს უშვებს. DiAuto ამას ვერ აარიდებს. სთხოვეთ დილერს %2$s ან უფრო ახალი.</string>
+    <string name="da_firmware_incompatible" formatted="true">თქვენი მანქანის პროგრამული უზრუნველყოფა (%1$s) ვერ უშვებს უსადენო Android Auto-ს: მისი Bluetooth ერთდროულად მხოლოდ ერთ აპის კავშირს უშვებს. DiAuto ამას ვერ აარიდებს. ჰკითხეთ დილერს, არსებობს თუ არა უფრო ახალი ვერსია.</string>
+</resources>

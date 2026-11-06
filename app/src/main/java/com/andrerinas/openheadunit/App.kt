@@ -50,12 +50,8 @@ class App : Application() {
         // profile is still locked. Boot receivers are directBootAware; constructing Settings
         // here used to crash the whole process with IllegalStateException before unlock.
         if (isUserUnlocked()) {
-            // A platform-signed car build already has the system identity it needs. Avoid
-            // eagerly constructing the root/Shizuku stack before the first Activity on
-            // vendor Android 9; ordinary phone builds retain the original behaviour.
-            if (Process.myUid() != Process.SYSTEM_UID) {
-                component.suExecutor.register()
-            }
+            // Before anything reads Settings: DiAuto used to be com.drivehub.diauto.mg4.
+            com.andrerinas.openheadunit.utils.AllgoPackage.importOldSettings(this)
 
             val settings = Settings(this) // Create a Settings instance
             AppLog.init(settings, this) // Initialize AppLog with settings for conditional logging
@@ -69,8 +65,6 @@ class App : Application() {
             // can read them during locked boot (before user unlock)
             Settings.syncAutoStartOnBootToDeviceStorage(this, settings.autoStartOnBoot)
             Settings.syncAutoStartOnUsbToDeviceStorage(this, settings.autoStartOnUsb)
-            Settings.syncAutoStartOnWifiToDeviceStorage(this, settings.autoStartOnWifi)
-            Settings.syncAutoStartWifiSsidToDeviceStorage(this, settings.autoStartWifiSsid)
             Settings.syncAutoStartBtMacsToDeviceStorage(this, settings.autoStartBluetoothDeviceMacs)
 
             // Enable OEM launcher Android Auto tile → DiAuto shortcut when configured.
@@ -92,7 +86,7 @@ class App : Application() {
 
         AppLog.d( "native library dir ${applicationInfo.nativeLibraryDir}")
 
-        File(applicationInfo.nativeLibraryDir).listFiles()?.forEach { file ->
+        File(applicationInfo.nativeLibraryDir ?: "").listFiles()?.forEach { file ->
             AppLog.d( "   ${file.name}")
         }
 

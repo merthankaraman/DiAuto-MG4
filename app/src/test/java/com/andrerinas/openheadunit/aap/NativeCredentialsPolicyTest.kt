@@ -1,6 +1,5 @@
 package com.andrerinas.openheadunit.aap
 
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,28 +15,6 @@ class NativeCredentialsPolicyTest {
         assertFalse(NativeCredentialsPolicy.isUsableBssid(""))
         assertFalse(NativeCredentialsPolicy.isUsableBssid("00:00:00:00:00:00"))
         assertFalse(NativeCredentialsPolicy.isUsableBssid("02:00:00:00:00:00"))
-    }
-
-    @Test
-    fun `WiFi Direct aborts rather than send credentials the phone will reject`() {
-        // Measured behaviour, not caution: a masked BSSID on the P2P path means the join fails
-        // anyway, and the usual cause — location services off — is something the user can fix
-        // once the log tells them to.
-        assertEquals(
-            UnusableBssidAction.ABORT,
-            NativeCredentialsPolicy.onUnusableBssid(NativeTransport.WIFI_DIRECT)
-        )
-    }
-
-    @Test
-    fun `the hotspot route sends them anyway, without the field`() {
-        // aa-proxy-rs omits the BSSID when it has none, and the OEM ZLink app ships without one:
-        // an ordinary access point is identified by SSID. Aborting here would make the route
-        // unusable on every device whose AP MAC is masked, which is most of them.
-        assertEquals(
-            UnusableBssidAction.SEND_WITH_EMPTY_BSSID,
-            NativeCredentialsPolicy.onUnusableBssid(NativeTransport.HOTSPOT)
-        )
     }
 
     @Test
@@ -67,13 +44,5 @@ class NativeCredentialsPolicyTest {
     fun `a running access point publishes however the interface was chosen`() {
         assertTrue(NativeCredentialsPolicy.shouldPublishCredentials(SoftApState.ENABLED, false))
         assertTrue(NativeCredentialsPolicy.shouldPublishCredentials(SoftApState.ENABLED, true))
-    }
-
-    @Test
-    fun `the transport setting maps over, and anything unrecognised stays on the default`() {
-        assertEquals(NativeTransport.WIFI_DIRECT, NativeTransport.fromSetting(0))
-        assertEquals(NativeTransport.HOTSPOT, NativeTransport.fromSetting(1))
-        assertEquals(NativeTransport.WIFI_DIRECT, NativeTransport.fromSetting(-1))
-        assertEquals(NativeTransport.WIFI_DIRECT, NativeTransport.fromSetting(99))
     }
 }

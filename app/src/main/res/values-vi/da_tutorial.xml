@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Bước %1$d/%2$d</string>
+    <string name="tuto_skip">Bỏ qua</string>
+    <string name="tuto_back">Quay lại</string>
+    <string name="tuto_next">Tiếp</string>
+    <string name="tuto_done">Bắt đầu</string>
+    <string name="tuto_welcome_title">Chào mừng đến với DiAuto cho MG4</string>
+    <string name="tuto_welcome_text">Android Auto không dây trên màn hình MG4 của bạn. Khi điện thoại đã ghép nối Bluetooth với xe, nó kết nối vào điểm phát Wi-Fi của xe và Android Auto tự khởi động.\n\nCác bước tiếp theo giới thiệu ba cử chỉ dùng được trên Android Auto.</string>
+    <string name="tuto_menu_title">Hai ngón từ mép trái</string>
+    <string name="tuto_menu_text">Đặt hai ngón tay gần mép trái màn hình và vuốt sang phải. Một menu mở ra với hai nút lớn: Ngắt kết nối và Cài đặt.\n\nChạm vào chỗ khác để đóng.</string>
+    <string name="tuto_fullscreen_title">Hai ngón từ mép phải</string>
+    <string name="tuto_fullscreen_text">Đặt hai ngón tay gần mép phải và vuốt sang trái để hiện hoặc ẩn các thanh của xe và dùng toàn bộ màn hình.</string>
+    <string name="tuto_top_title">Hai ngón từ cạnh trên</string>
+    <string name="tuto_top_text">Đặt hai ngón tay ở phía trên màn hình rồi vuốt xuống để quay lại launcher của xe. Android Auto vẫn được kết nối.</string>
+    <string name="tuto_home_title">Ba ngón vuốt xuống</string>
+    <string name="tuto_home_text">Vuốt ba ngón xuống để ngắt kết nối Android Auto và quay về màn hình chính của DiAuto.</string>
+    <string name="tuto_tips_title">Nên biết</string>
+    <string name="tuto_tips_text">• Google Maps trở thành công cụ lập kế hoạch chuyến đi: nhận pin, mức tiêu thụ và công suất sạc của MG4 và chọn các điểm dừng sạc.\n• Cài đặt → Xe: phiên bản MG4, dung lượng và tình trạng pin, tự động nhận diện và có thể điều chỉnh.\n• Tự động làm ấm pin trước điểm dừng sạc do Maps lên kế hoạch. Mặc định tắt, bật trong Cài đặt → Xe.\n• DiAuto được cài như bản cập nhật của Android Auto gốc trên xe (AllGo). Để quay lại: Cài đặt → Giới thiệu → Khôi phục, rồi khởi động lại màn hình bằng cách giữ nút Home 20 giây.\n• Cài đặt → Giới thiệu: xem lại hướng dẫn này.</string>
+    <string name="tuto_settings_title">Hướng dẫn</string>
+    <string name="tuto_settings_summary">Các cử chỉ trên Android Auto và các cài đặt hữu ích, trong vài bước.</string>
+    <string name="tuto_settings_button">Xem</string>
+    <string name="da_settings">Cài đặt</string>
+</resources>

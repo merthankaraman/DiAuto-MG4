@@ -15,6 +15,7 @@ import com.evsuite.hardware.AppLogger
 import com.evsuite.hardware.model.DriveMode
 import com.evsuite.hardware.model.RegenLevel
 import com.evsuite.hardware.FirmwareInfo
+import com.evsuite.hardware.saic.SaicAidl
 import com.evsuite.hardware.saic.SaicCharging
 import com.evsuite.hardware.saic.SaicHub
 import kotlinx.coroutines.CoroutineScope
@@ -387,16 +388,16 @@ object EVHardware {
      * Vehicle speed in km/h, or null if it cannot be read (CPM not ready,
      * property non supportsde, exception). [VehicleWriteGate] traite null comme un refus.
      *
-     * The property's unit varies by generation — see [VehicleSpeedScale].
+     * See [VehicleSpeedScale] for the property's unit.
      */
     fun getVehicleSpeedKmh(): Float? {
         val raw = getFloatPropertyCPM(PROP_VEHICLE_SPEED, AREA_GLOBAL)
             ?: getFloatPropertyCPM(PROP_VEHICLE_SPEED, 0)
             ?: return null
-        // The unit is firmware-dependent, not what AAOS specifies: SWI68 already reports
-        // km/h. [VehicleSpeedScale] carries the evidence and takes the magnitude, since the
-        // property is signed in reverse and every consumer asks whether the car is moving.
-        return VehicleSpeedScale.toKmh(raw, FirmwareInfo.getGeneration())
+        // Already km/h, not what AAOS specifies. [VehicleSpeedScale] carries the evidence and takes
+        // the magnitude, since the property is signed in reverse and every consumer asks whether
+        // the car is moving.
+        return VehicleSpeedScale.toKmh(raw)
     }
 
     /**
@@ -406,6 +407,37 @@ object EVHardware {
      * The null is significant: it means "we do not know", not "it is 0 °C".
      * A weather rule that receives null must NOT fire.
      */
+    // MG4 battery heating while driving (DRVNG_PTC_HEAT, as MG4 Dash drives it). Written 1 = on,
+    // 2 = off; read back 0 = on, 1 = off. Verified on a car 2026-10-15.
+    private const val PROP_DRIVING_BATTERY_HEAT = 0x2140f429
+
+    /** Whether battery heating is on, or null if the car does not say. */
+    fun isDrivingBatteryHeatOn(): Boolean? =
+        when (getIntPropertyCPM(PROP_DRIVING_BATTERY_HEAT, 0)) {
+            0 -> true
+            1 -> false
+            else -> null
+        }
+
+    /**
+     * Switches battery heating. Deliberately outside [VehicleWriteGate]: the car's own menu offers
+     * this switch while driving, and warming the pack on the way to a charger is the whole point.
+     * Every other vehicle write keeps the stopped-car rule.
+     */
+    fun setDrivingBatteryHeat(on: Boolean): Boolean {
+        val cpm = sCarPropertyManager ?: return false
+        return try {
+            cpm.javaClass
+                .getMethod("setIntProperty", Int::class.java, Int::class.java, Int::class.java)
+                .invoke(cpm, PROP_DRIVING_BATTERY_HEAT, 0, if (on) 1 else 2)
+            AppLogger.i(TAG, "battery heating ${if (on) "on" else "off"}")
+            true
+        } catch (e: Exception) {
+            AppLogger.w(TAG, "battery heating write failed: ${e.message}")
+            false
+        }
+    }
+
     fun getOutsideTempCelsius(): Float? =
         getFloatPropertyCPM(PROP_OUTSIDE_TEMP, AREA_GLOBAL)
             ?: getFloatPropertyCPM(PROP_OUTSIDE_TEMP, 0)
@@ -463,6 +495,68 @@ object EVHardware {
     /** A 400 V pack under load; outside this the pair is not the pair we think it is. */
     private val PACK_VOLTAGE_RANGE = 200f..500f
 
+    /** One reading for the capacity measurement, from the same sources as MG4 Dash's. */
+    data class CapacityReading(
+        /** Pack power in W from the BMS, positive when energy leaves the pack. */
+        val powerW: Float?,
+        /** Whole %, as the charging service gives it. */
+        val percent: Int?,
+        /** % to the tenth from the BMS, on the cars that give it. */
+        val precisePercent: Float?,
+        /** Plugged in, charging or V2L. */
+        val plugged: Boolean,
+    )
+
+    fun getCapacityReading(): CapacityReading {
+        val volts = getFloatPropertyCPM(PROP_BMS_PACK_VOLTAGE, 0)?.takeIf { it in 100f..900f }
+        val amps = getFloatPropertyCPM(PROP_BMS_PACK_CURRENT, 0)
+        val fromBms = getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, 0)
+            ?: getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, AREA_GLOBAL)
+        val ev = evServiceBinder()
+        val percent = SaicAidl.callInt(ev, EV_DESCRIPTOR, EV_TX_PERCENT)?.takeIf { it in 0..100 }
+            ?: getFloatPropertyCPM(PROP_EV_BATTERY_PCT_SWI68, AREA_GLOBAL)
+                ?.takeIf { it in 0f..100f && it != 82.3f }?.let { Math.round(it) }
+        val status = SaicAidl.callInt(ev, EV_DESCRIPTOR, EV_TX_CHARGE_STATUS)
+            ?: SaicCharging.chargingStatus()
+            ?: chargeStatusFromProperties()
+        return CapacityReading(
+            powerW = if (volts == null || amps == null) null else volts * amps,
+            percent = percent,
+            precisePercent = fromBms?.takeIf { it in 0.1f..100f },
+            plugged = status != 0,
+        )
+    }
+
+    /** BMS charge state, on the same scale as the EV service; 7 with a cable and no charge running. */
+    private fun chargeStatusFromProperties(): Int {
+        val raw = getIntPropertyCPM(PROP_BMS_CHARGE_STATE, AREA_GLOBAL)
+        val plugged = listOf(PROP_DC_CHARGE_STATE, PROP_AC_CHARGE_STATE)
+            .any { getIntPropertyCPM(it, AREA_GLOBAL).let { v -> v > 0 && v != 1023 } }
+        return when {
+            raw in 1..15 -> raw
+            plugged -> 7
+            else -> 0
+        }
+    }
+
+    @Volatile private var evBinder: android.os.IBinder? = null
+
+    private fun evServiceBinder(): android.os.IBinder? {
+        evBinder?.takeIf { it.isBinderAlive }?.let { return it }
+        return a9ClientBinder(EV_SERVICE_CODE).also { evBinder = it }
+    }
+
+    private const val EV_SERVICE_CODE = 0x4
+    private const val EV_DESCRIPTOR = "com.saicmotor.carapi.ev.ICarEvService"
+    private const val EV_TX_PERCENT = 3
+    private const val EV_TX_CHARGE_STATUS = 4
+    private const val PROP_BMS_CHARGE_STATE = 0x2140f409
+    private const val PROP_DC_CHARGE_STATE = 0x2140f43f
+    private const val PROP_AC_CHARGE_STATE = 0x2140f43e
+
+    private const val PROP_BMS_PACK_VOLTAGE = 560002054 // V
+    private const val PROP_BMS_PACK_CURRENT = 560002055 // A, positive when discharging
+
     /** Battery power in kW: positive traction/accessory draw, negative charging/regen. */
     fun getBatteryPowerKw(): Float? = supportedTelemetryRead {
         getFloatPropertyCPM(PROP_EV_INSTANTANEOUS_CHARGE_RATE, AREA_GLOBAL)
@@ -482,10 +576,18 @@ object EVHardware {
             ?.div(1_000f)
     }
 
+    /**
+     * Nominal pack capacity, when the firmware publishes it (SWI68 never does, SWI133 reads 0).
+     * It is an AOSP property, so area 0 is tried after the vendor area; AOSP gives Wh, some
+     * vehicles already publish kWh.
+     */
     fun getBatteryCapacityKwh(): Float? = supportedTelemetryRead {
-        getFloatPropertyCPM(PROP_INFO_EV_BATTERY_CAPACITY, AREA_GLOBAL)
+        val raw = (getFloatPropertyCPM(PROP_INFO_EV_BATTERY_CAPACITY, AREA_GLOBAL)
             ?.takeIf { it.isFinite() && it > 0f }
-            ?.div(1_000f)
+            ?: getFloatPropertyCPM(PROP_INFO_EV_BATTERY_CAPACITY, 0)
+                ?.takeIf { it.isFinite() && it > 0f })
+            ?: return@supportedTelemetryRead null
+        if (raw > 1_000f) raw / 1_000f else raw
     }
 
     /**
@@ -683,6 +785,52 @@ object EVHardware {
         probeProperty("HVAC_AMBIENT_TEMPERATURE", PROP_HVAC_AMBIENT_TEMP_SWI68, AREA_GLOBAL, Float::class.javaObjectType),
     )
 
+    /**
+     * The car's battery type code, as the stock charging app (EvCharge) reads it: the last byte of
+     * the configuration bytes CAL_360_camera_config 0x21704244 (global area). 1 = LFP
+     * (isOrthophosphoricAcidBattery); 7 and 9 are the EH32 EU/UK packs that allow a charge target.
+     * null when the car does not answer.
+     */
+    fun getBatteryTypeCode(): Int? = supportedTelemetryRead {
+        val cpm = sCarPropertyManager ?: return@supportedTelemetryRead null
+        cacheCarPropertyMethods(cpm)
+        val getProperty = sCpmGetPropertyMethod ?: return@supportedTelemetryRead null
+        try {
+            val holder = getProperty.invoke(cpm, ByteArray::class.java, PROP_VEHICLE_CONFIG_BATTERY, AREA_GLOBAL)
+            val bytes = holder?.javaClass?.getMethod("getValue")?.invoke(holder) as? ByteArray
+            lastVehicleConfigFailure = if (holder == null) "no value" else if (bytes == null || bytes.isEmpty()) "empty" else null
+            bytes?.takeIf { it.isNotEmpty() }
+                ?.also { lastVehicleConfigBytes = it.joinToString(" ") { b -> "%02x".format(b) } }
+                ?.last()?.toInt()
+        } catch (e: Exception) {
+            lastVehicleConfigFailure = (e.cause ?: e).toString()
+            null
+        }
+    }
+
+    private const val PROP_VEHICLE_CONFIG_BATTERY = 0x21704244
+
+    /**
+     * The right-hand wheel keys are switched away from media (ID_SWC_FUNCTION_CHANGE_SWA 0x21407b14:
+     * 0 = media, 1 = instrument cluster menus, 2 = climate). The stock launcher only acts on keys
+     * 297-301 at 0. null when the car does not answer.
+     */
+    fun wheelKeysOffMedia(): Boolean? {
+        val v = getIntPropertyCPM(PROP_SWC_FUNCTION, 0).takeIf { it >= 0 }
+            ?: getIntPropertyCPM(PROP_SWC_FUNCTION, AREA_GLOBAL).takeIf { it >= 0 }
+            ?: return null
+        return v != 0
+    }
+
+    private const val PROP_SWC_FUNCTION = 0x21407b14
+
+    /** The whole configuration bytes last read, for the log. */
+    @Volatile var lastVehicleConfigBytes: String? = null
+
+    /** Why [getBatteryTypeCode] last got nothing from a car that was connected. */
+    @Volatile var lastVehicleConfigFailure: String? = null
+        private set
+
     private fun probeProperty(name: String, propId: Int, areaId: Int, boxed: Class<*>): PropertyReport {
         val cpm = sCarPropertyManager
             ?: return PropertyReport(name, propId, areaId, "CarPropertyManager not connected")
@@ -737,6 +885,20 @@ object EVHardware {
     private val HVAC_AREA_CANDIDATES = intArrayOf(AREA_HVAC, AREA_GLOBAL, 0)
     // VehicleAreaWindow bits: front windshield + the four door windows.
     private val WINDOW_AREA_CANDIDATES = intArrayOf(0x0001, 0x0010, 0x0040, 0x0100, 0x0400)
+
+    /**
+     * Lights on, as MG4Dash reads it (measured on an SWI69 car): VEH_SIDE_LGHT 0x21409323 is not 0,
+     * or PMS_SYSTEM_DAY_NIGHT_MODE 0x11408a0d is 3 (night), both in the global area. null when the
+     * car answers neither.
+     */
+    fun getLightsOn(): Boolean? = supportedTelemetryRead {
+        val side = getIntPropertyCPM(PROP_SIDE_LIGHTS, AREA_GLOBAL)
+        val dayNight = getIntPropertyCPM(PROP_SYSTEM_DAY_NIGHT, AREA_GLOBAL)
+        if (side < 0 && dayNight < 0) null else side > 0 || dayNight == 3
+    }
+
+    private const val PROP_SIDE_LIGHTS = 0x21409323     // VEH_SIDE_LGHT, 0 = off
+    private const val PROP_SYSTEM_DAY_NIGHT = 0x11408a0d // PMS_SYSTEM_DAY_NIGHT_MODE, 3 = night
 
     fun getAcOn(): Boolean?          = readHvacBool(PROP_HVAC_AC_ON)
     fun getHvacAutoOn(): Boolean?    = readHvacBool(PROP_HVAC_AUTO_ON)

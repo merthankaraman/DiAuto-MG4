@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Stap %1$d van %2$d</string>
+    <string name="tuto_skip">Overslaan</string>
+    <string name="tuto_back">Vorige</string>
+    <string name="tuto_next">Volgende</string>
+    <string name="tuto_done">Aan de slag</string>
+    <string name="tuto_welcome_title">Welkom bij DiAuto voor MG4</string>
+    <string name="tuto_welcome_text">Draadloos Android Auto op het scherm van je MG4. Zodra je telefoon via Bluetooth met de auto is gekoppeld, maakt hij verbinding met de wifi-hotspot van de auto en start Android Auto vanzelf.\n\nDe volgende stappen tonen de drie gebaren die op Android Auto werken.</string>
+    <string name="tuto_menu_title">Twee vingers vanaf de linkerrand</string>
+    <string name="tuto_menu_text">Zet twee vingers bij de linkerrand van het scherm en veeg naar rechts. Er opent een menu met twee grote knoppen: Verbinding verbreken en Instellingen.\n\nTik ergens anders om het te sluiten.</string>
+    <string name="tuto_fullscreen_title">Twee vingers vanaf de rechterrand</string>
+    <string name="tuto_fullscreen_text">Zet twee vingers bij de rechterrand en veeg naar links om de balken van de auto te tonen of te verbergen en het hele scherm te gebruiken.</string>
+    <string name="tuto_top_title">Twee vingers vanaf de bovenrand</string>
+    <string name="tuto_top_text">Zet twee vingers boven aan het scherm en veeg omlaag om terug te gaan naar de launcher van de auto. Android Auto blijft verbonden.</string>
+    <string name="tuto_home_title">Drie vingers omlaag</string>
+    <string name="tuto_home_text">Veeg met drie vingers omlaag om Android Auto te ontkoppelen en terug te gaan naar het startscherm van DiAuto.</string>
+    <string name="tuto_tips_title">Goed om te weten</string>
+    <string name="tuto_tips_text">• Google Maps wordt een routeplanner: het krijgt de accu, het verbruik en het laadvermogen van je MG4 door en kiest de laadstops.\n• Instellingen → Auto: je MG4-versie, accucapaciteit en -conditie, automatisch herkend en aanpasbaar.\n• Automatisch voorverwarmen van de accu vóór een laadstop die Maps plant. Standaard uit, zet het aan in Instellingen → Auto.\n• DiAuto wordt geïnstalleerd als update van de originele Android Auto van de auto (AllGo). Terug ernaar: Instellingen → Over → Terugzetten, en herstart daarna het scherm door de Home-knop 20 s ingedrukt te houden.\n• Instellingen → Over: deze uitleg opnieuw bekijken.</string>
+    <string name="tuto_settings_title">Uitleg</string>
+    <string name="tuto_settings_summary">De gebaren op Android Auto en de handige instellingen, in een paar stappen.</string>
+    <string name="tuto_settings_button">Tonen</string>
+    <string name="da_settings">Instellingen</string>
+</resources>

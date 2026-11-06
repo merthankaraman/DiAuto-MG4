@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">Modellwerte für Maps einblenden</string>
+    <string name="dset_maps_overlay_summary">Zeigt über Android Auto, was das Modell erwartet und was der Akku wirklich verbraucht, für Testfahrten.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_overlay">在屏幕上显示地图模型数据</string>
+    <string name="dset_maps_overlay_summary">在 Android Auto 上方显示模型预测和电池实际消耗，用于试驾。</string>
+</resources>

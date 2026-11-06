@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Firmware-ul mașinii (%1$s) nu poate rula Android Auto wireless: Bluetooth-ul său acceptă o singură conexiune de aplicație odată. DiAuto nu poate ocoli asta. Cereți dealerului %2$s sau mai nou.</string>
+    <string name="da_firmware_incompatible" formatted="true">Firmware-ul mașinii (%1$s) nu poate rula Android Auto wireless: Bluetooth-ul său acceptă o singură conexiune de aplicație odată. DiAuto nu poate ocoli asta. Întrebați dealerul dacă există un firmware mai nou.</string>
+</resources>

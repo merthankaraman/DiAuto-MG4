@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Model zużycia dla Map</string>
+    <string name="dset_maps_model_summary">Mapy Google szacują baterię na miejscu na podstawie modelu MG4 (prędkość, zimno, klimatyzacja) zamiast średniego zużycia auta.</string>
+    <string name="dset_maps_model_explain">Co robi: Mapy Google szacują poziom baterii na miejscu docelowym na podstawie opisu auta, a nie bieżącego średniego zużycia. Liczą się wtedy prędkość, zimno i ogrzewanie.\n\nJak: DiAuto przekazuje Mapom opory ruchu auta (toczenia, większe w zimnie, i powietrza) oraz moc klimatyzacji i elektroniki zależnie od temperatury zewnętrznej. Serwery Google liczą energię dla każdego odcinka trasy, z przewidywaną prędkością, ruchem i przewyższeniami.\n\nUżywane dane: wersja auta (ustawienie baterii), poziom i pojemność baterii, temperatura zewnętrzna i to, czy klimatyzacja jest włączona. Trafiają tylko do Twojego telefonu, jak dziś poziom baterii.\n\nWartości są szacunkowe, prognoza może się różnić, dopóki nie zostaną skalibrowane.</string>
+    <string name="dset_maps_model_enable">Włącz</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">走行中に測定した %1$d kWh バッテリー</string>
+    <string name="battery_source_measuring">既定の %1$d kWh バッテリー、走行中に測定中（%2$d / %3$d %%）</string>
+    <string name="battery_soh_source_measured">走行中に測定</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Чіткість голосу</string>
+    <string name="dset_voice_clarity_summary">Фільтр для підказок і асистента: прибирає глухі низи й виділяє приголосні. З наступної підказки.</string>
+    <string name="dset_voice_headroom">Запас голосу</string>
+    <string name="dset_voice_headroom_summary">Трохи приглушує підказки, щоб обробка в автомобілі не перевантажувалась; для компенсації збільште гучність навігації в автомобілі.</string>
+</resources>

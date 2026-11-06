@@ -22,9 +22,14 @@ final class OtaCleanup {
     private OtaCleanup() {
     }
 
-    /** Tüm OTA APK / hash dosyalarını sil (kurulum sonrası). */
+    /** Tüm OTA APK / hash dosyalarını sil (kurulum sonrası), the app cache included. */
     static void deleteAllOtaApks(Context context) {
         deleteOldApks(null);
+        File[] staged = new File(context.getCacheDir(), OtaDownloader.OTA_DIR).listFiles();
+        if (staged == null) return;
+        for (File f : staged) {
+            if (f.isFile() && f.delete()) Log.i(TAG, "OTA cache deleted: " + f.getName());
+        }
     }
 
     /**

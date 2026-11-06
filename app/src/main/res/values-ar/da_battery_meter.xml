@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">بطارية %1$d كيلوواط ساعة مقاسة أثناء القيادة</string>
+    <string name="battery_source_measuring">بطارية %1$d كيلوواط ساعة افتراضيًا، قياس أثناء القيادة (%2$d من %3$d %%)</string>
+    <string name="battery_soh_source_measured">مقاس أثناء القيادة</string>
+</resources>

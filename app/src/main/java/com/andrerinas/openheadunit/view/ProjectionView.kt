@@ -49,8 +49,10 @@ class ProjectionView @JvmOverloads constructor(
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         AppLog.i("holder $holder")
-        videoDecoder?.stopIfCurrentSurface(holder.surface, DecoderStopPolicy.REASON_SURFACE_DESTROYED)
+        // The screen first: it parks the decoder off-screen. Stopping it here beforehand threw the
+        // running stream away, and the return to Android Auto then waited seconds for a keyframe.
         callbacks.forEach { it.onSurfaceDestroyed(holder.surface) }
+        videoDecoder?.stopIfCurrentSurface(holder.surface, DecoderStopPolicy.REASON_SURFACE_DESTROYED)
     }
 
     override fun addCallback(callback: IProjectionView.Callbacks) {

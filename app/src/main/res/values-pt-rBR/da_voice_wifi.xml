@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Agudos da voz</string>
+    <string name="dset_voice_enhance_summary">Recria os agudos que o telefone corta: excitador leve ou forte, ou rede neural (Opus). A partir da próxima instrução.</string>
+    <string name="dset_voice_enhance_standard">Não</string>
+    <string name="dset_voice_enhance_light">Leve</string>
+    <string name="dset_voice_enhance_strong">Forte</string>
+    <string name="dset_voice_enhance_neural">Neural</string>
+    <string name="dset_voice_experimental">Clareza e agudos da voz são experimentais: conte no GitHub qual ajuste soa melhor para você.</string>
+    <string name="dset_wifi_channel">Canal Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Canal do ponto de acesso do carro. Auto escolhe o menos congestionado ao iniciar o ponto de acesso, nunca durante uma conexão.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

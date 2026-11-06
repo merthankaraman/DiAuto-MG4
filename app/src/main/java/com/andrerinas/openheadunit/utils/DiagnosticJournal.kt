@@ -14,6 +14,8 @@ internal object DiagnosticJournal {
     private val recent = ArrayDeque<String>()
     private val diskLock = Any()
     @Volatile private var directory: File? = null
+    /** Off with the logs setting: nothing more is queued for disk. */
+    @Volatile var enabled = false
 
     @Synchronized fun init(context: Context) {
         if (directory != null) return
@@ -40,7 +42,7 @@ internal object DiagnosticJournal {
     }
 
     fun record(priority: Int, message: String) {
-        if (directory == null) return
+        if (directory == null || !enabled) return
         // DEBUG/VERBOSE can be many lines per frame; journaling them stalls the producer path
         // (redact + synchronized deque + disk queue) and shows up as lost FPS on the head unit.
         // Crash/diagnostic exports still get INFO and above, which is what we need.

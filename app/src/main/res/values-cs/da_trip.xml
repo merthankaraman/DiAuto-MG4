@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Nahrávat jízdy pro Mapy</string>
+    <string name="trip_option_summary">Přidá tlačítko pro nahrání vybrané jízdy, které pomůže zpřesnit předpovědi Map: spotřeba, rychlost, klimatizace, teplota. Bez polohy a osobních údajů.</string>
+    <string name="trip_start">Nahrát tuto jízdu</string>
+    <string name="trip_stop">Zastavit nahrávání</string>
+    <string name="trip_button_summary">Nahrává do zaparkování nebo zastavení, také z nabídky dvou prstů a domovské obrazovky.</string>
+    <string name="trip_no_battery">Stav baterie nelze přečíst: zkuste to za chvíli znovu.</string>
+    <string name="trip_bad_percent">Zadejte číslo od 0 do 100.</string>
+    <string name="trip_started">Nahrávání jízdy spuštěno.</string>
+    <string name="trip_saved">Jízda uložena.</string>
+    <string name="trip_too_short">Jízda je příliš krátká: neuložena.</string>
+    <string name="trip_files">Nahrané jízdy</string>
+    <string name="trip_files_summary">Uloženo: %1$d. Zkopírují se na USB disk a poté se z vozu odstraní.</string>
+    <string name="trip_copy">Kopírovat na USB</string>
+    <string name="trip_copied">Jízdy zkopírované na USB disk: %1$d.</string>
+    <string name="trip_copy_failed">USB disk nenalezen nebo kopírování selhalo: jízdy zůstávají ve voze.</string>
+    <string name="trip_picker_title">Baterie při příjezdu podle Map</string>
+    <string name="trip_picker_note">Nyní %1$d %%. Použitelná jízda spotřebuje alespoň %2$d %% baterie, bez zastávky na nabíjení.</string>
+    <string name="trip_battery_low">Baterie je příliš vybitá pro nahrání použitelné jízdy.</string>
+</resources>

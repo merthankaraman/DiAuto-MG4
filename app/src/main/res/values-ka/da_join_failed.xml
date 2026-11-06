@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">ტელეფონი ვერ უერთდება მანქანის Wi-Fi-ს. თუ მისი უსადენო წვდომის წერტილი ჩართულია, გამორთეთ.</string>
+</resources>

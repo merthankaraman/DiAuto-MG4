@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi автомобиля при USB</string>
+    <string name="dset_usb_wifi_summary">Когда Android Auto работает по USB-кабелю, Wi-Fi автомобиля подключается к известным сетям, например к точке доступа телефона, для интернета. При отключении кабеля он выключается.</string>
+</resources>

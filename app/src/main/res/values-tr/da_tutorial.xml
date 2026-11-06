@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Adım %1$d / %2$d</string>
+    <string name="tuto_skip">Atla</string>
+    <string name="tuto_back">Geri</string>
+    <string name="tuto_next">İleri</string>
+    <string name="tuto_done">Başlayalım</string>
+    <string name="tuto_welcome_title">MG4 için DiAuto\'ya hoş geldiniz</string>
+    <string name="tuto_welcome_text">MG4\'ünüzün ekranında kablosuz Android Auto. Telefonunuz araçla Bluetooth üzerinden eşlendiğinde aracın Wi-Fi erişim noktasına bağlanır ve Android Auto kendiliğinden başlar.\n\nSonraki adımlar Android Auto üzerinde çalışan üç hareketi gösterir.</string>
+    <string name="tuto_menu_title">Sol kenardan iki parmak</string>
+    <string name="tuto_menu_text">İki parmağınızı ekranın sol kenarına koyup sağa kaydırın. İki büyük düğmeli bir menü açılır: Bağlantıyı kes ve Ayarlar.\n\nKapatmak için başka bir yere dokunun.</string>
+    <string name="tuto_fullscreen_title">Sağ kenardan iki parmak</string>
+    <string name="tuto_fullscreen_text">İki parmağınızı sağ kenara koyup sola kaydırarak aracın çubuklarını gösterin veya gizleyin ve tüm ekranı kullanın.</string>
+    <string name="tuto_top_title">Üst kenardan iki parmak</string>
+    <string name="tuto_top_text">İki parmağınızı ekranın üstüne koyup aşağı kaydırarak aracın ana ekranına dönün. Android Auto bağlı kalır.</string>
+    <string name="tuto_home_title">Üç parmakla aşağı</string>
+    <string name="tuto_home_text">Android Auto bağlantısını kesip DiAuto ana ekranına dönmek için üç parmakla aşağı kaydırın.</string>
+    <string name="tuto_tips_title">Bilmekte fayda var</string>
+    <string name="tuto_tips_text">• Google Haritalar bir yolculuk planlayıcısına dönüşür: MG4\'ünüzün batarya, tüketim ve şarj gücü bilgilerini alır ve şarj duraklarını seçer.\n• Ayarlar → Araç: MG4 sürümünüz, batarya kapasitesi ve sağlığı; otomatik algılanır ve ayarlanabilir.\n• Haritalar\'ın planladığı bir şarj durağından önce bataryanın otomatik ön ısıtması. Varsayılan olarak kapalıdır, Ayarlar → Araç bölümünden açın.\n• DiAuto, aracın orijinal Android Auto\'sunun (AllGo) güncellemesi olarak yüklenir. Ona geri dönmek için: Ayarlar → Hakkında → Geri dön, ardından Home düğmesine 20 sn basılı tutarak ekranı yeniden başlatın.\n• Ayarlar → Hakkında: bu öğreticiyi yeniden göster.</string>
+    <string name="tuto_settings_title">Öğretici</string>
+    <string name="tuto_settings_summary">Android Auto üzerindeki hareketler ve faydalı ayarlar, birkaç adımda.</string>
+    <string name="tuto_settings_button">Göster</string>
+</resources>

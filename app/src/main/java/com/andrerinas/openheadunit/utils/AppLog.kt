@@ -38,8 +38,12 @@ object AppLog {
          * log lines is always better than stalling the thread that produces them, and the count is
          * reported so a capture never silently under-reports.
          */
-        class File(val file: IoFile) : Logger, Closeable {
-            private val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file, true), Charsets.UTF_8))
+        class File(initialFile: IoFile) : Logger, Closeable {
+            /** The file being written now; moves to a new one every [MAX_FILE_BYTES]. */
+            @Volatile var file: IoFile = initialFile
+                private set
+            private var writer = open(initialFile)
+            private var bytesInFile = initialFile.length()
             private val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
             private val queue = ArrayBlockingQueue<Any>(QUEUE_CAPACITY)
             private val dropped = AtomicInteger(0)
@@ -84,6 +88,8 @@ object AppLog {
                         try {
                             writer.write(line)
                             writer.newLine()
+                            bytesInFile += line.length + 1
+                            if (bytesInFile >= MAX_FILE_BYTES) rollOver()
                             val lost = dropped.getAndSet(0)
                             if (lost > 0) {
                                 writer.write("--- AppLog: $lost lines dropped, writer could not keep up ---")
@@ -104,6 +110,25 @@ object AppLog {
             }
 
             /**
+             * A head unit left on for hours writes one file for the whole run, and the total-size
+             * cap is only applied when a file is created: close this one at [MAX_FILE_BYTES], prune
+             * the folder, and carry on in a new file. Runs on the writer thread only.
+             */
+            private fun rollOver() {
+                try { writer.flush() } catch (_: IOException) {}
+                try { writer.close() } catch (_: IOException) {}
+                val dir = file.parentFile ?: return
+                LogFilesHelper.rotateLogs(dir)
+                val next = LogFilesHelper.createTimestampedLogFile(dir)
+                writer = open(next)
+                file = next
+                bytesInFile = 0
+            }
+
+            private fun open(target: IoFile) =
+                BufferedWriter(OutputStreamWriter(FileOutputStream(target, true), Charsets.UTF_8))
+
+            /**
              * Deliberately does not wait for the writer to finish. `close()` runs on the main thread
              * from [AppLog.init] every time the log settings change, and joining a thread that is
              * mid-flush to slow eMMC there is an ANR waiting to happen. The drain thread owns the
@@ -122,6 +147,9 @@ object AppLog {
             private companion object {
                 const val QUEUE_CAPACITY = 4096
 
+                /** One log file at most; the next lines go to a new file (see rollOver). */
+                const val MAX_FILE_BYTES = 5L * 1024 * 1024
+
                 /** End marker; a distinct type so it can never collide with a real line. */
                 val POISON = Any()
             }
@@ -133,7 +161,10 @@ object AppLog {
     @Volatile private var currentLogSource: Settings.LogSource = Settings.LogSource.LOGCAT
 
     fun init(settings: Settings?, context: Context? = null) {
-        context?.let { DiagnosticJournal.init(it.applicationContext) }
+        hidePairedPhones()
+        // Nothing is written to storage if the driver switched logs off.
+        DiagnosticJournal.enabled = settings?.exporterCaptureEnabled == true
+        if (DiagnosticJournal.enabled) context?.let { DiagnosticJournal.init(it.applicationContext) }
         // Cache the level rather than resolving it per call: every call site below, and every
         // LOG_VERBOSE/LOG_DEBUG guard, used to reach SharedPreferences.getInt() through
         // Settings.exporterLogLevel — a lock plus a map lookup for lines that are mostly discarded.
@@ -244,16 +275,46 @@ object AppLog {
     }
 
     private fun log(priority: Int, msg: String) {
-        DiagnosticJournal.record(priority, msg)
-        LOGGER.println(priority, TAG, msg)
+        DiagnosticJournal.record(priority, maskPrivate(msg))
+        LOGGER.println(priority, TAG, if (LOGGER is Logger.Android) msg else maskPrivate(msg))
     }
+
+    private val macAddress = Regex("(?i)\\b((?:[0-9a-f]{2}:){2}[0-9a-f]{2}):(?:[0-9a-f]{2}:){2}[0-9a-f]{2}\\b")
+
+    /**
+     * Log files are posted on GitHub: the second half of every Bluetooth / Wi-Fi address is
+     * hidden (the maker part is kept, it is enough to tell devices apart in a log).
+     */
+    internal fun maskAddresses(msg: String): String = msg.replace(macAddress, "$1:XX:XX:XX")
+
+    private val ssidValue = Regex("(?i)(ssid\\s*[=:]\\s*)(?!false\\b|true\\b)[^,\\s]+")
+    private val hiddenValues = java.util.concurrent.CopyOnWriteArraySet<String>()
+
+    /** A name that must not reach the log files, a phone's or a Wi-Fi network's. */
+    fun hide(value: String?) {
+        if (value != null && value.length >= MIN_HIDDEN_LENGTH) hiddenValues.add(value)
+    }
+
+    /** What log files may keep of a line: they are on shared storage, and posted on GitHub. */
+    internal fun maskPrivate(msg: String): String {
+        var masked = maskAddresses(msg).replace(ssidValue, "$1[hidden]")
+        for (value in hiddenValues) masked = masked.replace(value, "[hidden]")
+        return masked
+    }
+
+    @android.annotation.SuppressLint("MissingPermission")
+    private fun hidePairedPhones() {
+        runCatching { android.bluetooth.BluetoothAdapter.getDefaultAdapter()?.bondedDevices?.forEach { hide(it.name) } }
+    }
+
+    private const val MIN_HIDDEN_LENGTH = 3
 
     private fun isLoggable(priority: Int): Boolean = priority >= LOG_LEVEL
 
     private fun loge(message: String, tr: Throwable?) {
         val trace = if (LOGGER is Logger.Android) Log.getStackTraceString(tr) else ""
-        DiagnosticJournal.record(Log.ERROR, message)
-        LOGGER.println(Log.ERROR, TAG, message + '\n' + trace)
+        DiagnosticJournal.record(Log.ERROR, maskPrivate(message))
+        LOGGER.println(Log.ERROR, TAG, (if (LOGGER is Logger.Android) message else maskPrivate(message)) + '\n' + trace)
     }
 
     private fun closeAppLogFileLogger() {

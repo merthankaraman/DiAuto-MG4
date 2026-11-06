@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">برنامج سيارتك (%1$s) لا يدعم Android Auto اللاسلكي: البلوتوث فيه يسمح باتصال تطبيق واحد فقط في كل مرة. لا يستطيع DiAuto تجاوز ذلك. اطلب من الوكيل الإصدار %2$s أو أحدث.</string>
+    <string name="da_firmware_incompatible" formatted="true">برنامج سيارتك (%1$s) لا يدعم Android Auto اللاسلكي: البلوتوث فيه يسمح باتصال تطبيق واحد فقط في كل مرة. لا يستطيع DiAuto تجاوز ذلك. اسأل الوكيل عن إصدار أحدث.</string>
+</resources>

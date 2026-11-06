@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">音声の高音</string>
+    <string name="dset_voice_enhance_summary">電話がカットした高音を再現します：軽め・強めのエキサイター、またはニューラルネットワーク（Opus）。次の案内から。</string>
+    <string name="dset_voice_enhance_standard">オフ</string>
+    <string name="dset_voice_enhance_light">軽め</string>
+    <string name="dset_voice_enhance_strong">強め</string>
+    <string name="dset_voice_enhance_neural">ニューラル</string>
+    <string name="dset_voice_experimental">音声の明瞭さと高音は試験的な設定です。どの設定が一番聞きやすいか GitHub で教えてください。</string>
+    <string name="dset_wifi_channel">Wi-Fi チャンネル</string>
+    <string name="dset_wifi_channel_summary">車のアクセスポイントのチャンネル。自動ではアクセスポイントの起動時に最も空いているものを選び、接続中は変更しません。</string>
+    <string name="dset_wifi_channel_auto">自動</string>
+</resources>

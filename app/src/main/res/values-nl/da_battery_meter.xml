@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_source_measured_pack">accu van %1$d kWh, gemeten tijdens het rijden</string>
+    <string name="battery_source_measuring">accu van %1$d kWh standaard, meting tijdens het rijden (%2$d van %3$d %%)</string>
+    <string name="battery_soh_source_measured">gemeten tijdens het rijden</string>
+</resources>

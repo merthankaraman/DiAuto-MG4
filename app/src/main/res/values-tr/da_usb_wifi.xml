@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">USB ile araç Wi-Fi\'ı</string>
+    <string name="dset_usb_wifi_summary">Android Auto USB kablosuyla çalışırken araç Wi-Fi\'ı, internet için telefonun erişim noktası gibi bilinen ağlara bağlanır. Kablo çıkarılınca kapanır.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">記錄日誌</string>
+    <string name="dset_log_record_summary">預設開啟，發生問題時可附加到 GitHub issue。體積小，不含目的地和名稱。關閉後不寫入任何內容。</string>
+</resources>

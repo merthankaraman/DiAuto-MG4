@@ -41,6 +41,8 @@ object OemAndroidAutoBlocker {
         var stopped = 0
         for (pkg in TARGET_PACKAGES) {
             if (!isInstalled(context, pkg)) continue
+            // DiAuto now carries AllGo's Android Auto package name: never stop itself.
+            if (pkg == context.packageName) continue
             if (forceStop(context, pkg)) {
                 stopped++
                 AppLog.i("OemAndroidAutoBlocker: force-stopped $pkg ($reason)")

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">الخطوة %1$d من %2$d</string>
+    <string name="tuto_skip">تخطي</string>
+    <string name="tuto_back">السابق</string>
+    <string name="tuto_next">التالي</string>
+    <string name="tuto_done">لنبدأ</string>
+    <string name="tuto_welcome_title">مرحبًا بك في DiAuto لسيارة MG4</string>
+    <string name="tuto_welcome_text">Android Auto لاسلكي على شاشة سيارتك MG4. بعد إقران هاتفك بالسيارة عبر البلوتوث، يتصل بنقطة اتصال Wi-Fi في السيارة ويبدأ Android Auto تلقائيًا.\n\nتعرض الخطوات التالية الإيماءات الثلاث التي تعمل فوق Android Auto.</string>
+    <string name="tuto_menu_title">إصبعان من الحافة اليسرى</string>
+    <string name="tuto_menu_text">ضع إصبعين قرب الحافة اليسرى للشاشة واسحب نحو اليمين. تُفتح قائمة بزرين كبيرين: قطع الاتصال والإعدادات.\n\nالمس أي مكان آخر لإغلاقها.</string>
+    <string name="tuto_fullscreen_title">إصبعان من الحافة اليمنى</string>
+    <string name="tuto_fullscreen_text">ضع إصبعين قرب الحافة اليمنى واسحب نحو اليسار لإظهار أشرطة السيارة أو إخفائها واستخدام الشاشة كاملة.</string>
+    <string name="tuto_top_title">إصبعان من الحافة العلوية</string>
+    <string name="tuto_top_text">ضع إصبعين أعلى الشاشة واسحبهما إلى الأسفل للعودة إلى واجهة السيارة. يبقى Android Auto متصلًا.</string>
+    <string name="tuto_home_title">ثلاثة أصابع للأسفل</string>
+    <string name="tuto_home_text">اسحب بثلاثة أصابع للأسفل لقطع اتصال Android Auto والعودة إلى الشاشة الرئيسية لـ DiAuto.</string>
+    <string name="tuto_tips_title">معلومات مفيدة</string>
+    <string name="tuto_tips_text">• يصبح Google Maps مخطِّطًا للرحلات: يتلقى البطارية والاستهلاك وقدرة الشحن لسيارتك MG4 ويختار محطات الشحن.\n• الإعدادات ← السيارة: إصدار سيارتك MG4 وسعة البطارية وحالتها، تُكتشف تلقائيًا ويمكن تعديلها.\n• تسخين مسبق تلقائي للبطارية قبل محطة شحن يخططها Maps. معطّل افتراضيًا، فعّله من الإعدادات ← السيارة.\n• يُثبَّت DiAuto كتحديث لتطبيق Android Auto الأصلي في السيارة (AllGo). للعودة إليه: الإعدادات ← حول ← استعادة، ثم أعد تشغيل الشاشة بالضغط على زر Home لمدة 20 ثانية.\n• الإعدادات ← حول: عرض هذا الدليل مرة أخرى.</string>
+    <string name="tuto_settings_title">الدليل</string>
+    <string name="tuto_settings_summary">الإيماءات فوق Android Auto والإعدادات المفيدة في بضع خطوات.</string>
+    <string name="tuto_settings_button">عرض</string>
+</resources>

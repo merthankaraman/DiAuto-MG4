@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_log_record">Logboek bijhouden</string>
+    <string name="dset_log_record_summary">Standaard aan, om bij een probleem aan een GitHub-issue toe te voegen. Klein, zonder bestemmingen of namen. Zet het uit om niets te schrijven.</string>
+</resources>

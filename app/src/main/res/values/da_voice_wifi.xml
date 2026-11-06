@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Voice treble</string>
+    <string name="dset_voice_enhance_summary">Recreates the treble the phone cuts off: light or strong exciter, or a neural network (Opus). From the next prompt.</string>
+    <string name="dset_voice_enhance_standard">Off</string>
+    <string name="dset_voice_enhance_light">Light</string>
+    <string name="dset_voice_enhance_strong">Strong</string>
+    <string name="dset_voice_enhance_neural">Neural</string>
+    <string name="dset_voice_experimental">Voice clarity and treble are experimental: tell us on GitHub which setting sounds best to you.</string>
+    <string name="dset_wifi_channel">Wi-Fi channel</string>
+    <string name="dset_wifi_channel_summary">Channel of the car\'s access point. Auto picks the least crowded one when the access point starts, never during a connection.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

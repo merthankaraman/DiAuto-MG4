@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wifi van de auto terug na</string>
+    <string name="dset_station_delay_summary">De wifi van de auto staat uit tijdens draadloos Android Auto. Hij komt terug als de sessie zo lang voorbij is.</string>
+</resources>

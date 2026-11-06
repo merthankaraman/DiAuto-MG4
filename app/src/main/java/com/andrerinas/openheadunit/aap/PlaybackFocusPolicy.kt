@@ -48,6 +48,14 @@ object PlaybackFocusPolicy {
      * @param selfDefeatingLatched we already observed the phone cut its own audio right after we
      *                          took focus, more than once this session.
      */
+    /**
+     * Guidance, assistant and notification audio ask with MAY_DUCK or a short transient, which
+     * neither stops an A2DP stream for good nor is what the latch measures; without focus the car
+     * radio simply covers them. So they always ask, unless the driver chose NEVER.
+     */
+    fun speechMode(mode: Mode, isSpeech: Boolean): Mode =
+        if (isSpeech && mode == Mode.AUTO) Mode.ALWAYS else mode
+
     fun shouldAcquire(
         mode: Mode,
         staticAudioFocus: Boolean,

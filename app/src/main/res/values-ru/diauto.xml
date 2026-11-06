@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="da_brand">DiAuto</string>
+    <string name="da_brand">DiAuto for MG4</string>
     <string name="da_tagline">ВАШ ТЕЛЕФОН. ВАША ДОРОГА.</string>
     <string name="da_headline">Всё знакомо — даже в дороге.</string>
     <string name="da_description">Ваши карты, музыка и разговоры.\nAndroid Auto прямо на экране автомобиля.</string>

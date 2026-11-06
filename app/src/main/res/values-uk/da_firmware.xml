@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Прошивка автомобіля (%1$s) не підтримує бездротовий Android Auto: її Bluetooth дозволяє лише одне підключення застосунку водночас. DiAuto не може це обійти. Попросіть дилера оновити до %2$s або новішої.</string>
+    <string name="da_firmware_incompatible" formatted="true">Прошивка автомобіля (%1$s) не підтримує бездротовий Android Auto: її Bluetooth дозволяє лише одне підключення застосунку водночас. DiAuto не може це обійти. Запитайте дилера про новішу прошивку.</string>
+</resources>

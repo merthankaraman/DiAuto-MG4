@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">მანქანის Wi-Fi ბრუნდება</string>
+    <string name="dset_station_delay_summary">უსადენო Android Auto-ს დროს მანქანის Wi-Fi გამორთულია. ბრუნდება, როცა სესია ამდენი ხნის წინ დასრულდა.</string>
+</resources>

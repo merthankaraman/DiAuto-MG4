@@ -3,8 +3,8 @@
 Platform: MG4 / Android 9 (AUTUS SAIC MT2712). Operator-reported working with v1.9.8
 on MG4 Luxury 64 kWh, firmware SWI68-29958-1300R63 (not verifiable from source;
 other revisions untested).  
-Car APK: platform-signed `com.drivehub.diauto.mg4` (see `scripts/build_mg4.ps1`).
-Phone APK: `com.drivehub.diauto.mg4.phone`, without the system UID.
+Car APK: platform-signed `com.allgo.app.androidauto` (see `scripts/build_mg4.ps1`).
+Phone APK: `com.allgo.app.androidauto.phone`, without the system UID.
 
 Do **not** run DiPlay-MG4 CarPlay and DiAuto-MG4 Android Auto at the same time.
 

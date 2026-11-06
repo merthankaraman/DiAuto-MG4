@@ -6,7 +6,7 @@
     <color name="da_accent">#A6C8FF</color>
     <color name="da_text">#F1F5FC</color>
     <color name="da_muted">#A8B6CA</color>
-    <string name="da_brand">DiAuto</string>
+    <string name="da_brand">DiAuto for MG4</string>
     <string name="da_tagline">YOUR PHONE. YOUR DRIVE.</string>
     <string name="da_headline">A familiar drive.</string>
     <string name="da_description">Your maps, music and conversations.\nAndroid Auto, right here on your car display.</string>
@@ -23,6 +23,15 @@
     <string name="da_settings">Settings</string>
     <string name="da_settings_hint">Make yourself at home.</string>
     <string name="da_close">Car home</string>
+    <string name="da_update">Updates</string>
+    <string name="da_update_install">Install %1$s</string>
+    <string name="da_update_hint_checking">Looking for an update…</string>
+    <string name="da_update_hint_current">Version %1$s</string>
+    <string name="da_update_hint_up_to_date">Version %1$s · up to date</string>
+    <string name="da_update_hint_up_to_date_beta">Version %1$s · up to date, betas included</string>
+    <string name="da_update_hint_available">New version available</string>
+    <string name="da_update_hint_available_beta">New beta available</string>
+    <string name="da_update_hint_failed">Version %1$s · could not check</string>
     <string name="da_pair">Pair a phone</string>
     <string name="da_no_paired">Pair your Android phone with the car first. Return here when pairing is complete.</string>
     <string name="da_bluetooth_off">Turn on Bluetooth in the car’s settings to connect your phone.</string>

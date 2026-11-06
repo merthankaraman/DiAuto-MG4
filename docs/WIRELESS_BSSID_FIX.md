@@ -83,7 +83,7 @@ the ADB service in system settings.
   interface name, no IPv6 link-local, or only opaque identifiers.
 - **Second device.** HiBy R4 (Qualcomm, Android 12, SELinux enforcing, P2P MAC
   randomization supported) hosting the group with a debug build: `p2p0` link-local
-  `fe80::484d:90ff:fecb:ad5c` decoded to `4A:4D:90:CB:AD:5C`, equal to the kernel's
+  `fe80::48ab:cdff:feef:0123` decoded to `4A:AB:CD:EF:01:23`, equal to the kernel's
   `link/ether`, and a Samsung S25 Ultra (Android 16) scan listed `DIRECT-GH-HeadUnit`
   at that BSSID. The address stayed the same across group recreation and a Wi-Fi
   off/on. A full Android Auto session was not run on this device.

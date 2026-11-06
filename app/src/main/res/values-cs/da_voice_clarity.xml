@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Srozumitelnost hlasu</string>
+    <string name="dset_voice_clarity_summary">Filtr pro pokyny a asistenta: odstraní dunivé basy a zvýrazní souhlásky. Od příštího pokynu.</string>
+    <string name="dset_voice_headroom">Rezerva hlasu</string>
+    <string name="dset_voice_headroom_summary">Trochu ztiší pokyny, aby zpracování v autě nepřebudilo; pro vyrovnání zvyšte hlasitost navigace v autě.</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi của xe bật lại sau</string>
+    <string name="dset_station_delay_summary">Wi-Fi của xe tắt trong khi dùng Android Auto không dây. Nó bật lại khi phiên đã kết thúc được khoảng thời gian này.</string>
+</resources>

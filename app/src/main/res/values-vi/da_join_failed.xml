@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Điện thoại không thể kết nối Wi-Fi của xe. Nếu điểm phát sóng của điện thoại đang bật, hãy tắt nó.</string>
+</resources>

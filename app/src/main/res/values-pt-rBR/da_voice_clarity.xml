@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Clareza da voz</string>
+    <string name="dset_voice_clarity_summary">Filtro para as instruções e o assistente: tira os graves abafados e realça as consoantes. A partir da próxima instrução.</string>
+    <string name="dset_voice_headroom">Margem da voz</string>
+    <string name="dset_voice_headroom_summary">Abaixa um pouco as instruções para o processamento do carro não saturar; aumente o volume de navegação do carro para compensar.</string>
+</resources>

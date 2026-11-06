@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Telefon se nemůže připojit k Wi-Fi vozu. Pokud má zapnutý hotspot, vypněte ho.</string>
+</resources>

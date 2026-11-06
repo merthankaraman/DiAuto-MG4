@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Ses tizleri</string>
+    <string name="dset_voice_enhance_summary">Telefonun kestiği tizleri yeniden oluşturur: hafif veya güçlü exciter ya da sinir ağı (Opus). Bir sonraki yönlendirmeden itibaren.</string>
+    <string name="dset_voice_enhance_standard">Kapalı</string>
+    <string name="dset_voice_enhance_light">Hafif</string>
+    <string name="dset_voice_enhance_strong">Güçlü</string>
+    <string name="dset_voice_enhance_neural">Sinir ağı</string>
+    <string name="dset_voice_experimental">Ses netliği ve tizler deneyseldir: hangi ayarın size en iyi geldiğini GitHub\'da bize yazın.</string>
+    <string name="dset_wifi_channel">Wi-Fi kanalı</string>
+    <string name="dset_wifi_channel_summary">Aracın erişim noktasının kanalı. Otomatik, erişim noktası başlarken en az kalabalık olanı seçer, bağlantı sırasında asla değiştirmez.</string>
+    <string name="dset_wifi_channel_auto">Otomatik</string>
+</resources>

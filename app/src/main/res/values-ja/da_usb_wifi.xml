@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">USB 接続時の車の Wi-Fi</string>
+    <string name="dset_usb_wifi_summary">Android Auto を USB ケーブルで使うとき、車の Wi-Fi がスマートフォンのテザリングなど既知のネットワークに接続し、インターネットを使えます。ケーブルを抜くとオフになります。</string>
+</resources>

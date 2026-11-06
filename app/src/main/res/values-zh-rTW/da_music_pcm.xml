@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_music_pcm">無壓縮音樂（PCM）</string>
+    <string name="dset_music_pcm_summary">手機傳送音樂時不使用 AAC 壓縮。透過 Wi-Fi 約 1.5 Mb/s，可能斷斷續續。下次連線時生效。</string>
+</resources>

@@ -32,12 +32,22 @@ internal class AapAudio(
         SaicCarAudioSource.audioManager(context) ?: audioManager
 
     private val staticAudioFocus = settings.staticAudioFocus
+
     // Hybrid Bluetooth music: keep assistant/nav off STREAM_MUSIC so Gemini is not lost under A2DP.
     private val separateAudioStreams =
         settings.separateAudioStreams || settings.musicViaBluetooth
+
+    init {
+        // Separate streams: prompts and the assistant get their own channel, the car's navigation
+        // one (mixed over the radio). Otherwise they play in the multimedia stream with the music.
+        com.andrerinas.openheadunit.decoder.SpeechRoute.navigationChannel = separateAudioStreams
+    }
+
     private val mediaVolumeOffset = settings.mediaVolumeOffset
-    private val assistantVolumeOffset = settings.assistantVolumeOffset
-    private val navigationVolumeOffset = settings.navigationVolumeOffset
+    // On their own channel the voice is never boosted: the phone sends it near full scale, and the
+    // car's navigation volume sets its level cleanly. Only mixed with the music can it be raised.
+    private val assistantVolumeOffset = if (separateAudioStreams) 0 else settings.assistantVolumeOffset
+    private val navigationVolumeOffset = if (separateAudioStreams) 0 else settings.navigationVolumeOffset
     private val audioLatencyMultiplier = settings.audioLatencyMultiplier
     private val useAacAudio = settings.useAacAudio
     private val audioQueueCapacity = settings.audioQueueCapacity
@@ -60,7 +70,136 @@ internal class AapAudio(
         }
 
     private var audioFocusRequest: AudioFocusRequest? = null
+    /** Kind of [audioFocusRequest]: a held media request does not cover a prompt. */
+    private var audioFocusKind: ProtocolFocusRoute.Kind? = null
     private var legacyFocusListener: AudioManager.OnAudioFocusChangeListener? = null
+
+    /** Which focus changes come from the car and have to reach the phone (see [CarFocusTracker]). */
+    private val carFocus = CarFocusTracker()
+    private var audioFocusToken: Any? = null
+    @Volatile
+    private var playbackFocusToken: Any? = null
+
+    /** Set by [AapTransport]: tells the phone the car took (or gave back) audio focus. */
+    var onPhoneFocusState: ((Control.AudioFocusNotification.AudioFocusStateType) -> Unit)? = null
+
+    /** Set by [AapTransport]: the phone's music started playing over Wi-Fi. */
+    var onMediaPlaybackStarted: (() -> Unit)? = null
+
+    /** Set by [AapTransport]: a guidance or voice prompt ended while the music keeps playing. */
+    var onSpeechEndedDuringMedia: (() -> Unit)? = null
+
+    val isMediaPlaying: Boolean
+        get() = audioDecoder.getTrack(Channel.ID_AUD) != null
+
+    private fun trackedFocusListener(
+        token: Any,
+        inner: AudioManager.OnAudioFocusChangeListener
+    ) = AudioManager.OnAudioFocusChangeListener { focusChange ->
+        inner.onAudioFocusChange(focusChange)
+        if (isOwnFocusChurn(focusChange)) return@OnAudioFocusChangeListener
+        carFocus.onFocusChange(token, focusChange)?.let { state ->
+            AppLog.i("AapAudio: the car changed audio focus ($focusChange) - telling the phone $state")
+            onPhoneFocusState?.invoke(state)
+        }
+    }
+
+    @Volatile
+    private var lastOwnFocusRequestMs = 0L
+
+    /** Called before the service claims the car source, so the losses that claim causes stay here. */
+    fun markOwnFocusRequest() {
+        lastOwnFocusRequestMs = SystemClock.elapsedRealtime()
+    }
+
+    /** When the car or the user last took the audio focus away and the phone was told. */
+    @Volatile
+    var lastCarFocusLossMs = 0L
+        private set
+
+    /**
+     * A loss right after one of this app's own focus requests (the phone's, the playback one, or
+     * the car-source claim) is that request taking over, not the car: passing it on paused the
+     * phone 0.1 s after its music started. Losses that do reach the phone are timestamped.
+     */
+    private fun isOwnFocusChurn(focusChange: Int): Boolean {
+        if (focusChange >= 0) return false
+        val own = SystemClock.elapsedRealtime() - lastOwnFocusRequestMs < OWN_REQUEST_GRACE_MS ||
+            com.evsuite.hardware.saic.SaicCarAudioSource.claimedWithin(OWN_REQUEST_GRACE_MS)
+        if (own) {
+            AppLog.i("AapAudio: focus change $focusChange comes from this app's own request - not telling the phone")
+        } else {
+            lastCarFocusLossMs = SystemClock.elapsedRealtime()
+        }
+        return own
+    }
+
+    /**
+     * A change on the car-source request ([com.evsuite.hardware.saic.SaicCarAudioSource]). It is
+     * the only focus held once the phone's own requests are released, so when the car or a
+     * launcher switches to the radio the phone was never told and kept "playing" in silence.
+     * A loss right after one of our own requests is that request taking over, not the car.
+     */
+    fun onCarSourceFocusChange(focusChange: Int) {
+        if (isOwnFocusChurn(focusChange)) return
+        if (focusChange < 0) {
+            // The stock launcher sends the steering-wheel arrows to the radio's session, which grabs
+            // focus for a moment until a launcher hands the source back with PLAY. Passing that
+            // loss on at once stopped the phone, and a PLAY alone never restarted it. Wait.
+            pendingCarLoss?.let { handler.removeCallbacks(it) }
+            val forward = Runnable {
+                pendingCarLoss = null
+                forwardCarSourceFocusChange(focusChange)
+            }
+            pendingCarLoss = forward
+            handler.postDelayed(forward, CAR_LOSS_DEBOUNCE_MS)
+            return
+        }
+        pendingCarLoss?.let {
+            handler.removeCallbacks(it)
+            pendingCarLoss = null
+            AppLog.i("AapAudio: the car gave the Android Auto source focus back before the phone was told")
+        }
+        forwardCarSourceFocusChange(focusChange)
+    }
+
+    private fun forwardCarSourceFocusChange(focusChange: Int) {
+        carFocus.onUntrackedFocusChange(focusChange)?.let { state ->
+            AppLog.i("AapAudio: the car changed the Android Auto source focus ($focusChange) - telling the phone $state")
+            onPhoneFocusState?.invoke(state)
+        }
+    }
+
+    @Volatile
+    private var pendingCarLoss: Runnable? = null
+
+    /**
+     * The user (a steering-wheel key, a launcher's PLAY) wants this app's music again. A car loss
+     * still waiting is dropped; one the phone was already told is undone with a GAIN, since after
+     * STATE_LOSS the phone ignores a PLAY key on its own. Returns whether anything was taken back.
+     */
+    fun resumeFromUser(): Boolean {
+        var resumed = false
+        pendingCarLoss?.let {
+            handler.removeCallbacks(it)
+            pendingCarLoss = null
+            resumed = true
+        }
+        if (carFocus.takeBackAfterLoss()) {
+            AppLog.i("AapAudio: play asked after a car focus loss - telling the phone STATE_GAIN")
+            onPhoneFocusState?.invoke(Control.AudioFocusNotification.AudioFocusStateType.STATE_GAIN)
+            resumed = true
+        }
+        return resumed
+    }
+
+    /** A change on the static path's permanent request, the only focus this app holds there. */
+    fun onPermanentFocusChange(focusChange: Int) {
+        carFocus.onUntrackedFocusChange(focusChange)?.let { state ->
+            AppLog.i("AapAudio: the car changed permanent audio focus ($focusChange) - telling the phone $state")
+            onPhoneFocusState?.invoke(state)
+        }
+    }
 
     @Volatile
     private var playbackFocusRequest: AudioFocusRequest? = null
@@ -142,16 +281,18 @@ internal class AapAudio(
      * while the playback path holds focus. On a unit whose Bluetooth probe reads nothing, this path
      * has no automatic backstop and needs the mode set to NEVER by hand.
      */
-    fun shouldHonourProtocolFocusRequest(isRelease: Boolean): Boolean {
+    fun shouldHonourProtocolFocusRequest(isRelease: Boolean, isMedia: Boolean = true): Boolean {
         if (isRelease) return true
 
         val btMediaLinkActive = BluetoothHelper.isA2dpMediaLinkActive(context)
         // Hybrid NEVER is for media/A2DP only. Protocol focus (Gemini, nav prompts) must still
         // duck the car so TTS is not left on the phone speaker.
+        // Prompts and the assistant only duck or pause briefly: the latch, which guards the
+        // phone's music, must not leave guidance silent under the radio (seen 2026-10-27).
         val mode = if (settings.musicViaBluetooth) {
             PlaybackFocusPolicy.Mode.ALWAYS
         } else {
-            playbackFocusMode()
+            PlaybackFocusPolicy.speechMode(playbackFocusMode(), isSpeech = !isMedia)
         }
         val honour = PlaybackFocusPolicy.shouldAcquire(
                 mode = mode,
@@ -169,6 +310,7 @@ internal class AapAudio(
     }
 
     fun requestFocusChange(stream: Int, focusRequest: Int, callback: AudioManager.OnAudioFocusChangeListener): Int {
+        lastOwnFocusRequestMs = SystemClock.elapsedRealtime()
         // Notification/voice GAIN_TRANSIENT pauses A2DP (AVRCP) on this HU; duck instead.
         val effectiveFocus =
             if (focusRequest == Control.AudioFocusRequestNotification.AudioFocusRequestType.GAIN_TRANSIENT_VALUE &&
@@ -191,31 +333,44 @@ internal class AapAudio(
                     runCatching { audioManager.abandonAudioFocusRequest(it) }
                 }
                 audioFocusRequest = null
+                audioFocusKind = null
+                audioFocusToken?.let { carFocus.abandoned(it) }
+                audioFocusToken = null
                 result = AudioManager.AUDIOFOCUS_REQUEST_GRANTED
             } else {
-                val usage = when (stream) {
-                    AudioManager.STREAM_NOTIFICATION -> AudioAttributes.USAGE_NOTIFICATION
-                    AudioManager.STREAM_VOICE_CALL -> AudioAttributes.USAGE_VOICE_COMMUNICATION
-                    else -> AudioAttributes.USAGE_MEDIA
+                // One kind per request type, as MG's own Android Auto asks (see ProtocolFocusRoute).
+                val kind = ProtocolFocusRoute.kind(stream, effectiveFocus)
+                if (!ProtocolFocusRoute.asksSystem(kind, settings.musicViaBluetooth)) {
+                    AppLog.i("Audio Focus Request: music is on the car's Bluetooth - leaving system focus and source alone")
+                    return AudioManager.AUDIOFOCUS_REQUEST_GRANTED
                 }
-
-                val audioAttributes = if (usage == AudioAttributes.USAGE_MEDIA) {
+                val tagsSource = ProtocolFocusRoute.tagsCarSource(kind, settings.musicViaBluetooth)
+                val audioAttributes = if (tagsSource) {
                     // Tag MEDIA focus as AA (70) so MG4 eh32 amp leaves radio/BT for Wi‑Fi PCM.
                     SaicCarAudioSource.mediaAttributes()
                 } else {
                     AudioAttributes.Builder()
-                        .setUsage(usage)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .setUsage(kind.usage)
+                        .setContentType(
+                            if (kind == ProtocolFocusRoute.Kind.MEDIA) AudioAttributes.CONTENT_TYPE_MUSIC
+                            else AudioAttributes.CONTENT_TYPE_SPEECH
+                        )
                         .build()
                 }
+                AppLog.i("Audio Focus Request: ${kind.name} (usage=${kind.usage}, carSource=$tagsSource)")
+                val usage = kind.usage
 
-                val focusAm =
-                    if (usage == AudioAttributes.USAGE_MEDIA) mediaAudioManager else audioManager
+                val focusAm = if (tagsSource) mediaAudioManager else audioManager
+                val token = Any()
                 audioFocusRequest = AudioFocusRequest.Builder(effectiveFocus)
                         .setAudioAttributes(audioAttributes)
                         .setWillPauseWhenDucked(false)
-                        .setOnAudioFocusChangeListener(callback)
+                        .setOnAudioFocusChangeListener(trackedFocusListener(token, callback))
                         .build()
+                audioFocusToken = token
+                audioFocusKind = kind
+                carFocus.requested(token, media = usage == AudioAttributes.USAGE_MEDIA)
+                if (kind == ProtocolFocusRoute.Kind.GUIDANCE || kind == ProtocolFocusRoute.Kind.NOTIFICATION) armSpeechIdleCheck()
 
                 result = focusAm.requestAudioFocus(audioFocusRequest!!)
                 AppLog.i("Audio focus request result: ${if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) "GRANTED" else "FAILED ($result)"}")
@@ -249,6 +404,7 @@ internal class AapAudio(
     }
 
     private fun requestPlaybackFocus(channel: Int) {
+        lastOwnFocusRequestMs = SystemClock.elapsedRealtime()
         val speech = channel == Channel.ID_AU1 || channel == Channel.ID_AU2
         // Speech/notification must MAY_DUCK so hybrid A2DP music is not AVRCP-paused.
         val focusGain = if (speech) {
@@ -258,8 +414,10 @@ internal class AapAudio(
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val attrs = if (speech) {
+                // Guidance, not voice call: the MG4 mixes it over the radio, which a voice-call
+                // request silenced until the next key press (2026-10-27).
                 val usage = if (channel == Channel.ID_AU1) {
-                    AudioAttributes.USAGE_VOICE_COMMUNICATION
+                    AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE
                 } else {
                     AudioAttributes.USAGE_NOTIFICATION
                 }
@@ -271,12 +429,15 @@ internal class AapAudio(
                 SaicCarAudioSource.mediaAttributes()
             }
             val focusAm = if (speech) audioManager else mediaAudioManager
+            val token = Any()
             val request = AudioFocusRequest.Builder(focusGain)
                     .setAudioAttributes(attrs)
                     .setWillPauseWhenDucked(false)
-                    .setOnAudioFocusChangeListener(playbackFocusListener)
+                    .setOnAudioFocusChangeListener(trackedFocusListener(token, playbackFocusListener))
                     .build()
             playbackFocusRequest = request
+            playbackFocusToken = token
+            carFocus.requested(token, media = !speech)
 
             val result = focusAm.requestAudioFocus(request)
             AppLog.i(
@@ -306,6 +467,8 @@ internal class AapAudio(
                 runCatching { audioManager.abandonAudioFocusRequest(it) }
             }
             playbackFocusRequest = null
+            playbackFocusToken?.let { carFocus.abandoned(it) }
+            playbackFocusToken = null
         } else {
             @Suppress("DEPRECATION")
             legacyPlaybackFocusListener?.let {
@@ -361,6 +524,8 @@ internal class AapAudio(
 
     fun releaseAllFocus() {
         AppLog.i("AapAudio: Releasing all audio focus.")
+        pendingCarLoss?.let { handler.removeCallbacks(it) }
+        pendingCarLoss = null
         synchronized(activeAudioChannels) { activeAudioChannels.clear() }
         // The latch is a property of one connection, not of the head unit: re-arm it so a session
         // that reconnects with Bluetooth off gets the car-radio behaviour back.
@@ -368,9 +533,15 @@ internal class AapAudio(
         focusAcquiredAtMs = 0L
         selfDefeatingStops = 0
         selfDefeatingLatched = false
+        carFocus.clear()
+        audioFocusToken = null
+        playbackFocusToken = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioFocusRequest?.let { mediaAudioManager.abandonAudioFocusRequest(it) }
             audioFocusRequest = null
+            speechFocusRequests.values.forEach { runCatching { audioManager.abandonAudioFocusRequest(it) } }
+            speechFocusRequests.clear()
+            audioFocusKind = null
             playbackFocusRequest?.let { mediaAudioManager.abandonAudioFocusRequest(it) }
             playbackFocusRequest = null
         } else {
@@ -387,12 +558,17 @@ internal class AapAudio(
      * Processes a message as an audio stream packet.
      * Returns true if the packet was identified and processed as audio data, false otherwise.
      */
+    /** Set by [process]: the last media chunk will be acked by its track once played (see AudioDecoder.mediaAck). */
+    var lastChunkAckDeferred = false
+        private set
+
     fun process(message: AapMessage): Boolean {
         // Media stream packets have msgType 0 or 1.
         // Control packets on audio channels (Setup, Start, Stop) have types > 32767.
+        lastChunkAckDeferred = false
         if (message.type == 0 || message.type == 1) {
             if (message.size >= 10) {
-                decode(message.channel, 10, message.data, message.size - 10)
+                lastChunkAckDeferred = decode(message.channel, 10, message.data, message.size - 10)
             }
             return true
         }
@@ -413,7 +589,7 @@ internal class AapAudio(
             Channel.ID_AU2 -> navigationVolumeOffset
             else -> 0
         }
-        val gain = (1.0f + (offset / 100.0f)).coerceIn(0.0f, 2.0f)
+        val gain = (1.0f + (offset / 100.0f)).coerceIn(0.0f, 3.0f)
 
         // Voice and Navigation benefit from lower latency. Cap the multiplier for those channels.
         // MEDIA over Wi‑Fi also gets a DiPlay-style jitter start buffer (nav/speech stay immediate).
@@ -450,10 +626,100 @@ internal class AapAudio(
             mediaBufferMillis = jitterMs,
         )
         onAudioPlaybackStarted(channel)
+        // The phone is playing music over Wi-Fi: the moment to take the car's media source.
+        if (channel == Channel.ID_AUD) onMediaPlaybackStarted?.invoke()
+    }
+
+    private val speechFocusRequests = java.util.concurrent.ConcurrentHashMap<Int, AudioFocusRequest>()
+
+    /**
+     * A prompt's own guidance request, kept apart from the music's: the MG4 opens its navigation
+     * channel (and lowers the radio or the music) only while a guidance request is held, and the
+     * prompt audio plays on that channel. Without it the prompt is silent on every source.
+     */
+    private fun requestSpeechFocus(channel: Int) {
+        // Only the navigation channel needs it; on the media path the prompt plays with the music.
+        if (!com.andrerinas.openheadunit.decoder.SpeechRoute.navigationChannel) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || speechFocusRequests.containsKey(channel)) return
+        lastOwnFocusRequestMs = SystemClock.elapsedRealtime()
+        val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build()
+            )
+            .setWillPauseWhenDucked(false)
+            .setOnAudioFocusChangeListener { }
+            .build()
+        speechFocusRequests[channel] = request
+        val result = audioManager.requestAudioFocus(request)
+        AppLog.i("AapAudio: AA audio started (${Channel.name(channel)}) - guidance focus result=$result")
+        armSpeechIdleCheck()
+    }
+
+    private var speechLastActiveMs = 0L
+    private val speechIdleCheck = Runnable { checkSpeechIdle() }
+
+    /**
+     * A prompt's focus is given back when the phone stops the stream or releases its request; when
+     * that message does not come, the radio or the music stayed lowered until the next prompt
+     * (2026-10-28). Once no prompt audio has arrived for a few seconds, the guidance focus (never
+     * the assistant's, which listens in silence) is given back here.
+     */
+    private fun armSpeechIdleCheck() {
+        speechLastActiveMs = SystemClock.elapsedRealtime()
+        handler.removeCallbacks(speechIdleCheck)
+        handler.postDelayed(speechIdleCheck, SPEECH_IDLE_POLL_MS)
+    }
+
+    private fun checkSpeechIdle() {
+        val now = SystemClock.elapsedRealtime()
+        if (listOf(Channel.ID_AU1, Channel.ID_AU2).any { audioDecoder.getTrack(it)?.isReceivingAudio() == true }) {
+            speechLastActiveMs = now
+        }
+        val guidanceHeld = audioFocusRequest != null &&
+            (audioFocusKind == ProtocolFocusRoute.Kind.GUIDANCE || audioFocusKind == ProtocolFocusRoute.Kind.NOTIFICATION)
+        if (speechFocusRequests.isEmpty() && !guidanceHeld) return
+        if (now - speechLastActiveMs < SPEECH_IDLE_RELEASE_MS) {
+            handler.postDelayed(speechIdleCheck, SPEECH_IDLE_POLL_MS)
+            return
+        }
+        AppLog.i("AapAudio: no prompt audio for ${SPEECH_IDLE_RELEASE_MS / 1000}s - giving the guidance focus back")
+        speechFocusRequests.keys.toList().forEach { releaseSpeechFocus(it) }
+        if (guidanceHeld && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioFocusRequest?.let {
+                runCatching { mediaAudioManager.abandonAudioFocusRequest(it) }
+                runCatching { audioManager.abandonAudioFocusRequest(it) }
+            }
+            audioFocusRequest = null
+            audioFocusKind = null
+            audioFocusToken?.let { carFocus.abandoned(it) }
+            audioFocusToken = null
+        }
+    }
+
+    private fun releaseSpeechFocus(channel: Int) {
+        val request = speechFocusRequests.remove(channel) ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            runCatching { audioManager.abandonAudioFocusRequest(request) }
+        }
+        AppLog.i("AapAudio: ${Channel.name(channel)} stopped - guidance focus released")
     }
 
     private fun onAudioPlaybackStarted(channel: Int) {
         if (staticAudioFocus || !enableAudioSink || !Channel.isAudio(channel)) return
+        // A prompt the phone already asked focus for on the control channel needs nothing more:
+        // a second request made the SAIC radio drop focus and stay silent after it. The phone does
+        // not always ask, though, and then the prompt asks here, with the same guidance usage.
+        if (channel != Channel.ID_AUD) {
+            if (audioFocusRequest != null && audioFocusKind != null && audioFocusKind != ProtocolFocusRoute.Kind.MEDIA) {
+                AppLog.i("AapAudio: AA audio started (${Channel.name(channel)}) - the phone's focus request already covers it")
+            } else {
+                requestSpeechFocus(channel)
+            }
+            return
+        }
 
         // Only the set mutation belongs under the lock. requestPlaybackFocus() is a binder
         // round-trip to AudioService and the Bluetooth probe below is another, and this runs on
@@ -466,7 +732,8 @@ internal class AapAudio(
         if (!wasEmpty) return
 
         val btMediaLinkActive = BluetoothHelper.isA2dpMediaLinkActive(context)
-        val mode = playbackFocusModeForChannel(channel)
+        val mode = PlaybackFocusPolicy.speechMode(
+            playbackFocusModeForChannel(channel), isSpeech = channel != Channel.ID_AUD)
         val acquire = PlaybackFocusPolicy.shouldAcquire(
                 mode = mode,
                 staticAudioFocus = staticAudioFocus,
@@ -497,7 +764,16 @@ internal class AapAudio(
      * letting other local sources (e.g. the car radio) resume.
      */
     private fun onAudioPlaybackStopped(channel: Int) {
+        // The car may switch its source for a prompt and not come back to Android Auto; the
+        // service checks. Before the gates below: static focus mode has the same problem.
+        if ((channel == Channel.ID_AU1 || channel == Channel.ID_AU2) && isMediaPlaying) {
+            onSpeechEndedDuringMedia?.invoke()
+        }
         if (staticAudioFocus || !enableAudioSink || !Channel.isAudio(channel)) return
+        if (channel != Channel.ID_AUD) {
+            releaseSpeechFocus(channel)
+            return
+        }
 
         val nowEmpty = synchronized(activeAudioChannels) {
             activeAudioChannels.remove(channel)
@@ -545,7 +821,7 @@ internal class AapAudio(
         startAudioTrack(channel)
     }
 
-    private fun decode(channel: Int, start: Int, buf: ByteArray, len: Int) {
+    private fun decode(channel: Int, start: Int, buf: ByteArray, len: Int): Boolean {
         var length = len
         if (length > AUDIO_BUFS_SIZE) {
             AppLog.e("Error audio len: %d  aud_buf_BUFS_SIZE: %d", length, AUDIO_BUFS_SIZE)
@@ -556,19 +832,22 @@ internal class AapAudio(
             startAudioTrack(channel)
         }
 
-        audioDecoder.decode(channel, buf, start, length)
+        val deferred = audioDecoder.decode(channel, buf, start, length)
 
         if ((channel == Channel.ID_AU1 || channel == Channel.ID_AU2) && staticAudioFocus) {
             duckMedia()
             handler.removeCallbacks(unduckRunnable)
             handler.postDelayed(unduckRunnable, UNDUCK_DELAY_MS)
         }
+        return deferred
     }
 
     fun updateGains() {
         val mediaGain = (1.0f + (settings.mediaVolumeOffset / 100.0f)).coerceIn(0.0f, 2.0f)
-        val assistantGain = (1.0f + (settings.assistantVolumeOffset / 100.0f)).coerceIn(0.0f, 2.0f)
-        val navGain = (1.0f + (settings.navigationVolumeOffset / 100.0f)).coerceIn(0.0f, 2.0f)
+        val assistantGain = if (separateAudioStreams) 1.0f
+            else (1.0f + (settings.assistantVolumeOffset / 100.0f)).coerceIn(0.0f, 3.0f)
+        val navGain = if (separateAudioStreams) 1.0f
+            else (1.0f + (settings.navigationVolumeOffset / 100.0f)).coerceIn(0.0f, 3.0f)
 
         audioDecoder.setGain(Channel.ID_AUD, mediaGain)
         audioDecoder.setGain(Channel.ID_AU1, assistantGain)
@@ -597,5 +876,9 @@ internal class AapAudio(
         private const val AUDIO_BUFS_SIZE = 65536 * 4  // Up to 256 Kbytes
         private const val DUCK_VOLUME_FACTOR = 0.4f
         private const val UNDUCK_DELAY_MS = 1500L
+        private const val OWN_REQUEST_GRACE_MS = 1_000L
+        private const val CAR_LOSS_DEBOUNCE_MS = 1_500L
+        private const val SPEECH_IDLE_POLL_MS = 1_000L
+        private const val SPEECH_IDLE_RELEASE_MS = 3_000L
     }
 }

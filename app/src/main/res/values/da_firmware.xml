@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_firmware_incompatible_update" formatted="true">Your car\'s firmware (%1$s) cannot run wireless Android Auto: its Bluetooth only allows one app connection at a time. DiAuto cannot work around it. Ask your dealer for %2$s or later.</string>
+    <string name="da_firmware_incompatible" formatted="true">Your car\'s firmware (%1$s) cannot run wireless Android Auto: its Bluetooth only allows one app connection at a time. DiAuto cannot work around it. Ask your dealer whether a newer firmware is available.</string>
+</resources>

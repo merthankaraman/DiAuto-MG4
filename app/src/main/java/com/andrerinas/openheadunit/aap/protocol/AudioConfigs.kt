@@ -33,6 +33,8 @@ object AudioConfigs {
         }.build()
         audioTracks.put(Channel.ID_AUD, audioConfig0)
 
+        // Speech and system stay at 16 kHz mono: phones refuse to connect when they are announced
+        // at 48 kHz (2.1.0-beta9/10, 2026-10-28).
         val audioConfig1 = Media.AudioConfiguration.newBuilder().apply {
             sampleRate = AudioDecoder.SAMPLE_RATE_HZ_16
             numberOfBits = 16

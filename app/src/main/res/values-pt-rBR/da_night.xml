@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_night_sun">Sol</string>
+    <string name="dset_night_summary_modes">Cores escuras no Android Auto. Como o carro: escuro com os faróis acesos e do pôr ao nascer do sol. Sol: escuro do pôr ao nascer do sol, na posição do carro.</string>
+</resources>

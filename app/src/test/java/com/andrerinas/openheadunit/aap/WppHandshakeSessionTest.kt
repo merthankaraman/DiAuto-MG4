@@ -115,11 +115,34 @@ class WppHandshakeSessionTest {
     // --- settling -------------------------------------------------------------------------
 
     @Test
-    fun `the projection session landing completes the handshake`() {
+    fun `the projection session landing completes the handshake and holds the channel`() {
         val s = settledSession()
 
         assertEquals(listOf(WppAction.CompleteSuccess), s.on(WppEvent.TcpSessionUp))
-        assertEquals(WppStage.DONE, s.stage)
+        assertEquals(WppStage.HOLDING, s.stage)
+    }
+
+    @Test
+    fun `a held channel answers pings and ignores everything else`() {
+        val s = settledSession()
+        s.on(WppEvent.TcpSessionUp)
+
+        assertEquals(listOf(WppAction.SendPingResponse), s.on(msg(WppMessageType.PING_REQUEST)))
+        assertEquals(emptyList<WppAction>(), s.on(WppEvent.StageTimeout))
+        assertEquals(emptyList<WppAction>(), s.on(msg(WppMessageType.CONNECT_STATUS, -1)))
+        assertEquals(WppStage.HOLDING, s.stage)
+        assertEquals(null, s.currentStageTimeoutMs())
+    }
+
+    @Test
+    fun `a held channel is released when the session ends or the phone closes it`() {
+        val ended = settledSession().apply { on(WppEvent.TcpSessionUp) }
+        assertEquals(listOf(WppAction.Release(peerClosed = false)), ended.on(WppEvent.SessionEnded))
+        assertEquals(WppStage.DONE, ended.stage)
+
+        val closed = settledSession().apply { on(WppEvent.TcpSessionUp) }
+        assertEquals(listOf(WppAction.Release(peerClosed = true)), closed.on(WppEvent.PeerClosed))
+        assertEquals(WppStage.DONE, closed.stage)
     }
 
     @Test
@@ -306,6 +329,7 @@ class WppHandshakeSessionTest {
     fun `a finished session ignores everything, repeatedly`() {
         val s = settledSession()
         s.on(WppEvent.TcpSessionUp)
+        s.on(WppEvent.SessionEnded)
         assertEquals(WppStage.DONE, s.stage)
         val countAtCompletion = s.messagesReceived
 

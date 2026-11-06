@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Pasul %1$d din %2$d</string>
+    <string name="tuto_skip">Omite</string>
+    <string name="tuto_back">Înapoi</string>
+    <string name="tuto_next">Înainte</string>
+    <string name="tuto_done">Să începem</string>
+    <string name="tuto_welcome_title">Bun venit în DiAuto pentru MG4</string>
+    <string name="tuto_welcome_text">Android Auto wireless pe ecranul MG4-ului tău. După ce telefonul e asociat cu mașina prin Bluetooth, se conectează la hotspotul Wi-Fi al mașinii și Android Auto pornește singur.\n\nPașii următori arată cele trei gesturi care funcționează peste Android Auto.</string>
+    <string name="tuto_menu_title">Două degete de la marginea stângă</string>
+    <string name="tuto_menu_text">Pune două degete lângă marginea stângă a ecranului și glisează spre dreapta. Se deschide un meniu cu două butoane mari: Deconectează și Setări.\n\nAtinge în altă parte pentru a-l închide.</string>
+    <string name="tuto_fullscreen_title">Două degete de la marginea dreaptă</string>
+    <string name="tuto_fullscreen_text">Pune două degete lângă marginea dreaptă și glisează spre stânga pentru a afișa sau ascunde barele mașinii și a folosi tot ecranul.</string>
+    <string name="tuto_top_title">Două degete de la marginea de sus</string>
+    <string name="tuto_top_text">Pune două degete în partea de sus a ecranului și glisează în jos pentru a reveni la launcherul mașinii. Android Auto rămâne conectat.</string>
+    <string name="tuto_home_title">Trei degete în jos</string>
+    <string name="tuto_home_text">Glisează cu trei degete în jos pentru a deconecta Android Auto și a reveni la ecranul principal DiAuto.</string>
+    <string name="tuto_tips_title">Bine de știut</string>
+    <string name="tuto_tips_text">• Google Maps devine planificator de traseu: primește bateria, consumul și puterea de încărcare ale MG4-ului tău și alege opririle de încărcare.\n• Setări → Mașină: versiunea MG4-ului tău, capacitatea și starea bateriei, detectate automat și reglabile.\n• Preîncălzirea automată a bateriei înaintea unei opriri de încărcare planificate de Maps. Dezactivată implicit, activeaz-o în Setări → Mașină.\n• DiAuto se instalează ca actualizare a Android Auto original al mașinii (AllGo). Pentru a reveni la el: Setări → Despre → Revino, apoi repornește ecranul ținând apăsat butonul Home 20 s.\n• Setări → Despre: revezi acest tutorial.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">Gesturile peste Android Auto și setările utile, în câțiva pași.</string>
+    <string name="tuto_settings_button">Afișează</string>
+    <string name="da_settings">Setări</string>
+</resources>

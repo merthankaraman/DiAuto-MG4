@@ -1,27 +1,5 @@
 package com.andrerinas.openheadunit.aap
 
-/** Which network the Native AA mode puts the phone on. */
-enum class NativeTransport {
-    /** A WiFi Direct P2P group with this head unit as group owner. The default. */
-    WIFI_DIRECT,
-
-    /** This head unit's own WPA2 access point, as the OEM ZLink app uses. Experimental. */
-    HOTSPOT,
-
-    /** App-owned public-API hotspot, with no upstream internet or external helper. */
-    LOCAL_HOTSPOT;
-
-    companion object {
-        /** [Settings.nativeApTransport][com.andrerinas.openheadunit.utils.Settings.nativeApTransport]
-         *  as a transport, defaulting to [WIFI_DIRECT] for any value we do not recognise. */
-        fun fromSetting(value: Int): NativeTransport = when (value) {
-            1 -> HOTSPOT
-            2 -> LOCAL_HOTSPOT
-            else -> WIFI_DIRECT
-        }
-    }
-}
-
 /** What the framework says about this device's own access point. */
 enum class SoftApState {
     /** An access point is running. */
@@ -34,25 +12,11 @@ enum class SoftApState {
     UNKNOWN
 }
 
-/** What to do when the credentials we are about to send carry no usable BSSID. */
-enum class UnusableBssidAction {
-    /** Do not send them at all. */
-    ABORT,
-
-    /** Send them with the BSSID field present but empty — never absent. See [NativeCredentialsPolicy]. */
-    SEND_WITH_EMPTY_BSSID
-}
-
 /**
- * Whether a set of credentials is fit to hand the phone. The interesting case is a missing BSSID,
- * where the answer differs by transport:
- *
- * - **WiFi Direct** aborts. Measured, not cautious: a masked BSSID there means the phone rejects
- *   the credentials anyway, and the usual cause (location services off) is fixable once the log
- *   says so rather than showing a healthy-looking handshake and a phone that never arrives.
- * - **Hotspot** sends anyway, with the field empty. Not because an empty one works — it does not —
- *   but because the phone's refusal is a message we can explain, where aborting leaves nothing to
- *   read, and because the route stays open for any client that is less strict than the one measured.
+ * Whether a set of credentials is fit to hand the phone. The interesting case is a missing BSSID:
+ * the hotspot route sends anyway, with the field empty. Not because an empty one works — it does
+ * not — but because the phone's refusal is a message we can explain, where aborting leaves nothing
+ * to read.
  *
  * The justification this used to carry — that aa-proxy-rs and ZLink ship without a BSSID, so an
  * ordinary AP is identified by SSID — was wrong, and it is worth recording how wrong. Both reference
@@ -76,13 +40,6 @@ object NativeCredentialsPolicy {
 
     /** Whether [bssid] is a real address rather than absent, blank or a masking placeholder. */
     fun isUsableBssid(bssid: String?): Boolean = SoftApBssidPolicy.isUsable(bssid)
-
-    /** What to do when [isUsableBssid] said no. */
-    fun onUnusableBssid(transport: NativeTransport): UnusableBssidAction = when (transport) {
-        NativeTransport.WIFI_DIRECT -> UnusableBssidAction.ABORT
-        NativeTransport.LOCAL_HOTSPOT -> UnusableBssidAction.ABORT
-        NativeTransport.HOTSPOT -> UnusableBssidAction.SEND_WITH_EMPTY_BSSID
-    }
 
     /**
      * Whether to advertise a network the framework says is not running.

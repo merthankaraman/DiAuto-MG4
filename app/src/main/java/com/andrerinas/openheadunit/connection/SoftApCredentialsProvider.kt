@@ -40,7 +40,7 @@ import java.net.NetworkInterface
 
 /**
  * Supplies the Native AA handshake with the credentials of *this head unit's own access point*,
- * as an alternative to [WifiDirectManager]'s P2P group.
+ * the car hotspot.
  *
  * A teardown of the OEM ZLink app showed it doing wireless Android Auto over an ordinary WPA2 soft
  * AP — same Bluetooth handshake, same UUID, no WiFi Direct — so the phone accepts a plain access
@@ -49,7 +49,7 @@ import java.net.NetworkInterface
  *
  * It does not copy ZLink's way of *starting* the AP; that needs TETHER_PRIVILEGED and root
  * daemons. Reading a hotspot the user configured is the load-bearing path, switching one on is
- * best effort. Same contract as [WifiDirectManager] so a launcher can treat both transports alike.
+ * best effort.
  */
 class SoftApCredentialsProvider(
     private val context: Context,

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">第 %1$d 步，共 %2$d 步</string>
+    <string name="tuto_skip">略過</string>
+    <string name="tuto_back">上一步</string>
+    <string name="tuto_next">下一步</string>
+    <string name="tuto_done">開始使用</string>
+    <string name="tuto_welcome_title">歡迎使用 MG4 版 DiAuto</string>
+    <string name="tuto_welcome_text">在 MG4 螢幕上使用無線 Android Auto。手機透過藍牙與車輛配對後，會連線到車輛的 Wi-Fi 熱點，Android Auto 自動啟動。\n\n接下來的步驟介紹在 Android Auto 上可用的三種手勢。</string>
+    <string name="tuto_menu_title">雙指從左邊緣滑動</string>
+    <string name="tuto_menu_text">將兩根手指放在螢幕左邊緣並向右滑動，會開啟一個有兩個大按鈕的選單：中斷連線 和 設定。\n\n輕觸其他位置即可關閉。</string>
+    <string name="tuto_fullscreen_title">雙指從右邊緣滑動</string>
+    <string name="tuto_fullscreen_text">將兩根手指放在右邊緣並向左滑動，可顯示或隱藏車輛的狀態列，使用整個螢幕。</string>
+    <string name="tuto_top_title">兩指從頂部邊緣下滑</string>
+    <string name="tuto_top_text">將兩根手指放在螢幕頂部並向下滑動，即可返回車輛主畫面。Android Auto 保持連線。</string>
+    <string name="tuto_home_title">三指向下滑動</string>
+    <string name="tuto_home_text">三指向下滑動可中斷 Android Auto 並返回 DiAuto 主畫面。</string>
+    <string name="tuto_tips_title">實用提示</string>
+    <string name="tuto_tips_text">• Google 地圖變成行程規劃器：它取得 MG4 的電量、能耗和充電功率，並選擇充電站點。\n• 設定 → 車輛：MG4 版本、電池容量和健康度，自動偵測且可調整。\n• 在地圖規劃的充電站點之前自動預熱電池。預設關閉，可在 設定 → 車輛 中開啟。\n• DiAuto 以車輛原廠 Android Auto（AllGo）的更新方式安裝。如需還原：設定 → 關於 → 還原，然後長按 Home 鍵 20 秒重新啟動螢幕。\n• 設定 → 關於：再次查看本教學。</string>
+    <string name="tuto_settings_title">教學</string>
+    <string name="tuto_settings_summary">幾步了解 Android Auto 上的手勢和實用設定。</string>
+    <string name="tuto_settings_button">查看</string>
+    <string name="da_settings">設定</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">Telefonul nu se poate conecta la Wi-Fi-ul mașinii. Dacă hotspotul lui este activ, oprește-l.</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">음성 선명도</string>
+    <string name="dset_voice_clarity_summary">안내와 어시스턴트용 필터: 웅웅거리는 저음을 없애고 자음을 또렷하게 합니다. 다음 안내부터 적용.</string>
+    <string name="dset_voice_headroom">음성 여유</string>
+    <string name="dset_voice_headroom_summary">차량 처리가 포화되지 않도록 안내를 조금 낮춥니다. 차량 내비 음량을 올려 보완하세요.</string>
+</resources>

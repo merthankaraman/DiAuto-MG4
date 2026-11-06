@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Wi-Fi của xe khi dùng USB</string>
+    <string name="dset_usb_wifi_summary">Khi Android Auto chạy qua cáp USB, Wi-Fi của xe kết nối với các mạng đã biết, như điểm phát của điện thoại, để có internet. Wi-Fi tắt khi rút cáp.</string>
+</resources>

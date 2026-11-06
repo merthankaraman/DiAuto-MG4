@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">車の Wi-Fi の復帰まで</string>
+    <string name="dset_station_delay_summary">ワイヤレス Android Auto の使用中は車の Wi-Fi がオフになります。セッション終了からこの時間がたつと戻ります。</string>
+</resources>

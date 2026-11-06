@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_usb_wifi">Az autó Wi-Fi-je USB-n</string>
+    <string name="dset_usb_wifi_summary">Ha az Android Auto USB-kábelen fut, az autó Wi-Fi-je csatlakozik az ismert hálózatokhoz, például a telefon hotspotjához, így van internet. A kábel kihúzásakor kikapcsol.</string>
+</resources>

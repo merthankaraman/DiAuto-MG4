@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_option">Ritten opnemen voor Maps</string>
+    <string name="trip_option_summary">Voegt een knop toe om een gekozen rit op te nemen en de voorspellingen van Maps te verbeteren: verbruik, snelheid, klimaat, temperatuur. Zonder locatie of persoonlijke gegevens.</string>
+    <string name="trip_start">Deze rit opnemen</string>
+    <string name="trip_stop">Opname stoppen</string>
+    <string name="trip_button_summary">Neemt op tot u parkeert of stopt, ook vanuit het tweevingermenu en het startscherm.</string>
+    <string name="trip_no_battery">Batterijniveau niet leesbaar: probeer het zo opnieuw.</string>
+    <string name="trip_bad_percent">Voer een getal van 0 tot 100 in.</string>
+    <string name="trip_started">Opname van de rit gestart.</string>
+    <string name="trip_saved">Rit opgeslagen.</string>
+    <string name="trip_too_short">Rit te kort: niet opgeslagen.</string>
+    <string name="trip_files">Opgenomen ritten</string>
+    <string name="trip_files_summary">%1$d opgeslagen. Worden naar een USB-stick gekopieerd en daarna uit de auto verwijderd.</string>
+    <string name="trip_copy">Naar USB kopiëren</string>
+    <string name="trip_copied">%1$d ritten naar de USB-stick gekopieerd.</string>
+    <string name="trip_copy_failed">Geen USB-stick gevonden of kopiëren mislukt: ritten blijven in de auto.</string>
+    <string name="trip_picker_title">Door Maps voorspelde batterij bij aankomst</string>
+    <string name="trip_picker_note">Nu %1$d %%. Een bruikbare rit verbruikt minstens %2$d %% batterij, zonder laadstop.</string>
+    <string name="trip_battery_low">Batterij te laag om een bruikbare rit op te nemen.</string>
+</resources>

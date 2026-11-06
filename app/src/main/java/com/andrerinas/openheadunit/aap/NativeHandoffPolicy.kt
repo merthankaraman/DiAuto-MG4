@@ -9,10 +9,7 @@ package com.andrerinas.openheadunit.aap
  * radio or taking the P2P group owner off-channel in that window makes the phone abandon the
  * join, which it shows as "Obtaining IP address" forever.
  *
- * Split out as a pure object so the timing rules are unit-testable without Android, and so
- * [com.andrerinas.openheadunit.connection.NativeAaHandshakeManager] and
- * [com.andrerinas.openheadunit.connection.WifiDirectManager] share one definition instead of
- * re-deriving it.
+ * Split out as a pure object so the timing rules are unit-testable without Android.
  */
 object NativeHandoffPolicy {
 
@@ -48,7 +45,7 @@ object NativeHandoffPolicy {
      * not merely as a belt-and-braces measure: on head units where closing the Bluetooth socket
      * does not unblock a pending `readFully()`, the handshake coroutine never reaches its cleanup.
      * A plain boolean latched true there for the life of the process, stopping the wake poke and
-     * making `WifiDirectManager`'s join watchdog defer recovery forever.
+     * making the access point refresh defer recovery forever.
      */
     fun isHandshaking(startedAtMs: Long, nowMs: Long, timeoutMs: Long = HANDSHAKE_TIMEOUT_MS): Boolean =
         isWithinWindow(startedAtMs, nowMs, timeoutMs)

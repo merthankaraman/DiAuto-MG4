@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_clarity">Sprachklarheit</string>
+    <string name="dset_voice_clarity_summary">Filter für Ansagen und Assistent: entfernt dumpfe Bässe und hebt Konsonanten hervor. Ab der nächsten Ansage.</string>
+    <string name="dset_voice_headroom">Sprach-Reserve</string>
+    <string name="dset_voice_headroom_summary">Senkt die Ansagen etwas ab, damit die Verarbeitung des Autos nicht übersteuert; zum Ausgleich die Navigationslautstärke des Autos erhöhen.</string>
+</resources>

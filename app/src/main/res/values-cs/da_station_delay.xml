@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi auta zpět po</string>
+    <string name="dset_station_delay_summary">Wi-Fi auta je během bezdrátového Android Auto vypnuté. Vrátí se, když relace skončila před touto dobou.</string>
+</resources>

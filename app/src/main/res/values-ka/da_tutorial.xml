@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">ნაბიჯი %1$d / %2$d</string>
+    <string name="tuto_skip">გამოტოვება</string>
+    <string name="tuto_back">უკან</string>
+    <string name="tuto_next">შემდეგი</string>
+    <string name="tuto_done">დავიწყოთ</string>
+    <string name="tuto_welcome_title">კეთილი იყოს თქვენი მობრძანება DiAuto-ში MG4-ისთვის</string>
+    <string name="tuto_welcome_text">უსადენო Android Auto თქვენი MG4-ის ეკრანზე. როცა ტელეფონი Bluetooth-ით დაწყვილებულია მანქანასთან, ის უკავშირდება მანქანის Wi-Fi ცხელ წერტილს და Android Auto თავად ირთვება.\n\nშემდეგი ნაბიჯები აჩვენებს სამ ჟესტს, რომლებიც Android Auto-ზე მუშაობს.</string>
+    <string name="tuto_menu_title">ორი თითი მარცხენა კიდიდან</string>
+    <string name="tuto_menu_text">დადეთ ორი თითი ეკრანის მარცხენა კიდესთან და გადაასრიალეთ მარჯვნივ. გაიხსნება მენიუ ორი დიდი ღილაკით: გათიშვა და პარამეტრები.\n\nდასახურად შეეხეთ სხვა ადგილს.</string>
+    <string name="tuto_fullscreen_title">ორი თითი მარჯვენა კიდიდან</string>
+    <string name="tuto_fullscreen_text">დადეთ ორი თითი მარჯვენა კიდესთან და გადაასრიალეთ მარცხნივ, რომ მანქანის ზოლები აჩვენოთ ან დამალოთ და მთელი ეკრანი გამოიყენოთ.</string>
+    <string name="tuto_top_title">ორი თითი ზედა კიდიდან</string>
+    <string name="tuto_top_text">დადეთ ორი თითი ეკრანის ზედა ნაწილში და ჩამოასრიალეთ, რომ დაუბრუნდეთ მანქანის მთავარ ეკრანს. Android Auto დაკავშირებული რჩება.</string>
+    <string name="tuto_home_title">სამი თითი ქვემოთ</string>
+    <string name="tuto_home_text">გადაასრიალეთ სამი თითი ქვემოთ, რომ Android Auto გათიშოთ და DiAuto-ს მთავარ ეკრანზე დაბრუნდეთ.</string>
+    <string name="tuto_tips_title">კარგია იცოდეთ</string>
+    <string name="tuto_tips_text">• Google Maps ხდება მარშრუტის დამგეგმავი: იღებს თქვენი MG4-ის ბატარეას, მოხმარებას და დამუხტვის სიმძლავრეს და ირჩევს დამუხტვის გაჩერებებს.\n• პარამეტრები → მანქანა: თქვენი MG4-ის ვერსია, ბატარეის ტევადობა და მდგომარეობა, ავტომატურად განსაზღვრული და რეგულირებადი.\n• ბატარეის ავტომატური წინასწარი გათბობა Maps-ის მიერ დაგეგმილ დამუხტვის გაჩერებამდე. ნაგულისხმევად გამორთულია, ჩართეთ პარამეტრები → მანქანა.\n• DiAuto ინსტალირდება მანქანის ორიგინალი Android Auto-ს (AllGo) განახლების სახით. მასზე დასაბრუნებლად: პარამეტრები → შესახებ → დაბრუნება, შემდეგ გადატვირთეთ ეკრანი Home ღილაკზე 20 წამით დაჭერით.\n• პარამეტრები → შესახებ: ამ სახელმძღვანელოს ხელახლა ნახვა.</string>
+    <string name="tuto_settings_title">სახელმძღვანელო</string>
+    <string name="tuto_settings_summary">ჟესტები Android Auto-ზე და სასარგებლო პარამეტრები რამდენიმე ნაბიჯში.</string>
+    <string name="tuto_settings_button">ნახვა</string>
+    <string name="da_settings">პარამეტრები</string>
+</resources>

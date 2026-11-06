@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiAuto</string>
+    <string name="app_name">DiAuto MG4+</string>
     <string name="menu">القائمة</string>
     <string name="settings">الإعدادات</string>
 
@@ -868,11 +868,8 @@
     <string name="playback_focus_mode_always_hint">يوقف الأصوات الأخرى دائماً أثناء تشغيل Android Auto. إذا توقفت الموسيقى بعد ثانية أو ثانيتين عند تفعيل Bluetooth، عُد إلى الوضع التلقائي.</string>
     <string name="playback_focus_mode_never_hint">لا يغير تركيز صوت النظام أبداً. قد تستمر الأصوات الأخرى فوق صوت Android Auto.</string>
     <string name="playback_focus_mode_static_hint">عند تفعيل تركيز الصوت الثابت، يسري هذا منذ اتصال الهاتف وطوال الجلسة، وليس أثناء تشغيل الصوت فقط.</string>
-    <string name="github_issues_url">https://github.com/shihabal3amri/DiAuto/issues</string>
+    <string name="github_issues_url">https://github.com/Skittle6938/DiAuto-MG4/issues</string>
     <string name="support_rules_english_title">All posts in English</string>
-    <string name="boot_loop_paused_title">تم إيقاف بدء الاتصال اللاسلكي مؤقتاً</string>
-    <string name="boot_loop_paused_generic">أُعيد تشغيل هذا الجهاز ثلاث مرات متتالية بعد بدء الاتصال اللاسلكي في Open Headunit، لذلك لم يُفعّل هذه المرة. ما زال USB يعمل. افتح التطبيق لإعادة تفعيله.</string>
-    <string name="boot_loop_paused_native_wifi_direct">أُعيد تشغيل الجهاز ثلاث مرات متتالية بعد بدء الاتصال اللاسلكي في Open Headunit، لذلك أُوقف هذه المرة. في بعض وحدات القيادة، تتسبب شريحة Wi-Fi في تعطل النظام عند انضمام الهاتف إلى شبكة Wi-Fi Direct. جرّب وضع نقطة اتصال وحدة القيادة في Android Auto. ما زال USB يعمل.</string>
     <string name="vehicle_make_hint">تعرض علامة السيارة شعارها على زر الخروج في Android Auto، لكنها تخفي التطبيقات المثبتة من خارج Play Store. أعد اختيار Google لإظهار تلك التطبيقات.</string>
     <string name="external_bt_nativeaa">الاتصال اللاسلكي الأصلي غير مدعوم على هذه الوحدة</string>
     <string name="external_bt_nativeaa_desc">تستخدم هذه الوحدة وحدة Bluetooth خاصة (%1$s) بدلاً من الواجهة التي يتيحها Android للتطبيقات. يقترن الهاتف بها، لذا لا تصل إليه بيانات Bluetooth من التطبيق؛ وقد يبدو الاتصال جارياً ثم يتوقف.\n\nهذا قيد في العتاد ولا يمكن تجاوزه من التطبيق. استخدم USB أو وضع Wireless Helper أو Auto (Headunit Server)، فهي لا تحتاج إلى مصافحة Bluetooth.</string>
@@ -946,8 +943,6 @@
     <string name="diagnostic_save_failure_hint">تحقق من المساحة المتاحة أو اختر موقع حفظ آخر.</string>
     <string name="diagnostic_choose_location">اختيار الموقع</string>
     <string name="no_files_found">لم يتم العثور على ملفات</string>
-    <string name="byd_navigation_title">شاشة BYD الأمامية ولوحة العدادات</string>
-    <string name="byd_navigation_description">عرض إرشادات Android Auto على شاشات BYD المدعومة. تجريبي؛ يختلف التوافق حسب السيارة.</string>
     <string name="da_connection_setup">إعداد الاتصال</string>
     <string name="da_connection_setup_hint">اختر طريقة الاتصال وأعدّ نقطة اتصال سيارتك.</string>
     <string name="da_diagnostics">التشخيص</string>
@@ -974,7 +969,7 @@
     <string name="battery_for_google_maps">Battery for Google Maps</string>
     <string name="battery_for_google_maps_description">Send MG4 charge and range to Android Auto so Google Maps can show battery level. Set net capacity and SOH below. Needs a platform-signed install on the car.</string>
     <string name="battery_net_capacity_kwh">Net capacity (kWh)</string>
-    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 50.8, 61.7 or 74.4 kWh. Maps uses capacity × SOH.</string>
+    <string name="battery_net_capacity_description">Select the usable battery capacity for your MG4: 49, 61 or 72.5 kWh. Maps uses capacity × SOH.</string>
     <string name="battery_net_capacity_enter">Enter net (usable) capacity when new, in kWh</string>
     <string name="battery_soh_percent">Battery SOH (%)</string>
     <string name="battery_soh_description">Enter battery state of health from 1 to 100. Decimal values such as 98.75 are supported. Effective usable capacity = capacity × SOH / 100.</string>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Wi-Fi-ul mașinii revine după</string>
+    <string name="dset_station_delay_summary">Wi-Fi-ul mașinii e oprit în timpul Android Auto wireless. Revine când sesiunea s-a încheiat de atâta timp.</string>
+</resources>

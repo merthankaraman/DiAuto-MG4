@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">حدّة الصوت</string>
+    <string name="dset_voice_enhance_summary">يعيد الترددات العالية التي يقطعها الهاتف: مُثير خفيف أو قوي، أو شبكة عصبية (Opus). بدءًا من الإرشاد التالي.</string>
+    <string name="dset_voice_enhance_standard">إيقاف</string>
+    <string name="dset_voice_enhance_light">خفيف</string>
+    <string name="dset_voice_enhance_strong">قوي</string>
+    <string name="dset_voice_enhance_neural">عصبي</string>
+    <string name="dset_voice_experimental">إعدادات وضوح الصوت وحدّته تجريبية: أخبرنا على GitHub بالإعداد الذي يبدو لك الأفضل.</string>
+    <string name="dset_wifi_channel">قناة Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">قناة نقطة الوصول في السيارة. يختار الوضع التلقائي الأقل ازدحامًا عند تشغيل نقطة الوصول، وليس أثناء الاتصال أبدًا.</string>
+    <string name="dset_wifi_channel_auto">تلقائي</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_maps_model">Model spotřeby pro Mapy</string>
+    <string name="dset_maps_model_summary">Mapy Google odhadují baterii v cíli podle modelu MG4 (rychlost, zima, klimatizace) místo průměrné spotřeby auta.</string>
+    <string name="dset_maps_model_explain">Co dělá: Mapy Google odhadují stav baterie v cíli podle popisu auta, ne podle aktuální průměrné spotřeby. Počítá se tak s rychlostí, zimou i topením.\n\nJak: DiAuto sděluje Mapám jízdní odpor auta (valivý, v zimě vyšší, a vzduch) a příkon klimatizace a elektroniky podle venkovní teploty. Servery Googlu spočítají energii každého úseku trasy s očekávanou rychlostí, provozem a převýšením.\n\nPoužitá data: verze auta (nastavení baterie), stav a kapacita baterie, venkovní teplota a zda je zapnutá klimatizace. Jdou jen do vašeho telefonu, stejně jako dnes stav baterie.\n\nHodnoty jsou odhady, předpověď se může lišit, dokud nebudou zkalibrovány.</string>
+    <string name="dset_maps_model_enable">Zapnout</string>
+</resources>

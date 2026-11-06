@@ -43,7 +43,7 @@ Check first connection, reconnect after restarting the app or car, maps, music/a
 and USB if applicable. If a feature fails, record the steps, MG4 model/firmware,
 phone model/OS, connection type, and app version. Export a report from **Settings →
 Diagnostics → Save diagnostic report** and review it before sharing; do not include
-the hotspot password.
+the hotspot password. Reports are saved under Downloads/DiAuto or Downloads/DiPlay.
 
 The `phone` flavor is a regular phone/tablet build without the system UID. Its
 CarProperty battery access and ability to force-stop OEM Android Auto apps on an MG4

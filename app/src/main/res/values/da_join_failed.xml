@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">The phone can\'t join the car\'s Wi-Fi. If its Wi-Fi hotspot is on, turn it off.</string>
+</resources>

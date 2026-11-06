@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_station_delay">Car Wi-Fi back after</string>
+    <string name="dset_station_delay_summary">The car\'s Wi-Fi client is off during wireless Android Auto. It comes back once the session has ended for this long.</string>
+</resources>

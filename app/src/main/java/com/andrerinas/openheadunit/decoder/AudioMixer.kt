@@ -58,6 +58,18 @@ class AudioMixer(
 
     // Per-channel configuration
     private val channelConfigs = ConcurrentHashMap<Int, ChannelConfig>()
+    private val upsamplers = ConcurrentHashMap<Int, Upsampler3x>()
+    // Per feeding thread: each channel feeds from its own wrapper thread.
+    private val upsampleBuffer = ThreadLocal<ShortArray>()
+
+    private fun getUpsampleBuffer(size: Int): ShortArray {
+        var arr = upsampleBuffer.get()
+        if (arr == null || arr.size < size) {
+            arr = ShortArray(size)
+            upsampleBuffer.set(arr)
+        }
+        return arr
+    }
 
     // Per-channel PCM circular buffers
     private val channelBuffers = ConcurrentHashMap<Int, ShortCircularBuffer>()
@@ -227,6 +239,7 @@ class AudioMixer(
      */
     fun unregisterChannel(channel: Int) {
         channelConfigs.remove(channel)
+        upsamplers.remove(channel)
         channelBuffers.remove(channel)
         channelPreRolling.remove(channel)
         channelGains.remove(channel)
@@ -263,17 +276,14 @@ class AudioMixer(
             // Highly optimized path: 16kHz mono to 48kHz stereo (ratio = 3)
             val outputShortsSize = inputShortsSize * 3 * 2
             val outputShorts = getFeedOutputBuffer(outputShortsSize)
+            // A filtered upsampler per channel (see Upsampler3x), then mono to both sides.
+            val upsampler = upsamplers.getOrPut(channel) { Upsampler3x() }
+            val mono = getUpsampleBuffer(inputShortsSize * 3)
+            val produced = upsampler.process(inputShorts, inputShortsSize, mono)
             var outIdx = 0
-            for (i in 0 until inputShortsSize) {
-                val current = inputShorts[i].toInt()
-                val next = if (i + 1 < inputShortsSize) inputShorts[i + 1].toInt() else current
-
-                for (j in 0 until 3) {
-                    val fraction = j.toFloat() / 3f
-                    val interpolated = (current + (next - current) * fraction).toInt().coerceIn(-32768, 32767).toShort()
-                    outputShorts[outIdx++] = interpolated // Left
-                    outputShorts[outIdx++] = interpolated // Right
-                }
+            for (i in 0 until produced) {
+                outputShorts[outIdx++] = mono[i] // Left
+                outputShorts[outIdx++] = mono[i] // Right
             }
             buffer.write(outputShorts, outputShortsSize)
         } else {

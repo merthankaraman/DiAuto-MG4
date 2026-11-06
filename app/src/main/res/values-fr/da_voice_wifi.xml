@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dset_voice_enhance">Aigus de la voix</string>
+    <string name="dset_voice_enhance_summary">Recrée les aigus que le téléphone coupe : exciteur léger ou fort, ou réseau de neurones (Opus). Dès la prochaine annonce.</string>
+    <string name="dset_voice_enhance_standard">Non</string>
+    <string name="dset_voice_enhance_light">Léger</string>
+    <string name="dset_voice_enhance_strong">Fort</string>
+    <string name="dset_voice_enhance_neural">Neuronal</string>
+    <string name="dset_voice_experimental">Les réglages de clarté et d\'aigus de la voix sont expérimentaux : dites-nous sur GitHub celui que vous préférez à l\'écoute.</string>
+    <string name="dset_wifi_channel">Canal Wi-Fi</string>
+    <string name="dset_wifi_channel_summary">Canal du point d\'accès de la voiture. Auto choisit le moins encombré au démarrage du point d\'accès, jamais pendant une connexion.</string>
+    <string name="dset_wifi_channel_auto">Auto</string>
+</resources>

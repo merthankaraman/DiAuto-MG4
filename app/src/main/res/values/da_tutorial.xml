@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tuto_step">Step %1$d of %2$d</string>
+    <string name="tuto_skip">Skip</string>
+    <string name="tuto_back">Back</string>
+    <string name="tuto_next">Next</string>
+    <string name="tuto_done">Let\'s go</string>
+    <string name="tuto_welcome_title">Welcome to DiAuto for MG4</string>
+    <string name="tuto_welcome_text">Wireless Android Auto on your MG4\'s screen. Once your phone is paired with the car over Bluetooth, it joins the car\'s Wi-Fi hotspot and Android Auto starts by itself.\n\nThe next steps show the three gestures that work over Android Auto.</string>
+    <string name="tuto_menu_title">Two fingers from the left edge</string>
+    <string name="tuto_menu_text">Put two fingers near the left edge of the screen and slide them to the right. A menu opens with two large buttons: Disconnect and Settings.\n\nTap anywhere else to close it.</string>
+    <string name="tuto_fullscreen_title">Two fingers from the right edge</string>
+    <string name="tuto_fullscreen_text">Put two fingers near the right edge and slide them to the left to show or hide the car\'s bars and use the whole screen.</string>
+    <string name="tuto_top_title">Two fingers from the top edge</string>
+    <string name="tuto_top_text">Put two fingers at the top of the screen and slide them down to go back to the car\'s launcher. Android Auto stays connected.</string>
+    <string name="tuto_home_title">Three fingers down</string>
+    <string name="tuto_home_text">Slide three fingers down the screen to disconnect Android Auto and come back to DiAuto\'s home screen.</string>
+    <string name="tuto_tips_title">Good to know</string>
+    <string name="tuto_tips_text">• Google Maps becomes a trip planner: it gets your MG4\'s battery, consumption and charging power, and picks the charging stops.\n• Settings → Car: your MG4 version, battery capacity and health, detected automatically and adjustable.\n• Automatic battery preheating before a charging stop planned by Maps. Off by default, turn it on in Settings → Car.\n• DiAuto installs as an update of the car\'s own Android Auto (AllGo). To go back to it: Settings → About → Go back, then restart the screen by holding the Home button for 20 s.\n• Settings → About: show this tutorial again.</string>
+    <string name="tuto_settings_title">Tutorial</string>
+    <string name="tuto_settings_summary">The gestures over Android Auto and the useful settings, in a few steps.</string>
+    <string name="tuto_settings_button">Show</string>
+</resources>

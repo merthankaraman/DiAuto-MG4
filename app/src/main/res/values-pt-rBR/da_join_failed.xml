@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="da_join_failed">O telefone não consegue entrar no Wi-Fi do carro. Se o roteador Wi-Fi dele estiver ativo, desative-o.</string>
+</resources>

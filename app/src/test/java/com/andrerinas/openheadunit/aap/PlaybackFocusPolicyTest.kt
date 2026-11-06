@@ -209,4 +209,13 @@ class PlaybackFocusPolicyTest {
     fun `auto is the stored default so an unset preference behaves like 3 point 1 point 1 plus detection`() {
         assertEquals(0, Mode.AUTO.value)
     }
+
+    @Test
+    fun `guidance asks for focus even once the music latch is armed`() {
+        val speech = PlaybackFocusPolicy.speechMode(Mode.AUTO, isSpeech = true)
+        assertTrue(acquire(mode = speech, btMediaLinkActive = false, selfDefeatingLatched = true))
+        assertFalse(acquire(mode = PlaybackFocusPolicy.speechMode(Mode.AUTO, isSpeech = false),
+            btMediaLinkActive = false, selfDefeatingLatched = true))
+        assertEquals(Mode.NEVER, PlaybackFocusPolicy.speechMode(Mode.NEVER, isSpeech = true))
+    }
 }
