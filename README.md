@@ -136,7 +136,7 @@ export them, and contain no destinations, road names, GPS position, or phone and
 
 ## Install
 
-1. Download `DiAuto-MG4_<version>.apk` from the [Releases](https://github.com/mastroiannim/DiAuto-MG4/releases)
+1. Download `DiAuto-MG4-v<version>-car.apk` (the `-car` asset, platform-signed; its `.sha256` file sits next to it) from the [Releases](https://github.com/mastroiannim/DiAuto-MG4/releases)
    page and copy it to a USB stick.
 2. On the car, open the **Files** app. If you have never installed an app on the car:
    1. Open **Bluetooth Settings** and select the car's name.
