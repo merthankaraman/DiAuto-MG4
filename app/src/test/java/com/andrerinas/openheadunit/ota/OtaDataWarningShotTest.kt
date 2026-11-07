@@ -20,7 +20,7 @@ import org.robolectric.annotation.GraphicsMode
 import java.io.File
 
 @ConscryptMode(ConscryptMode.Mode.OFF)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class, sdk = [33], qualifiers = "fr-w1920dp-h720dp-land-night-mdpi")
 class OtaDataWarningShotTest {

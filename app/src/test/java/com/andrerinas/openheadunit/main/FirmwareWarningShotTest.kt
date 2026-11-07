@@ -23,7 +23,7 @@ import java.io.File
 /** The red home banner for firmwares known not to run wireless Android Auto. */
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @Config(application = Application::class, sdk = [33], qualifiers = "fr-w1920dp-h720dp-land-night-mdpi")
 class FirmwareWarningShotTest {
 

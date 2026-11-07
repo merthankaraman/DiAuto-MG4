@@ -31,7 +31,7 @@ import java.io.File
 /** Mock-ups of the simplified DiAuto for MG4 screens, written to app/build/screenshots/. */
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @Config(application = Application::class, sdk = [28], qualifiers = "fr-w1920dp-h720dp-land-night-mdpi")
 class MockupScreenshotTest {
 

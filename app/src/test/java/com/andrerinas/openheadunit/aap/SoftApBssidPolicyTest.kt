@@ -85,7 +85,7 @@ class SoftApBssidPolicyTest {
     }
 
     @Test
-    fun `the settings default of "0" is not an address`() {
+    fun `the settings default of '0' is not an address`() {
         // staticBSSID stores "0" when unset. It is not MAC-shaped, so a placeholder blacklist let
         // it through, and being first in the chain it beat the real interface MAC and went out as
         // BSSID=0 — which the phone rejected on every retry.

@@ -17,7 +17,7 @@ import java.io.File
 /** The real settings screens, in English, for the README: app/build/screenshots/readme_*.png. */
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @Config(sdk = [33], qualifiers = "en-w1920dp-h720dp-land-night-mdpi")
 class ReadmeShotTest {
     @Test

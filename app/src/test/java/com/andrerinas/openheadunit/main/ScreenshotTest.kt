@@ -33,7 +33,7 @@ import java.io.File
  */
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @Config(application = Application::class, sdk = [28], qualifiers = "fr-w1920dp-h720dp-land-night-mdpi")
 class ScreenshotTest {
 

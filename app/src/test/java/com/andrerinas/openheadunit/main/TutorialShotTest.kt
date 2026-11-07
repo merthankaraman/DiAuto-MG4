@@ -15,7 +15,7 @@ import java.io.File
 
 /** The first-start tutorial rendered on the MG4 panel, one PNG per step in app/build/screenshots/. */
 @RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@GraphicsMode(GraphicsMode.Mode.LEGACY)
 @org.robolectric.annotation.ConscryptMode(org.robolectric.annotation.ConscryptMode.Mode.OFF)
 @Config(application = android.app.Application::class, qualifiers = "en-w1920dp-h720dp-land-night-mdpi", sdk = [28])
 class TutorialShotTest {
