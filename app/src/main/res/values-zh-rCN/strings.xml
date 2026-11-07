@@ -1047,4 +1047,23 @@
     <string name="crash_report_sending">Sending report…</string>
     <string name="crash_report_sent">Report sent. Thank you.</string>
     <string name="crash_report_send_failed">Could not send the report. Check internet and try again.</string>
+    <string name="about_fork_notice">DiAuto-MG4 的社区分支，由社区独立维护，适用于 MG4。\ngithub.com/Skittle6938/DiAuto-MG4</string>
+    <string name="battery_value_percent">%1$s%%</string>
+    <string name="battery_auto">自动</string>
+    <string name="battery_auto_value">%1$s · 自动（%2$s）</string>
+    <string name="battery_manual_value">%1$s · 手动设置</string>
+    <string name="battery_soh_manual_value">%1$s · 手动设置</string>
+    <string name="battery_auto_option">自动（%1$s，%2$s）</string>
+    <string name="battery_pack_option">%1$d kWh 电池（可用容量 %2$.1f kWh）</string>
+    <string name="battery_source_car">从车辆读取</string>
+    <string name="battery_source_default_pack">默认使用 %1$d kWh 电池</string>
+    <string name="battery_soh_source_default">默认</string>
+    <string name="battery_soh_auto_description" formatted="false">自动模式使用 MG4 Dash 的估算值（需已安装并完成电池测量），否则使用 100 %。</string>
+    <string name="fullscreen_nav_only">仅隐藏左侧栏</string>
+    <string name="ota_status_no_stable">没有更新的正式版本</string>
+    <string name="ota_dialog_no_stable_message">目前还没有比 %1$s 更新的正式版本。只有在设置中启用“同时检查 Beta 版本”后，才会提供 Beta 版本。</string>
+    <string name="ota_dialog_up_to_date_version">DiAuto %1$s 是最新版本。</string>
+    <string name="ota_dialog_install_message">将下载并安装 DiAuto %1$s（%2$s）。如果未连接 Wi‑Fi，将使用车辆的移动数据。随后 DiAuto 将重启，Android Auto 会停止几秒钟。</string>
+    <string name="ota_progress_installing">正在安装… DiAuto 将自动重启。</string>
+    <string name="ota_progress_busy">已有更新正在下载或安装。</string>
 </resources>

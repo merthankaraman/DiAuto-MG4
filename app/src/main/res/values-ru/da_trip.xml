@@ -18,4 +18,5 @@
     <string name="trip_picker_title">Заряд по прибытии по прогнозу Карт</string>
     <string name="trip_picker_note">Сейчас %1$d %%. Пригодная поездка расходует не менее %2$d %% заряда, без остановки на зарядку.</string>
     <string name="trip_battery_low">Заряд слишком низкий для записи пригодной поездки.</string>
+    <string name="trip_go">СТАРТ</string>
 </resources>

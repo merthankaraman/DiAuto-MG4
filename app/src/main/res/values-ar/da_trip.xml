@@ -18,4 +18,5 @@
     <string name="trip_picker_title">البطارية عند الوصول حسب توقع الخرائط</string>
     <string name="trip_picker_note">الآن %1$d %%. تستهلك الرحلة الصالحة %2$d %% على الأقل من البطارية، بدون توقف للشحن.</string>
     <string name="trip_battery_low">البطارية منخفضة جدًا لتسجيل رحلة صالحة.</string>
+    <string name="trip_go">انطلق</string>
 </resources>

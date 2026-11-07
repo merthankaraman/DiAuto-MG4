@@ -36,4 +36,18 @@
     <string name="da_settings_subtitle">Ajusta la pantalla, el sonido y la conexión.</string>
     <string name="da_bluetooth_music">Música por Bluetooth del coche</string>
     <string name="da_bluetooth_music_hint">Mantén la música en el reproductor Bluetooth del coche. DiAuto no modifica su foco de audio; el sonido de navegación y del asistente sigue disponible. Vuelve a conectar Android Auto tras cambiar esta opción.</string>
+    <string name="da_update">Actualizaciones</string>
+    <string name="da_update_install">Instalar %1$s</string>
+    <string name="da_update_hint_checking">Buscando una actualización…</string>
+    <string name="da_update_hint_current">Versión %1$s</string>
+    <string name="da_update_hint_up_to_date">Versión %1$s · al día</string>
+    <string name="da_update_hint_up_to_date_beta">Versión %1$s · al día, incluidas las versiones beta</string>
+    <string name="da_update_hint_available">Hay una nueva versión disponible</string>
+    <string name="da_update_hint_available_beta">Hay una nueva versión beta disponible</string>
+    <string name="da_update_hint_failed">Versión %1$s · no se pudo comprobar</string>
+    <string name="da_hybrid_bt_music_needed">Conecta el teléfono al Bluetooth del coche para usar la música y las llamadas (modo híbrido). De lo contrario, la música y las llamadas podrían seguir sonando en el teléfono.</string>
+    <string name="da_hybrid_bt_calls_hint">El modo híbrido requiere Bluetooth del coche (A2DP + teléfono/HFP). Si Bluetooth está desactivado, la música, las llamadas y Gemini pueden seguir en el teléfono, aunque el vídeo de Android Auto seguirá funcionando. El audio del asistente y de la navegación seguirá usando Android Auto (no la música por Wi-Fi).</string>
+    <string name="da_wifi_music_trial_hint">Para probar la música por Wi-Fi: DiAuto desconecta la música Bluetooth del coche (A2DP) para que no se mezcle con el audio Wi-Fi. Activa AAC, aumenta el búfer multimedia Wi-Fi (1000–1500 ms) y mantén una tasa de fotogramas moderada. Si sigue entrecortándose, vuelve a reproducir música por el Bluetooth del coche.</string>
+    <string name="da_force_bt_music_on_connect">Cambiar a Música Bluetooth del coche al conectar</string>
+    <string name="da_force_bt_music_on_connect_hint">Prueba: cuando se conecte Android Auto (con el modo híbrido activado), solicitar al servicio multimedia del coche que seleccione Música Bluetooth, igual que la tarjeta de música de la pantalla de inicio. SAIC / MG. Desactivado de forma predeterminada.</string>
 </resources>

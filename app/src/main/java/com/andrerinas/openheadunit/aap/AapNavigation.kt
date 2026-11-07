@@ -207,26 +207,7 @@ class AapNavigation(
         }
     }
 
-    private fun updatePreheat() {
-        val status = snapshot.clusterStatus?.payload?.status
-        // The route state alone says a route is followed: the cluster status does not always come.
-        val navigating = status == NavigationStatus.NavigationClusterStatus.NavigationStatusEnum.ACTIVE ||
-            status == NavigationStatus.NavigationClusterStatus.NavigationStatusEnum.REROUTING ||
-            (snapshot.navigationState?.payload?.destinationsCount ?: 0) > 0
-        val nextStop = snapshot.navigationState?.payload?.destinationsList?.firstOrNull()
-            ?.takeIf { it.hasAddress() }?.address
-        val seconds = snapshot.currentPosition?.payload?.destinationDistancesList?.firstOrNull()
-            ?.takeIf { it.hasTimeToArrivalSeconds() }?.timeToArrivalSeconds?.coerceIn(0, Int.MAX_VALUE.toLong())?.toInt()
-        // Maps sends two lines per stop (name, then address) but a time for the next stop only:
-        // "A11 | Aire de Pirmil Ouest, A11, km 197 | Rue du Layon 4 | 85560" is a charging stop then
-        // the destination.
-        val lines = snapshot.navigationState?.payload?.destinationsCount ?: 0
-        val stopsAhead = maxOf(snapshot.currentPosition?.payload?.destinationDistancesCount ?: 0, (lines + 1) / 2)
-        com.andrerinas.openheadunit.vehicle.ChargeStopPreheater.update(context, navigating, nextStop, seconds, stopsAhead)
-    }
-
     private fun scheduleDebouncedBroadcast(navEventType: Int) {
-        updatePreheat()
         val guidance = com.andrerinas.openheadunit.hud.SaicNavigationMapper.from(snapshot, settings.rightHandDrive)
         logOnChange("cluster", guidance?.let { "icon=${it.icon.name} (${it.icon.id})" } ?: "none")
         com.andrerinas.openheadunit.hud.SaicNavigationOutputs.update(guidance)

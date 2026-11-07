@@ -16,7 +16,7 @@ object Messages {
             createRawMessage(chan, flags, type, data, data.size)
 
     // 1.7, as current head units announce: at 1.2 the phone only sends the old next-turn events,
-    // never the route state with its stops and times (needed for battery preheating).
+    // never the route state with its stops and times.
     private var VERSION_REQUEST = byteArrayOf(0, 1, 0, 7)
 
     private fun createRawMessage(chan: Int, flags: Int, type: Int, data: ByteArray, size: Int): ByteArray {

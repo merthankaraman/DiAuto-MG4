@@ -93,4 +93,11 @@
     <string name="dset_battery_reset">العودة إلى التلقائي</string>
     <string name="dset_battery_reset_summary">السعة وحالة البطارية وإصدار MG4 كما تبلغ عنها السيارة.</string>
     <string name="dset_battery_reset_button">إعادة الضبط</string>
+    <string name="dset_ev_layout">النموذج المُرسل إلى خرائط Google (اختبار)</string>
+    <string name="dset_ev_layout_summary">مؤقت: قارن محطات الشحن التي تخطط لها خرائط Google مع كل تنسيق</string>
+    <string name="dset_ev_layout_a">A · الحالي (البطارية فقط)</string>
+    <string name="dset_ev_layout_b">B · ‏A مع الوزن ودرجة الحرارة الخارجية</string>
+    <string name="dset_ev_layout_c">C · ‏B مع منحنى الشحن بالتيار المستمر</string>
+    <string name="dset_ev_layout_d">D · ‏B مع أوقات الشحن بالتيار المستمر</string>
+    <string name="dset_ev_layout_e">E · كامل (بيتا 5)</string>
 </resources>

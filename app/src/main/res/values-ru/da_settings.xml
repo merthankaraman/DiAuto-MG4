@@ -93,4 +93,11 @@
     <string name="dset_battery_reset">Вернуть автоматически</string>
     <string name="dset_battery_reset_summary">Ёмкость, состояние батареи и версия MG4 по данным автомобиля.</string>
     <string name="dset_battery_reset_button">Сбросить</string>
+    <string name="dset_ev_layout">Модель для Google Maps (тест)</string>
+    <string name="dset_ev_layout_summary">Временная настройка: сравните остановки для зарядки, которые Карты планируют для каждого формата</string>
+    <string name="dset_ev_layout_a">A · текущий (только батарея)</string>
+    <string name="dset_ev_layout_b">B · A + масса и наружная температура</string>
+    <string name="dset_ev_layout_c">C · B + кривая зарядки постоянным током</string>
+    <string name="dset_ev_layout_d">D · B + время зарядки постоянным током</string>
+    <string name="dset_ev_layout_e">E · полный (бета 5)</string>
 </resources>

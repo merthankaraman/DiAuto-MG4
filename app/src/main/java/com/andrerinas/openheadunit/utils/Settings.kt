@@ -201,7 +201,7 @@ class Settings(private val context: Context) {
      * New key: installs that had the old always-on default start with logs off.
      */
     var exporterCaptureEnabled: Boolean
-        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, true)
+        get() = prefs.getBoolean(KEY_LOG_CAPTURE_ENABLED_V2, false)
         set(value) { prefs.edit().putBoolean(KEY_LOG_CAPTURE_ENABLED_V2, value).apply() }
     val logLevel: Int get() = exporterLogLevel.logLevel
 
@@ -515,16 +515,6 @@ class Settings(private val context: Context) {
     var evModelLayout: String
         get() = if (testMode) prefs.getString("ev-model-layout", "dc_curve")!! else "dc_curve"
         set(value) { prefs.edit().putString("ev-model-layout", value).apply() }
-
-    /** Switch battery heating on before a charging stop on the route (off by default). */
-    var batteryPreheatBeforeCharger: Boolean
-        get() = prefs.getBoolean("battery-preheat-before-charger", false)
-        set(value) { prefs.edit().putBoolean("battery-preheat-before-charger", value).apply() }
-
-    /** How long before the charging stop, in minutes (5 to 60, in steps of 5). */
-    var batteryPreheatMinutes: Int
-        get() = prefs.getInt("battery-preheat-minutes", 30).coerceIn(5, 60)
-        set(value) { prefs.edit().putInt("battery-preheat-minutes", value.coerceIn(5, 60)).apply() }
 
     /**
      * When true, [com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider] uses the demo

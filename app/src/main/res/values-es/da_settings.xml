@@ -93,4 +93,11 @@
     <string name="dset_battery_reset">Volver a automático</string>
     <string name="dset_battery_reset_summary">Capacidad, estado de salud y versión del MG4 según el coche.</string>
     <string name="dset_battery_reset_button">Restablecer</string>
+    <string name="dset_ev_layout">Modelo enviado a Google Maps (prueba)</string>
+    <string name="dset_ev_layout_summary">Temporal: compara las paradas de carga que Maps planifica con cada formato</string>
+    <string name="dset_ev_layout_a">A · actual (solo batería)</string>
+    <string name="dset_ev_layout_b">B · A + peso y temperatura exterior</string>
+    <string name="dset_ev_layout_c">C · B + curva de carga de CC</string>
+    <string name="dset_ev_layout_d">D · B + tiempos de carga de CC</string>
+    <string name="dset_ev_layout_e">E · completo (beta 5)</string>
 </resources>

@@ -66,8 +66,11 @@ runbook](MG4_ROLLBACK.md). Do not proceed without a tested recovery path.
   `-car.apk` release asset instead.
 - If the phone logs `WifiConnectStatus status=-3` and `pskLen=0`, no hotspot password
   was available: with no saved password and no readable live configuration an empty
-  passphrase can be advertised, and Android Auto usually refuses to join. Re-enter
-  SSID and password in **Settings → Connection setup** (uninstalling removes local app data).
+  passphrase can be advertised, and Android Auto usually refuses to join. Confirm the
+  car hotspot is enabled and has a password in the head unit's Wi-Fi settings, then
+  turn the hotspot off and on before retrying; DiAuto refreshes its credentials when
+  the hotspot state changes. The current app has no screen for manually entering the
+  hotspot SSID or password.
 - If a 2.4 GHz connection repeatedly starts and disconnects before video appears,
   try lowering resolution and frame rate in Display and performance, then reconnect.
   This release leaves video preferences under your control; it does not force a

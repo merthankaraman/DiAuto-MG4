@@ -16,6 +16,7 @@
     <string name="trip_copied">%1$d viajes copiados a la memoria USB.</string>
     <string name="trip_copy_failed">No se encontró memoria USB o falló la copia: los viajes siguen en el coche.</string>
     <string name="trip_picker_title">Batería a la llegada prevista por Maps</string>
-    <string name="trip_picker_note">Ahora %1$d %%. Un viaje útil consume al menos un %2$d %% de batería, sin parada de carga.</string>
+    <string name="trip_picker_note">Ahora %1$d %%. Sin paradas de carga, un viaje útil requiere que la batería esté al menos al %2$d %%.</string>
     <string name="trip_battery_low">Batería demasiado baja para grabar un viaje útil.</string>
+    <string name="trip_go">EMPEZAR</string>
 </resources>

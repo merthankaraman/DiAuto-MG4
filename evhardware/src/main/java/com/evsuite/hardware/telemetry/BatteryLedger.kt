@@ -3,6 +3,8 @@ package com.evsuite.hardware.telemetry
 import com.google.gson.Gson
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * One moment in the pack's life, including the ones a trip never sees.
@@ -116,10 +118,13 @@ class BatteryLedgerStore(
                 output.write(bytes)
                 output.fd.sync()
             }
-            if (temp.renameTo(target)) true else {
-                temp.delete()
-                false
-            }
+            Files.move(
+                temp.toPath(),
+                target.toPath(),
+                StandardCopyOption.ATOMIC_MOVE,
+                StandardCopyOption.REPLACE_EXISTING,
+            )
+            true
         } catch (_: Exception) {
             temp.delete()
             false

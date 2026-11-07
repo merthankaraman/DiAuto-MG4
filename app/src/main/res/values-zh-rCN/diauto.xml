@@ -36,4 +36,18 @@
     <string name="da_settings_subtitle">调整显示、声音和连接。</string>
     <string name="da_bluetooth_music">通过车辆蓝牙播放音乐</string>
     <string name="da_bluetooth_music_hint">让音乐通过车辆蓝牙播放器播放。DiAuto 不改变其音频焦点；导航和助手音频仍可使用。更改此选项后请重新连接 Android Auto。</string>
+    <string name="da_update">更新</string>
+    <string name="da_update_install">安装 %1$s</string>
+    <string name="da_update_hint_checking">正在检查更新…</string>
+    <string name="da_update_hint_current">版本 %1$s</string>
+    <string name="da_update_hint_up_to_date">版本 %1$s · 已是最新</string>
+    <string name="da_update_hint_up_to_date_beta">版本 %1$s · 已是最新，包含 Beta 版本</string>
+    <string name="da_update_hint_available">有新版本可用</string>
+    <string name="da_update_hint_available_beta">有新的 Beta 版本可用</string>
+    <string name="da_update_hint_failed">版本 %1$s · 检查失败</string>
+    <string name="da_hybrid_bt_music_needed">在混合模式下，请将手机连接到车辆蓝牙以播放音乐和接听电话，否则音乐和通话声音可能仍从手机播放。</string>
+    <string name="da_hybrid_bt_calls_hint">混合模式需要连接车辆蓝牙（A2DP + 电话/HFP）。如果蓝牙关闭，音乐、通话和 Gemini 可能仍通过手机播放，但 Android Auto 视频仍可正常工作。语音助手和导航音频仍使用 Android Auto（而不是 Wi‑Fi 音乐）。</string>
+    <string name="da_wifi_music_trial_hint">试用 Wi‑Fi 音乐：DiAuto 会断开车辆蓝牙音乐（A2DP），避免与 Wi‑Fi 音频混音。启用 AAC，将 Wi‑Fi 媒体缓冲区调高至 1000–1500 毫秒，并保持适中的帧率。如果仍有卡顿，请切回通过车辆蓝牙播放音乐。</string>
+    <string name="da_force_bt_music_on_connect">连接时切换到车辆蓝牙音乐</string>
+    <string name="da_force_bt_music_on_connect_hint">测试：Android Auto 连接时（混合模式已启用），请求车辆媒体服务选择蓝牙音乐，与主屏幕上的音乐卡片相同。适用于 SAIC / MG。默认关闭。</string>
 </resources>

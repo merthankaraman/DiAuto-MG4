@@ -18,4 +18,5 @@
     <string name="trip_picker_title">地图预测的到达时电量</string>
     <string name="trip_picker_note">当前 %1$d %%。有效行程至少消耗 %2$d %% 电量，且途中不充电。</string>
     <string name="trip_battery_low">电量过低，无法记录有效行程。</string>
+    <string name="trip_go">开始</string>
 </resources>

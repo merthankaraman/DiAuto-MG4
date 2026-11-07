@@ -305,13 +305,6 @@ class DaSettingsActivity : BaseActivity() {
                 settings.mapsModelOverlay = it
             })
         }
-        if (com.andrerinas.openheadunit.vehicle.ChargeStopPreheatPolicy.supportedOnThisCar()) {
-            row(R.string.dset_preheat, R.string.dset_preheat_summary, yesNo(settings.batteryPreheatBeforeCharger) {
-                settings.batteryPreheatBeforeCharger = it
-            })
-            row(R.string.dset_preheat_lead, R.string.dset_preheat_lead_summary,
-                value(getString(R.string.dset_minutes, settings.batteryPreheatMinutes)) { pickPreheatLead() })
-        }
         val keys = SteeringKeyLog.recent().takeLast(5).joinToString(" · ").ifEmpty { "—" }
         row(R.string.dset_wheel_keys, R.string.dset_wheel_keys_summary, value(keys, null))
         row(R.string.dset_battery_reset, R.string.dset_battery_reset_summary,
@@ -482,18 +475,6 @@ class DaSettingsActivity : BaseActivity() {
         com.andrerinas.openheadunit.vehicle.BatteryCapacityMeter.clear(this)
         com.andrerinas.openheadunit.vehicle.Mg4EnergyProvider.refresh()
         showTab(selectedTab)
-    }
-
-    private fun pickPreheatLead() {
-        val minutes = (5..60 step 5).toList()
-        MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
-            .setTitle(R.string.dset_preheat_lead)
-            .setItems(minutes.map { getString(R.string.dset_minutes, it) }.toTypedArray()) { _, i ->
-                settings.batteryPreheatMinutes = minutes[i]
-                showTab(selectedTab)
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     private fun pickPhone() {

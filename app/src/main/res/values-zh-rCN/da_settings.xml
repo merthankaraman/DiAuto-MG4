@@ -93,4 +93,11 @@
     <string name="dset_battery_reset">恢复自动</string>
     <string name="dset_battery_reset_summary">容量、健康度和 MG4 版本恢复为车辆数据。</string>
     <string name="dset_battery_reset_button">重置</string>
+    <string name="dset_ev_layout">发送到 Google Maps 的模型（测试）</string>
+    <string name="dset_ev_layout_summary">临时选项：比较 Maps 为每种数据格式规划的充电站</string>
+    <string name="dset_ev_layout_a">A · 当前（仅电池）</string>
+    <string name="dset_ev_layout_b">B · A + 车重和室外温度</string>
+    <string name="dset_ev_layout_c">C · B + 直流充电曲线</string>
+    <string name="dset_ev_layout_d">D · B + 直流充电时间</string>
+    <string name="dset_ev_layout_e">E · 完整（Beta 5）</string>
 </resources>

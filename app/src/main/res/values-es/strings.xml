@@ -1056,4 +1056,23 @@
     <string name="crash_report_sending">Sending report…</string>
     <string name="crash_report_sent">Report sent. Thank you.</string>
     <string name="crash_report_send_failed">Could not send the report. Check internet and try again.</string>
+    <string name="about_fork_notice">Versión comunitaria de DiAuto-MG4, mantenida por separado para el MG4.\ngithub.com/Skittle6938/DiAuto-MG4</string>
+    <string name="battery_value_percent">%1$s%%</string>
+    <string name="battery_auto">Automático</string>
+    <string name="battery_auto_value">%1$s · automático (%2$s)</string>
+    <string name="battery_manual_value">%1$s · ajustado manualmente</string>
+    <string name="battery_soh_manual_value">%1$s · ajustado manualmente</string>
+    <string name="battery_auto_option">Automático (%1$s, %2$s)</string>
+    <string name="battery_pack_option">Batería de %1$d kWh (%2$.1f kWh útiles)</string>
+    <string name="battery_source_car">obtenido del coche</string>
+    <string name="battery_source_default_pack">Batería de %1$d kWh predeterminada</string>
+    <string name="battery_soh_source_default">predeterminado</string>
+    <string name="battery_soh_auto_description" formatted="false">El modo automático usa la estimación de MG4 Dash si está instalada y ya ha medido la batería; de lo contrario, usa el 100 %.</string>
+    <string name="fullscreen_nav_only">Ocultar solo la barra izquierda</string>
+    <string name="ota_status_no_stable">No hay una versión oficial más reciente</string>
+    <string name="ota_dialog_no_stable_message">Aún no hay ninguna versión oficial posterior a %1$s. Se ofrecerán versiones beta si activas «Buscar también versiones beta» en Ajustes.</string>
+    <string name="ota_dialog_up_to_date_version">DiAuto %1$s es la versión más reciente.</string>
+    <string name="ota_dialog_install_message">Se descargará e instalará DiAuto %1$s (%2$s). Si no hay Wi-Fi, se usarán los datos móviles del coche. Después, DiAuto se reiniciará y Android Auto se detendrá durante unos segundos.</string>
+    <string name="ota_progress_installing">Instalando… DiAuto se reiniciará automáticamente.</string>
+    <string name="ota_progress_busy">Ya se está descargando o instalando una actualización.</string>
 </resources>

@@ -1046,4 +1046,23 @@
     <string name="crash_report_sending">Sending report…</string>
     <string name="crash_report_sent">Report sent. Thank you.</string>
     <string name="crash_report_send_failed">Could not send the report. Check internet and try again.</string>
+    <string name="about_fork_notice">نسخة مجتمعية من DiAuto-MG4، تتم صيانتها بشكل مستقل لسيارة MG4.\ngithub.com/Skittle6938/DiAuto-MG4</string>
+    <string name="battery_value_percent">%1$s٪</string>
+    <string name="battery_auto">تلقائي</string>
+    <string name="battery_auto_value">%1$s · تلقائي (%2$s)</string>
+    <string name="battery_manual_value">%1$s · ضبط يدويًا</string>
+    <string name="battery_soh_manual_value">%1$s · ضبط يدويًا</string>
+    <string name="battery_auto_option">تلقائي (%1$s، %2$s)</string>
+    <string name="battery_pack_option">بطارية %1$d كيلوواط ساعة (%2$.1f كيلوواط ساعة قابلة للاستخدام)</string>
+    <string name="battery_source_car">مقروء من السيارة</string>
+    <string name="battery_source_default_pack">بطارية %1$d كيلوواط ساعة افتراضيًا</string>
+    <string name="battery_soh_source_default">افتراضي</string>
+    <string name="battery_soh_auto_description" formatted="false">يستخدم الوضع التلقائي تقدير MG4 Dash عند تثبيته وقياسه للبطارية، وإلا يستخدم 100٪.</string>
+    <string name="fullscreen_nav_only">إخفاء الشريط الأيسر فقط</string>
+    <string name="ota_status_no_stable">لا يتوفر إصدار رسمي أحدث</string>
+    <string name="ota_dialog_no_stable_message">لا يتوفر بعد إصدار رسمي أحدث من %1$s. ستُعرض الإصدارات التجريبية عند تفعيل «التحقق أيضًا من الإصدارات التجريبية» في الإعدادات.</string>
+    <string name="ota_dialog_up_to_date_version">DiAuto %1$s هو أحدث إصدار.</string>
+    <string name="ota_dialog_install_message">سيتم تنزيل DiAuto %1$s (%2$s) وتثبيته. عند عدم الاتصال بشبكة Wi-Fi، ستُستخدم بيانات السيارة الخلوية. بعد ذلك سيُعاد تشغيل DiAuto ويتوقف Android Auto لبضع ثوانٍ.</string>
+    <string name="ota_progress_installing">جارٍ التثبيت… سيُعاد تشغيل DiAuto تلقائيًا.</string>
+    <string name="ota_progress_busy">يجري تنزيل تحديث أو تثبيته بالفعل.</string>
 </resources>

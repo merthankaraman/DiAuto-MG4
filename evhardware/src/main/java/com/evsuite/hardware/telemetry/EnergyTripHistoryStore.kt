@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /** A stored trip: always its totals, and its track for as long as there is room for it. */
 data class StoredTrip(
@@ -171,10 +173,13 @@ class EnergyTripHistoryStore(
                 output.write(bytes)
                 output.fd.sync()
             }
-            if (temp.renameTo(target)) true else {
-                temp.delete()
-                false
-            }
+            Files.move(
+                temp.toPath(),
+                target.toPath(),
+                StandardCopyOption.ATOMIC_MOVE,
+                StandardCopyOption.REPLACE_EXISTING,
+            )
+            true
         } catch (_: Exception) {
             temp.delete()
             false

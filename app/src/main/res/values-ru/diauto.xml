@@ -36,4 +36,18 @@
     <string name="da_settings_subtitle">Настройте экран, звук и подключение.</string>
     <string name="da_bluetooth_music">Музыка через Bluetooth автомобиля</string>
     <string name="da_bluetooth_music_hint">Оставьте музыку в Bluetooth-проигрывателе автомобиля. DiAuto не меняет его аудиофокус; звук навигации и ассистента остаётся доступен. После изменения переподключите Android Auto.</string>
+    <string name="da_update">Обновления</string>
+    <string name="da_update_install">Установить %1$s</string>
+    <string name="da_update_hint_checking">Проверка обновлений…</string>
+    <string name="da_update_hint_current">Версия %1$s</string>
+    <string name="da_update_hint_up_to_date">Версия %1$s · актуальная</string>
+    <string name="da_update_hint_up_to_date_beta">Версия %1$s · актуальная, включая бета-версии</string>
+    <string name="da_update_hint_available">Доступна новая версия</string>
+    <string name="da_update_hint_available_beta">Доступна новая бета-версия</string>
+    <string name="da_update_hint_failed">Версия %1$s · не удалось проверить</string>
+    <string name="da_hybrid_bt_music_needed">Подключите телефон к Bluetooth автомобиля, чтобы музыка и звонки звучали через автомобиль в гибридном режиме. Иначе звук может оставаться на телефоне.</string>
+    <string name="da_hybrid_bt_calls_hint">Для гибридного режима требуется Bluetooth автомобиля (A2DP + телефон/HFP). Если Bluetooth выключен, музыка, звонки и Gemini могут оставаться на телефоне, хотя видео Android Auto продолжит работать. Звук ассистента и навигации по-прежнему передаётся через Android Auto (а не музыку по Wi‑Fi).</string>
+    <string name="da_wifi_music_trial_hint">Проверка музыки по Wi‑Fi: DiAuto отключает музыку через Bluetooth автомобиля (A2DP), чтобы она не смешивалась со звуком по Wi‑Fi. Включите AAC, увеличьте буфер мультимедиа Wi‑Fi до 1000–1500 мс и установите умеренную частоту кадров. Если звук всё ещё прерывается, вернитесь к музыке через Bluetooth автомобиля.</string>
+    <string name="da_force_bt_music_on_connect">Переключать автомобиль на музыку Bluetooth при подключении</string>
+    <string name="da_force_bt_music_on_connect_hint">Тест: при подключении Android Auto (в гибридном режиме) попросить мультимедийную службу автомобиля выбрать Bluetooth Music — как карточку музыки на главном экране. SAIC / MG. По умолчанию выключено.</string>
 </resources>

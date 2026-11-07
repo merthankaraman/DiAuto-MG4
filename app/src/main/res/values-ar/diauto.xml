@@ -36,4 +36,18 @@
     <string name="da_settings_subtitle">اضبط الشاشة والصوت والاتصال.</string>
     <string name="da_bluetooth_music">الموسيقى عبر Bluetooth السيارة</string>
     <string name="da_bluetooth_music_hint">أبقِ الموسيقى في مشغّل Bluetooth السيارة. لا يغيّر DiAuto تركيزه الصوتي؛ ويظل صوت الملاحة والمساعد متاحاً. أعد توصيل Android Auto بعد تغيير هذا الخيار.</string>
+    <string name="da_update">التحديثات</string>
+    <string name="da_update_install">تثبيت %1$s</string>
+    <string name="da_update_hint_checking">جارٍ البحث عن تحديث…</string>
+    <string name="da_update_hint_current">الإصدار %1$s</string>
+    <string name="da_update_hint_up_to_date">الإصدار %1$s · محدّث</string>
+    <string name="da_update_hint_up_to_date_beta">الإصدار %1$s · محدّث، مع تضمين الإصدارات التجريبية</string>
+    <string name="da_update_hint_available">يتوفر إصدار جديد</string>
+    <string name="da_update_hint_available_beta">يتوفر إصدار تجريبي جديد</string>
+    <string name="da_update_hint_failed">الإصدار %1$s · تعذر التحقق</string>
+    <string name="da_hybrid_bt_music_needed">وصّل الهاتف ببلوتوث السيارة لتشغيل الموسيقى والمكالمات (الوضع الهجين)، وإلا فقد تبقى الموسيقى والمكالمات على الهاتف.</string>
+    <string name="da_hybrid_bt_calls_hint">يتطلب الوضع الهجين اتصال بلوتوث السيارة (A2DP + الهاتف/HFP). إذا كان Bluetooth متوقفًا، فقد تبقى الموسيقى والمكالمات وGemini على الهاتف، بينما يستمر فيديو Android Auto بالعمل. يظل صوت المساعد والتنقل عبر Android Auto (وليس عبر موسيقى Wi-Fi).</string>
+    <string name="da_wifi_music_trial_hint">لتجربة الموسيقى عبر Wi-Fi: يفصل DiAuto موسيقى Bluetooth السيارة (A2DP) حتى لا تختلط بصوت Wi-Fi. فعّل AAC، وارفع مخزن وسائط Wi-Fi المؤقت إلى 1000–1500 مللي ثانية، وأبقِ معدل الإطارات معتدلًا. إذا استمر التقطّع، فارجع إلى تشغيل الموسيقى عبر Bluetooth السيارة.</string>
+    <string name="da_force_bt_music_on_connect">التبديل إلى موسيقى Bluetooth السيارة عند الاتصال</string>
+    <string name="da_force_bt_music_on_connect_hint">للاختبار: عند اتصال Android Auto (مع تفعيل الوضع الهجين)، اطلب من خدمة الوسائط في السيارة اختيار موسيقى Bluetooth، كما في بطاقة الموسيقى على الشاشة الرئيسية. لسيارات SAIC / MG. متوقف افتراضيًا.</string>
 </resources>
