@@ -84,11 +84,6 @@ internet over Bluetooth is not possible on the MG4: its Bluetooth stack has no n
   to record a trip you choose, with the battery % Maps forecasts at arrival. It keeps consumption,
   speed, climate and temperature, with no position or personal data, and can move the files to a USB
   stick.
-- **Battery preheating before a charging stop** (off by default): when the next stop on the Maps
-  route is a charger, DiAuto turns battery heating on a set time before you arrive (30 min by
-  default, 5 to 60 min) and turns it off again if the route changes. It uses the battery
-  heating switch exactly as the car's own apps do, on every MG4 firmware DiAuto recognises.
-
 <p align="center"><img src="docs/screenshots/settings_car.png" width="800" alt="Settings, Car tab"></p>
 
 ### Sound

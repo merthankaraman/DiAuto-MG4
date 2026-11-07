@@ -1,3 +1,10 @@
+# DiAuto MG4+ 2.3.1
+
+- Removed automatic battery preheating from navigation so it cannot start while driving.
+- Diagnostic log capture is off by default; existing saved preferences are preserved.
+- Fixed replacement of existing telemetry history files on Windows.
+- Completed missing Arabic, Spanish, Russian, and Simplified Chinese translations and corrected hotspot troubleshooting instructions.
+
 # DiAuto MG4+ 2.3.0
 
 - Merged Skittle6938/DiAuto-MG4 2.2.2 into this repository (history of both kept). New home, tabbed settings, steering-wheel and media-card integration, trip recording, battery and Maps energy model, hands-free and hotspot connection fixes all come from that line.
